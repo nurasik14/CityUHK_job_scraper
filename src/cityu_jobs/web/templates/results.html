@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, mmss, banner, level_meter, match_ring %}
+{% block title %}Results · CityU Job Recommender{% endblock %}
+{% block content %}
+{# Closing-date urgency, in days: danger up to URGENT, warn up to SOON, a neutral chip up to NEAR. #}
+{% set URGENT_DAYS, SOON_DAYS, NEAR_DAYS = 3, 7, 14 %}
+
+{% if task.status == 'running' %}
+{# Progress: app.js polls the status URL, updates the message and m:ss, then reloads. #}
+<section class="card" data-status-url="/api/status">
+  <h1>{{ "Logging in to AIMS" if task.kind == 'login' else "Searching" }}…</h1>
+  <div class="progress-track" aria-hidden="true"></div>
+  <p aria-live="polite" data-progress-message>{{ task.message }}</p>
+  <p class="hint">{{ icon("clock") }} Elapsed <span class="num" data-elapsed>{{ mmss(task.elapsed_s) }}</span></p>
+  <p class="hint">The first AIMS scrape takes about 35 minutes and rating takes about 7 s per job; later searches
+    reuse the cache. It's safe to leave this page: the search keeps running and the results will be here.</p>
+</section>
+{% if task.kind == 'search' %}
+<div class="results skeletons" aria-hidden="true">
+  {% for _ in range(3) %}
+  <div class="card skeleton">
+    <div class="sk-head"><span class="sk sk-ring"></span><span class="sk-lines"><span class="sk sk-title"></span><span class="sk sk-meta"></span></span></div>
+    <span class="sk sk-bar"></span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% else %}
+
+{% if task.status == 'error' %}
+{% call banner("danger", ("Login" if task.kind == 'login' else "Search") ~ " failed", role="alert") %}
+  <p>{{ task.error }} <a href="/">Try again</a></p>
+{% endcall %}
+{% elif task.kind == 'login' and task.status == 'done' %}
+{% call banner("ok", None, role="status") %}<p>{{ task.message }}</p>{% endcall %}
+{% endif %}
+
+{% if prefs %}
+<div class="results-head">
+  <h1>Top {{ results|length }} of {{ total }} open jobs</h1>
+  <div class="legend" aria-label="How to read the cards">
+    <span class="legend-title">How to read the cards:</span>
+    {% for group, terms in term_groups %}
+    <span class="legend-group"><strong>{{ group }}</strong>
+      {% for term in terms %}<span class="legend-item"><span class="dot t-{{ term }}"></span>{{ term_labels[term] }}</span>{% endfor %}
+    </span>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="summary-bar{% if results %} is-sticky{% endif %}">
+  <ul class="chips" aria-label="Your search">
+    <li class="chip chip-query" title="{{ prefs.query or 'anything' }}">{{ icon("search") }} <span class="ellipsis">“{{ prefs.query or "anything" }}”</span></li>
+    <li class="chip hide-sm" title="{{ department or 'No department' }}">{{ icon("building") }} {{ prefs.department_code or "No department" }}<span class="visually-hidden">{% if department %} · {{ department }}{% endif %}</span></li>
+    <li class="chip hide-sm"><span class="dot t-hours"></span> Earn <strong class="num">{{ prefs.earn }}/5</strong></li>
+    <li class="chip hide-sm"><span class="dot t-level"></span> Learn <strong class="num">{{ prefs.learn }}/5</strong></li>
+    <li class="chip show-sm">Earn <strong class="num">{{ prefs.earn }}</strong> · Learn <strong class="num">{{ prefs.learn }}</strong></li>
+  </ul>
+  <a class="btn btn-compact" href="/"><span>Change<span class="hide-sm"> search</span></span></a>
+</div>
+
+{% if report and report.notes %}
+<details class="notes">
+  <summary>{{ icon("chevron") }} Scrape notes ({{ report.notes|length }})</summary>
+  <ul>{% for note in report.notes %}<li>{{ note }}</li>{% endfor %}</ul>
+  {% if report.skipped %}<p class="hint">Reused from cache (fresh): {{ report.skipped|join(", ") }}</p>{% endif %}
+</details>
+{% endif %}
+
+{% if results %}
+<ol class="results">
+  {% for r in results %}
+  {% set j = r.job %}
+  {% set pct = [[(100 * r.score / max_score)|round|int, 0]|max, 100]|min %}
+  {% set tier = "featured" if loop.first else ("standard" if loop.index <= 3 else "quiet") %}
+  {% set days_left = (j.closing_date - today).days if j.closing_date else none %}
+  {% set points = [] %}
+  {% for term in term_labels %}{% set v = r.breakdown.get(term, 0) %}{% if v > 0 %}
+    {% set _ = points.append((term, (100 * v / max_score)|round|int, v)) %}
+  {% endif %}{% endfor %}
+  <li class="card job {{ tier }}" style="--i: {{ [loop.index0, 10]|min }}"
+      aria-label="Rank {{ loop.index }}: {{ j.title }}, score {{ '%.2f'|format(r.score) }} of {{ '%.2f'|format(max_score) }}">
+    <div class="job-head">
+      <span class="rank" aria-hidden="true">{{ loop.index }}</span>
+      <div class="job-title">
+        {% if loop.first %}<span class="badge-top">{{ icon("sparkle") }} Top match</span>{% endif %}
+        <h2>{{ j.title }}</h2>
+        <span class="pill {{ j.source }}"><span class="dot"></span>{{ source_labels.get(j.source, j.source) }}</span>
+      </div>
+      {{ match_ring(pct, 72 if loop.first else 56) }}
+    </div>
+
+    {% if loop.first and j.description %}
+    {# The teaser is the first paragraph about the job itself, not the ITC "Company:" / "About the company:" ones. #}
+    {% set ns = namespace(teaser="") %}
+    {% for para in j.description.split("\n\n") %}{% if not ns.teaser and not para.startswith(("Company: ", "About the company: ")) %}{% set ns.teaser = para %}{% endif %}{% endfor %}
+    <p class="teaser">{{ (ns.teaser or j.description)|truncate(180, end="…") }}</p>
+    {% endif %}
+
+    <ul class="meta">
+      {% if j.department_code or j.department_name %}
+      <li>{{ icon("building") }} {{ j.department_code or "" }}{% if j.department_code and j.department_name %} · {% endif %}{{ j.department_name or "" }}</li>
+      {% endif %}
+      {% if j.weekly_hours is not none %}<li>{{ icon("clock") }} {{ "%g"|format(j.weekly_hours) }} h/week</li>{% endif %}
+      {% if j.closing_date %}
+      <li>{{ icon("calendar") }} Closes {{ j.closing_date.strftime("%d %b %Y") }}</li>
+      {% if days_left is not none and days_left <= NEAR_DAYS %}
+      <li><span class="badge-soon" data-urgency="{{ 'danger' if days_left <= URGENT_DAYS else ('warn' if days_left <= SOON_DAYS else 'neutral') }}">{{ icon("clock") }}
+        {% if days_left == 0 %}Closes today{% else %}Closes in {{ days_left }} day{{ "s" if days_left != 1 }}{% endif %}</span></li>
+      {% endif %}
+      {% endif %}
+      <li class="job-id">{{ j.job_id }}</li>
+    </ul>
+
+    <div class="bar" aria-hidden="true">
+      {% for term, n, v in points %}<span class="seg t-{{ term }}" style="width: {{ (100 * v / max_score)|round(1) }}%" title="{{ term_labels[term]|capitalize }}: {{ n }} points"></span>{% endfor %}
+    </div>
+    <p class="visually-hidden">{% for term, n, v in points %}{{ term_labels[term]|capitalize if loop.first else term_labels[term] }} {{ n }}{{ ", " if not loop.last }}{% endfor %} points</p>
+
+    <div class="level">
+      {% if r.level %}
+      {{ icon("sparkle") }} {{ level_meter(r.level) }} <span class="level-reason">Level {{ r.level }}/5 · {{ r.level_reason }}</span>
+      {% else %}
+      <span class="muted">{{ icon("sparkle") }} Not rated yet</span>
+      {% endif %}
+    </div>
+
+    <details class="why">
+      <summary>{{ icon("chevron") }} Why this score</summary>
+      <ul class="why-list">
+        {% for term, n, v in points %}<li><span class="dot t-{{ term }}"></span>{{ term_labels[term]|capitalize }} <strong class="num">{{ n }}</strong></li>{% endfor %}
+      </ul>
+      <p class="hint">Raw score {{ "%.2f"|format(r.score) }} of {{ "%.2f"|format(max_score) }} possible for your priorities.</p>
+    </details>
+
+    <details>
+      <summary>{{ icon("chevron") }} Details</summary>
+      <div class="details-body">
+        <div class="detail-text">{{ j.description }}</div>
+        {% if j.requirements %}<h3>Requirements</h3><div class="detail-text">{{ j.requirements }}</div>{% endif %}
+        {% if j.employment_period %}<p class="hint">Period: {{ j.employment_period }}</p>{% endif %}
+        {% if j.raw._honorarium %}<p class="hint">Extra honorarium: {{ j.raw._honorarium }}</p>{% endif %}
+        {% if j.url %}<p><a href="{{ j.url }}" rel="noreferrer" target="_blank">Open the listing</a></p>
+        {% else %}<p class="hint">Apply in AIMS with job no. {{ j.job_id.split(":", 1)[1] }}.</p>{% endif %}
+      </div>
+    </details>
+  </li>
+  {% endfor %}
+</ol>
+{% else %}
+<section class="card empty">
+  {{ icon("search") }}
+  <h2>No open jobs in the cache yet</h2>
+  <p>Check the scrape notes above. AIMS jobs need a login: log in to AIMS, then search again with “Refresh now”.
+    ITC STEM jobs need the job list saved in <code>.data/itc/</code>.</p>
+  <a class="btn btn-primary" href="/">Back to search</a>
+</section>
+{% endif %}
+
+{% else %}
+<section class="card empty">
+  <svg viewBox="0 0 72 72" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="10" y="20" width="44" height="34" rx="6"/><path d="M24 20v-5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v5M10 33h44"/>
+    <circle cx="52" cy="50" r="9"/><path d="m58.5 56.5 6 6"/>
+  </svg>
+  <h1>No search yet</h1>
+  <p>Tell us what kind of job you want and how much you care about earning and learning.</p>
+  <a class="btn btn-primary" href="/">{{ icon("search") }} Start a search</a>
+</section>
+{% endif %}
+{% endif %}
+{% endblock %}

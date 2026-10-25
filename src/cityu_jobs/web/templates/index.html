@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block content %}
+{% set priority_words = ["Not important", "Low", "Medium", "High", "Top priority"] %}
+<section class="hero">
+  <div class="hero-text">
+    <h1>Find the CityU job that fits you</h1>
+    <p class="lede">Campus Internship Scheme, Student Helper and ITC STEM jobs, ranked by what you ask for
+      and by how much you care about earning versus learning.</p>
+  </div>
+  <svg class="hero-art" viewBox="0 0 240 160" aria-hidden="true" focusable="false">
+    <g fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="170" cy="80" r="28"/><circle cx="170" cy="80" r="48"/><circle cx="170" cy="80" r="68"/>
+    </g>
+    <g fill="currentColor">
+      {% for row in range(5) %}{% for col in range(6) %}<circle cx="{{ 12 + col * 14 }}" cy="{{ 38 + row * 14 }}" r="2"/>{% endfor %}{% endfor %}
+      <circle cx="170" cy="80" r="7"/>
+    </g>
+  </svg>
+</section>
+
+<div class="layout-split">
+  <form class="card" method="post" action="/search">
+    <div class="field">
+      <label for="department">Your department</label>
+      <select id="department" name="department" aria-describedby="department-hint">
+        {% for d in departments %}
+        <option value="{{ d.code }}" {% if d.code == prefs.department_code %}selected{% endif %}>{{ d.code }} - {{ d.name }}</option>
+        {% if loop.first %}<option disabled>──────────</option>{% endif %}
+        {% endfor %}
+      </select>
+      <p class="hint" id="department-hint">Jobs from your department get a boost; nothing is filtered out.</p>
+    </div>
+
+    <div class="field">
+      <label for="query">What kind of job do you want?</label>
+      <textarea id="query" name="query" rows="3"
+        placeholder="e.g. machine learning research, backend development, data analysis">{{ prefs.query }}</textarea>
+      {# Shown by app.js only: without JS these buttons would do nothing. #}
+      <div class="examples" data-examples hidden>
+        <span class="hint">Try:</span>
+        {% for example in ["machine learning research", "backend development", "data analysis", "web frontend", "IT support"] %}
+        <button type="button" class="chip chip-button" data-example="{{ example }}" aria-label="Add example: {{ example }}">{{ example }}</button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="priorities">
+      {% for name, label in [("earn", "Earn money"), ("learn", "Learn / build a portfolio")] %}
+      <fieldset class="field">
+        <legend>{{ label }}</legend>
+        <div class="segmented {{ name }}">
+          {% for v in range(1, 6) %}
+          <input type="radio" id="{{ name }}-{{ v }}" name="{{ name }}" value="{{ v }}" {% if v == prefs[name] %}checked{% endif %}>
+          <label for="{{ name }}-{{ v }}"><span class="seg-num">{{ v }}</span> <span class="seg-word">{{ priority_words[v - 1] }}</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      {% endfor %}
+    </div>
+
+    <div class="field">
+      <label class="check"><input type="checkbox" name="refresh">
+        <span>Refresh now <span class="hint">(otherwise job lists less than {{ stale_hours }} hours old are reused)</span></span></label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" {% if task.status == 'running' %}disabled{% endif %}>{{ icon("search") }} Search</button>
+      {% if task.status == 'running' %}<p class="hint flush">A task is running: <a href="/results">see progress</a>.</p>{% endif %}
+    </div>
+  </form>
+
+  <aside class="stack" aria-label="About this search">
+    <section class="card card-quiet">
+      <h2>How ranking works</h2>
+      <ul class="aside-list">
+        <li><span class="swatch sw-match"></span><span><strong>Relevance:</strong> how close a job is to what you typed, plus a boost for your department.</span></li>
+        <li><span class="swatch sw-earn"></span><span><strong>Earn:</strong> more weekly hours and Student Helper jobs score higher as “earn” goes up.</span></li>
+        <li><span class="swatch sw-learn"></span><span><strong>Learn:</strong> the AI-rated job level and internship schemes score higher as “learn” goes up.</span></li>
+      </ul>
+      <p class="hint">Closed jobs are hidden. Every result shows why it ranked where it did.</p>
+    </section>
+
+    <section class="card card-quiet">
+      <h2>AIMS session</h2>
+      <p>Campus Internship and Student Helper jobs need your AIMS login. It opens in a separate browser window on
+        this computer; this app never sees your password and keeps only the session cookies, in <code>.data/</code>.</p>
+      <form method="post" action="/login"><button type="submit" class="btn" {% if task.status == 'running' %}disabled{% endif %}>Log in to AIMS</button></form>
+    </section>
+  </aside>
+</div>
+{% endblock %}

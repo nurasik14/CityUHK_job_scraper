@@ -1,0 +1,12 @@
+# Local data, incl. the AIMS session file (acts like a password)
+.data/
+
+# Python
+.venv/
+__pycache__/
+
+# VibeWise learning notes
+.vibe-wise/
+
+# Playwright MCP browser logs/snapshots (local tooling output)
+.playwright-mcp/

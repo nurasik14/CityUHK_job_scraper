@@ -1,0 +1,842 @@
+[
+ {
+  "code": "AC",
+  "name": "Accountancy"
+ },
+ {
+  "code": "ACE",
+  "name": "Architect & Civil Engg Res Ctr"
+ },
+ {
+  "code": "ACGC",
+  "name": "Acc'ting & Corp Governance Ctr"
+ },
+ {
+  "code": "ACIM",
+  "name": "Ctr for App Comp & Inter Media"
+ },
+ {
+  "code": "ACRC",
+  "name": "Architect & Civil Engg Res Ctr"
+ },
+ {
+  "code": "ADMO",
+  "name": "Admissions Office"
+ },
+ {
+  "code": "ADSE",
+  "name": "Adv Design & Systems Engg"
+ },
+ {
+  "code": "AERC",
+  "name": "Ability R&D Energy Res Ctr"
+ },
+ {
+  "code": "AI",
+  "name": "Adv Inst for Cross-Discpl Stud"
+ },
+ {
+  "code": "AIM",
+  "name": "AIMtech Centre"
+ },
+ {
+  "code": "AIS",
+  "name": "Asian & International Studies"
+ },
+ {
+  "code": "ANSD",
+  "name": "Adv Nclr Sfty & Sustnble Dev"
+ },
+ {
+  "code": "AP",
+  "name": "Physics & Materials Science"
+ },
+ {
+  "code": "ARO",
+  "name": "Alumni Relations Office"
+ },
+ {
+  "code": "ARRO",
+  "name": "Acad Regulations & Records Off"
+ },
+ {
+  "code": "ATIS",
+  "name": "Adv Transport Info Sys Res Ctr"
+ },
+ {
+  "code": "BC",
+  "name": "Building & Construction"
+ },
+ {
+  "code": "BCH",
+  "name": "Biology & Chemistry"
+ },
+ {
+  "code": "BD",
+  "name": "College of Biomedicine"
+ },
+ {
+  "code": "BG",
+  "name": "Indra and Harry Banga Gallery"
+ },
+ {
+  "code": "BIOS",
+  "name": "Biostatistics"
+ },
+ {
+  "code": "BME",
+  "name": "Biomedical Engineering"
+ },
+ {
+  "code": "BMS",
+  "name": "Biomedical Sciences"
+ },
+ {
+  "code": "BST",
+  "name": "Building Science & Technology"
+ },
+ {
+  "code": "BTC",
+  "name": "Biotech and Health Centre"
+ },
+ {
+  "code": "CA",
+  "name": "Architecture and Civil Engg"
+ },
+ {
+  "code": "CAH",
+  "name": "Chinese and History"
+ },
+ {
+  "code": "CAHW",
+  "name": "Ctr for Anml Health & Welfare"
+ },
+ {
+  "code": "CAI",
+  "name": "CityUHK Academy of Innovation"
+ },
+ {
+  "code": "CAIO",
+  "name": "Career and Internship Office"
+ },
+ {
+  "code": "CAO",
+  "name": "Office of the CAO"
+ },
+ {
+  "code": "CAOC",
+  "name": "Ctr of Appl'd Optim'n & Comp'n"
+ },
+ {
+  "code": "CASM",
+  "name": "Ctr for Adv Struct Materials"
+ },
+ {
+  "code": "CB",
+  "name": "Col. of Business"
+ },
+ {
+  "code": "CBD",
+  "name": "Res Ctr Tmt of Brain Disorders"
+ },
+ {
+  "code": "CBNN",
+  "name": "Ctr Biosys,Neurosci & Nanotech"
+ },
+ {
+  "code": "CBRC",
+  "name": "China Busi & Econ Dev Res Ctr"
+ },
+ {
+  "code": "CC",
+  "name": "College of Computing"
+ },
+ {
+  "code": "CCAH",
+  "name": "Ctr for Compan Animal Health"
+ },
+ {
+  "code": "CCCL",
+  "name": "Ctr for Chin & Comparative Law"
+ },
+ {
+  "code": "CCCN",
+  "name": "Ctr-Complexity & Complex Ntwks"
+ },
+ {
+  "code": "CCIV",
+  "name": "Chinese Civilisation Centre"
+ },
+ {
+  "code": "CCNS",
+  "name": "CityU Ctr on Neutron Scatter'g"
+ },
+ {
+  "code": "CCR",
+  "name": "Ctr for Communication Research"
+ },
+ {
+  "code": "CCS",
+  "name": "Ctr for Cross-cultural Studies"
+ },
+ {
+  "code": "CDFO",
+  "name": "Campus Dev & Facilities Ofc"
+ },
+ {
+  "code": "CDO",
+  "name": "Campus Development Office"
+ },
+ {
+  "code": "CDTC",
+  "name": "Ctr for Decentra'd Trust Comp"
+ },
+ {
+  "code": "CE",
+  "name": "Sch of Continuing & Prof Educ"
+ },
+ {
+  "code": "CEAC",
+  "name": "Ctr for East Asian & Comp Phil"
+ },
+ {
+  "code": "CEO",
+  "name": "Cultural Exchange Oasis"
+ },
+ {
+  "code": "CFP",
+  "name": "Ctr for Functional Photonics"
+ },
+ {
+  "code": "CFSC",
+  "name": "Ctr on Opt Fibr Sensing & Comm"
+ },
+ {
+  "code": "CGIF",
+  "name": "Ctr on Global Internet Finance"
+ },
+ {
+  "code": "CH",
+  "name": "Col of Liberal Arts & Soc Sci"
+ },
+ {
+  "code": "CHEM",
+  "name": "Chemistry"
+ },
+ {
+  "code": "CIO",
+  "name": "Office of the CIO"
+ },
+ {
+  "code": "CIRO",
+  "name": "Comm and Inst Research Office"
+ },
+ {
+  "code": "CM",
+  "name": "Business"
+ },
+ {
+  "code": "CNBM",
+  "name": "Ctr Nanotec & Biomed Microsys"
+ },
+ {
+  "code": "CNIE",
+  "name": "Ctr for Nature-Inspired Engg"
+ },
+ {
+  "code": "CNS",
+  "name": "Ctr for Neutron Scattering"
+ },
+ {
+  "code": "COM",
+  "name": "Media and Communication"
+ },
+ {
+  "code": "CPAL",
+  "name": "Ctr for Public Affairs and Law"
+ },
+ {
+  "code": "CPE",
+  "name": "Centre for Power Electronics"
+ },
+ {
+  "code": "CPO",
+  "name": "Campus Planning Office"
+ },
+ {
+  "code": "CPRO",
+  "name": "Communications & Pub Rel Ofc"
+ },
+ {
+  "code": "CRA",
+  "name": "Ctr for Robotics & Automation"
+ },
+ {
+  "code": "CS",
+  "name": "Computer Science"
+ },
+ {
+  "code": "CSC",
+  "name": "Computing Services Centre"
+ },
+ {
+  "code": "CSCR",
+  "name": "Ctr Smart Enrgy Conv&Util Res"
+ },
+ {
+  "code": "CSHK",
+  "name": "Resrch Ctr for Sustainable HK"
+ },
+ {
+  "code": "CSIE",
+  "name": "Ctr for Sys Informatics Engg"
+ },
+ {
+  "code": "CSMR",
+  "name": "Ctr for Soc Media Mkting & BI"
+ },
+ {
+  "code": "CTEX",
+  "name": "Office of CityU Extension"
+ },
+ {
+  "code": "CTFS",
+  "name": "Ctr for Tran, Trade & Fin Stud"
+ },
+ {
+  "code": "CTL",
+  "name": "Chinese, Transl & Linguistics"
+ },
+ {
+  "code": "CUC",
+  "name": "Council Secretariat"
+ },
+ {
+  "code": "CXO",
+  "name": "Cultural Exchange Oasis"
+ },
+ {
+  "code": "DAO",
+  "name": "Dev. & Alumni Relations Office"
+ },
+ {
+  "code": "DAOS",
+  "name": "Decision Analytics &Operations"
+ },
+ {
+  "code": "DCO",
+  "name": "Science and Technology"
+ },
+ {
+  "code": "DGO",
+  "name": "CityU Dongguan Campus Office"
+ },
+ {
+  "code": "DO",
+  "name": "Development Office"
+ },
+ {
+  "code": "DP",
+  "name": "Office of the Deputy President"
+ },
+ {
+  "code": "DS",
+  "name": "Data Science"
+ },
+ {
+  "code": "DSL",
+  "name": "Office of the Dean of Std Lrng"
+ },
+ {
+  "code": "DSS",
+  "name": "Social Sciences"
+ },
+ {
+  "code": "DS^",
+  "name": "School of Data Science"
+ },
+ {
+  "code": "DUE",
+  "name": "Office of the Dean of Ugrd Edu"
+ },
+ {
+  "code": "E2",
+  "name": "Sch of Energy and Environment"
+ },
+ {
+  "code": "EDGE",
+  "name": "Ofc of Edu Dev & Gen Edu"
+ },
+ {
+  "code": "EDSP",
+  "name": "Off of Exec Dir of Sp Projects"
+ },
+ {
+  "code": "EE",
+  "name": "Electrical Engineering"
+ },
+ {
+  "code": "EF",
+  "name": "Economics & Finance"
+ },
+ {
+  "code": "EG",
+  "name": "College of Engineering"
+ },
+ {
+  "code": "EL",
+  "name": "English Language Centre"
+ },
+ {
+  "code": "ELCO",
+  "name": "Ext Liaison & Cooperation Off"
+ },
+ {
+  "code": "EN",
+  "name": "English"
+ },
+ {
+  "code": "EPA",
+  "name": "Ctr for EPA"
+ },
+ {
+  "code": "ESU",
+  "name": "Enterprise Solutions Office"
+ },
+ {
+  "code": "ET",
+  "name": "Sch of Energy and Environment"
+ },
+ {
+  "code": "FBAC",
+  "name": "Fintech & Bus. Analytics Ctr"
+ },
+ {
+  "code": "FL",
+  "name": "School of Law"
+ },
+ {
+  "code": "FMO",
+  "name": "Facilities Management Office"
+ },
+ {
+  "code": "FO",
+  "name": "Finance Office"
+ },
+ {
+  "code": "GARC",
+  "name": "Governance in Asia Res Ctr"
+ },
+ {
+  "code": "GCCC",
+  "name": "Guy Carpenter Climate Centre"
+ },
+ {
+  "code": "GEO",
+  "name": "Global Engagement Office"
+ },
+ {
+  "code": "GSO",
+  "name": "Global Services Office"
+ },
+ {
+  "code": "H2O",
+  "name": "Ctr for Oceans & Human Health"
+ },
+ {
+  "code": "HCLS",
+  "name": "Halliday Ctr for Int App of LS"
+ },
+ {
+  "code": "HKCM",
+  "name": "Ctr for Maritime & Transp Law"
+ },
+ {
+  "code": "HRO",
+  "name": "Human Resources Office"
+ },
+ {
+  "code": "IAS",
+  "name": "Institute for Advanced Study"
+ },
+ {
+  "code": "IAUD",
+  "name": "Internal Audit Office"
+ },
+ {
+  "code": "ICE",
+  "name": "HK Inst for Clean Energy"
+ },
+ {
+  "code": "IDM",
+  "name": "Institute of Digital Medicine"
+ },
+ {
+  "code": "IDS",
+  "name": "HK Inst for Data Science"
+ },
+ {
+  "code": "IFL",
+  "name": "Institute of Future Learning"
+ },
+ {
+  "code": "IGGI",
+  "name": "Inst Global Gov&Innov Shar Fut"
+ },
+ {
+  "code": "IND",
+  "name": "Industrial Technologies Centre"
+ },
+ {
+  "code": "INSO",
+  "name": "Int'l and Non-local Studs Ofc"
+ },
+ {
+  "code": "IRO",
+  "name": "Institutional Research Office"
+ },
+ {
+  "code": "IS",
+  "name": "Information Systems"
+ },
+ {
+  "code": "IT",
+  "name": "Computer Eng & Info Technology"
+ },
+ {
+  "code": "JERI",
+  "name": "Ctr for JER cum Identif HK Law"
+ },
+ {
+  "code": "KTO",
+  "name": "Knowledge Transfer Office"
+ },
+ {
+  "code": "LARU",
+  "name": "Lab Animal Research Unit"
+ },
+ {
+  "code": "LBJ",
+  "name": "Liu Bie Ju Ctr for Math Sci"
+ },
+ {
+  "code": "LC",
+  "name": "CFML CSL Language Centre"
+ },
+ {
+  "code": "LCCI",
+  "name": "Low-Carbon & Clim Ipct Res Ctr"
+ },
+ {
+  "code": "LCO",
+  "name": "Legal Counsel Office"
+ },
+ {
+  "code": "LIB",
+  "name": "Library"
+ },
+ {
+  "code": "LS",
+  "name": "Arts and Humanities"
+ },
+ {
+  "code": "LT",
+  "name": "Linguistics and Translation"
+ },
+ {
+  "code": "MA",
+  "name": "Mathematics"
+ },
+ {
+  "code": "MB",
+  "name": "MB Secretariat"
+ },
+ {
+  "code": "MBE",
+  "name": "Mechanical and Biomedical Engg"
+ },
+ {
+  "code": "MEAO",
+  "name": "Mainland & Extrnl Affairs Ofc"
+ },
+ {
+  "code": "MEEM",
+  "name": "Manufacturing Engg & Engg Mgt"
+ },
+ {
+  "code": "MERC",
+  "name": "Multimedia S/w Engg Resch Ctr"
+ },
+ {
+  "code": "MGT",
+  "name": "Management"
+ },
+ {
+  "code": "MKT",
+  "name": "Marketing"
+ },
+ {
+  "code": "MNE",
+  "name": "Mechanical Engineering"
+ },
+ {
+  "code": "MS",
+  "name": "Management Sciences"
+ },
+ {
+  "code": "MSE",
+  "name": "Materials Sci & Engineering"
+ },
+ {
+  "code": "NPMM",
+  "name": "HK Nat Prec Met M Engg Res Ctr"
+ },
+ {
+  "code": "NS",
+  "name": "Neuroscience"
+ },
+ {
+  "code": "OBOR",
+  "name": "Rsrch Ctr on One-Belt-One-Road"
+ },
+ {
+  "code": "OHRP",
+  "name": "App'd One Hlth Rsrch&Plcy Advc"
+ },
+ {
+  "code": "OP",
+  "name": "Office of the President"
+ },
+ {
+  "code": "PH",
+  "name": "Infectious Diseases & Pub Hlth"
+ },
+ {
+  "code": "PHMC",
+  "name": "Ctr for Prognos & Sys Hlth Mgt"
+ },
+ {
+  "code": "PHY",
+  "name": "Physics"
+ },
+ {
+  "code": "PIA",
+  "name": "Public & International Affairs"
+ },
+ {
+  "code": "POL",
+  "name": "Public Policy"
+ },
+ {
+  "code": "PRVT",
+  "name": "Office of the Provost"
+ },
+ {
+  "code": "PVDP",
+  "name": "Office of the Provost & DP"
+ },
+ {
+  "code": "QEC",
+  "name": "Quality Evaluation Centre"
+ },
+ {
+  "code": "RCC",
+  "name": "Contemporary China Resrch Prj"
+ },
+ {
+  "code": "RCCL",
+  "name": "Ctr for Chin & Comparative Law"
+ },
+ {
+  "code": "RCL",
+  "name": "Language Info Sci Research Ctr"
+ },
+ {
+  "code": "RCMS",
+  "name": "Liu Bie Ju Ctr. for Math. Sci."
+ },
+ {
+  "code": "RCMT",
+  "name": "Ctr for Media Technology"
+ },
+ {
+  "code": "RCO",
+  "name": "Optoelectronics Research Ctr"
+ },
+ {
+  "code": "RCP",
+  "name": "Ctr-Coastal Pollution & Conser"
+ },
+ {
+  "code": "RCSA",
+  "name": "Southeast Asia Research Ctr"
+ },
+ {
+  "code": "RCW",
+  "name": "Wireless Communications Res Cr"
+ },
+ {
+  "code": "RFO",
+  "name": "Research Foundation Office"
+ },
+ {
+  "code": "RO",
+  "name": "Research Grnts & Contracts Ofc"
+ },
+ {
+  "code": "RSDA",
+  "name": "Ctr-Super-Diamond & Adv Films"
+ },
+ {
+  "code": "SDS",
+  "name": "Student Development Services"
+ },
+ {
+  "code": "SE",
+  "name": "Col. of Science & Engineering"
+ },
+ {
+  "code": "SEEM",
+  "name": "Systems Engg and Engg Mgt"
+ },
+ {
+  "code": "SGS",
+  "name": "School of Graduate Studies"
+ },
+ {
+  "code": "SI",
+  "name": "College of Science"
+ },
+ {
+  "code": "SKL",
+  "name": "State Key Lab of Mm Waves"
+ },
+ {
+  "code": "SKME",
+  "name": "SKL of Marine Env. Health"
+ },
+ {
+  "code": "SKMP",
+  "name": "State Key Lab Marine Pollution"
+ },
+ {
+  "code": "SKMW",
+  "name": "State Key Lab THz and Mm Waves"
+ },
+ {
+  "code": "SM",
+  "name": "School of Creative Media"
+ },
+ {
+  "code": "SRO",
+  "name": "Student Residence Office"
+ },
+ {
+  "code": "SS",
+  "name": "Social and Behavioural Sci"
+ },
+ {
+  "code": "SVIE",
+  "name": "Office of the Senior VP (IE)"
+ },
+ {
+  "code": "SYE",
+  "name": "Systems Engineering"
+ },
+ {
+  "code": "TBSC",
+  "name": "Tung BioMed Sci Ctr"
+ },
+ {
+  "code": "TED",
+  "name": "Talent & Education Dev Office"
+ },
+ {
+  "code": "TFBC",
+  "name": "Tung Foundation BioMed Sci Ctr"
+ },
+ {
+  "code": "TTO",
+  "name": "Technology Transfer Office"
+ },
+ {
+  "code": "UP",
+  "name": "City University of HK Press"
+ },
+ {
+  "code": "VCS",
+  "name": "Veterinary Clinical Sciences"
+ },
+ {
+  "code": "VM",
+  "name": "Col of Vet Medicine & Life Sci"
+ },
+ {
+  "code": "VPAD",
+  "name": "Office of Vice-President (AD)"
+ },
+ {
+  "code": "VPCE",
+  "name": "Office of Vice-President (CE)"
+ },
+ {
+  "code": "VPDE",
+  "name": "Office of Vice-President (DE)"
+ },
+ {
+  "code": "VPFA",
+  "name": "Office of Vice-President (FA)"
+ },
+ {
+  "code": "VPMS",
+  "name": "VPMS"
+ },
+ {
+  "code": "VPR",
+  "name": "Office of Vice-President (R)"
+ },
+ {
+  "code": "VPRE",
+  "name": "Office of Vice-President (RES)"
+ },
+ {
+  "code": "VPRT",
+  "name": "Office of Vice-President (RT)"
+ },
+ {
+  "code": "VPSA",
+  "name": "Office of Vice-President (SA)"
+ },
+ {
+  "code": "VPTI",
+  "name": "Office of Vice-President (TI)"
+ },
+ {
+  "code": "VPUE",
+  "name": "Office of Vice-President (UE)"
+ },
+ {
+  "code": "YATE",
+  "name": "Youth Arts and Tech Education"
+ },
+ {
+  "code": "YCT",
+  "name": "CoolThink@JC"
+ },
+ {
+  "code": "YKS",
+  "name": "KeySteps@JC 2.0"
+ },
+ {
+  "code": "YUGA",
+  "name": "Jockey Club Project UGA"
+ },
+ {
+  "code": "YYE",
+  "name": "JC Youth Empathy Project"
+ },
+ {
+  "code": "ZRC",
+  "name": "Information Technology Ctr"
+ }
+]

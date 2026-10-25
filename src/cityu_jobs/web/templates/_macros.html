@@ -1,0 +1,38 @@
+{# Small reusable pieces. Icons come from the sprite in base.html. #}
+
+{% macro icon(name) -%}
+<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-{{ name }}"></use></svg>
+{%- endmacro %}
+
+{% macro mmss(seconds) -%}
+{{ "%d:%02d"|format(seconds // 60, seconds % 60) }}
+{%- endmacro %}
+
+{# A banner: kind is warn | danger | ok. `role` is alert for errors, status for success. #}
+{% macro banner(kind, title, role=None, icon_name=None) -%}
+<div class="banner {{ kind }}"{% if role %} role="{{ role }}"{% endif %}>
+  {{ icon(icon_name or ("check" if kind == "ok" else "alert")) }}
+  <div class="banner-body">
+    {% if title %}<p class="banner-title">{{ title }}</p>{% endif %}
+    {{ caller() if caller else "" }}
+  </div>
+</div>
+{%- endmacro %}
+
+{# The 5-pip level meter. #}
+{% macro level_meter(level) -%}
+<span class="pips" role="img" aria-label="Level {{ level }} of 5">
+  {%- for i in range(1, 6) %}<i{% if i <= level %} class="on"{% endif %}></i>{% endfor -%}
+</span>
+{%- endmacro %}
+
+{# The 0-100 match ring. The SVG is decoration; "73 match" is real text. size: 56 (cards) or 72 (featured). #}
+{% macro match_ring(pct, size=56) -%}
+<div class="ring" style="--ring: {{ size }}px">
+  <svg viewBox="0 0 36 36" aria-hidden="true" focusable="false">
+    <circle class="ring-track" cx="18" cy="18" r="15.5" pathLength="100"/>
+    <circle class="ring-arc" cx="18" cy="18" r="15.5" pathLength="100" stroke-dasharray="{{ pct }} 100" transform="rotate(-90 18 18)"/>
+  </svg>
+  <span class="ring-text"><span class="ring-num">{{ pct }}</span> <span class="ring-label">match</span></span>
+</div>
+{%- endmacro %}
