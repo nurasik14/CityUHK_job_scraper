@@ -10,7 +10,7 @@
     <p class="eyebrow">{{ source_labels.get(job.source, job.scheme) }}</p>
     <h1>{{ job.title }}</h1>
     <p class="employer">{{ icon("building") }} <strong>{{ info.employer or "Employer not listed" }}</strong>
-      {% if job.location %}<span class="muted"> · {{ icon("pin") }} {{ job.location }}</span>{% endif %}</p>
+      {% if job.location %}<span class="muted employer-loc">{{ icon("pin") }} {{ job.location }}</span>{% endif %}</p>
     <ul class="meta">
       {% if t and t.deadline %}<li>{{ icon("calendar") }} Apply by <strong>{{ t.deadline|day }}</strong></li>{% endif %}
       {% if t and t.start %}<li>{{ icon("play") }}{% if t.approximate %} {{ t.label }} <span class="muted">(approx.)</span>{% else %} Starts {{ t.start|day }}{% if t.days %} · {{ t.days }} days{% endif %}{% endif %}</li>{% endif %}

@@ -414,6 +414,21 @@ function setupForms() {
   }
 }
 
+// Phones: the nav row scrolls sideways; show the current page and drop the edge fade at the end.
+function setupNav() {
+  const nav = document.querySelector(".site-nav");
+  if (!nav) return;
+  const current = nav.querySelector('[aria-current="page"]');
+  if (current && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = current.offsetLeft - (nav.clientWidth - current.offsetWidth) / 2;
+  }
+  const update = () => nav.classList.toggle("at-end", nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 2);
+  nav.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+}
+
+setupNav();
 setupThemeToggle();
 setupPolling();
 setupExamples();

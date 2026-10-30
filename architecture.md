@@ -629,6 +629,18 @@ listed so the owner can review them.
   forms (Workday, Greenhouse…) forbid bots and vary per site; a wrong submission can't
   be undone. Instead: prefilled email/letter + the apply link + Saved/Applied tracking
   (`.data/applications.json`).
+- **Your gaps** (`core/gaps.py`, `/gaps`, implementer's design): two steps so the AI
+  never reads 90 listings at once. `collect()` (code): over the jobs with a fit estimate
+  for the current profile (= top results; fallback: top 40 results' skills only), count
+  the `skills` stored with each level (canonical names, e.g. "LLMs" → "llm"), keyword-check
+  each against the profile text (with a small alias list: "SQL" is shown by "PostgreSQL"),
+  and gather the per-job `missing` and `blockers`. `summarize()` (one Claude call, JSON
+  schema): groups that evidence into ≤7 weaknesses {area, kind skill|experience|evidence|
+  eligibility, severity, jobs_affected, jobs J1.., why, fix, effort} + strengths,
+  cv_fixes, later, plan; validated in code (job numbers mapped to real ids, counts
+  clamped, sorted by severity then jobs affected); job numbers cited inside sentences are
+  turned into links (`link_jobs`, escaped). Saved per results tab in `.data/gaps.json`
+  (mode 600) with a key = hash(profile fingerprint + analysed job ids) → "out of date" note.
 - **Trust boundary change**: with Claude selected, the profile (CV text) goes to
   Anthropic when estimating fit or writing letters. Ollama users get letters locally but
   no fit estimates.

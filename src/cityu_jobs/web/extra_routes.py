@@ -17,10 +17,11 @@ from starlette.datastructures import UploadFile
 
 from cityu_jobs import config
 from cityu_jobs.core.ai.providers import ProviderError
-from cityu_jobs.core.apply_info import apply_info, clean_label, itc_page_url
+from cityu_jobs.core.apply_info import apply_info, clean_label, employer, itc_page_url
 from cityu_jobs.core.cache import Cache
 from cityu_jobs.core.dates import job_timeline
 from cityu_jobs.core.fit import assess_fit, can_assess
+from cityu_jobs.core.gaps import GapsError, collect, load_reports, save_report, summarize
 from cityu_jobs.core.itc_stem_scraper import fix_mojibake, manual_files, parse_job_list
 from cityu_jobs.core.letters import STATUSES, LetterError, load_letter, load_tracker, set_status, write_letter
 from cityu_jobs.core.profile import CVError, Profile, extract_cv_text
@@ -95,7 +96,62 @@ def find_job(runner, job_id: str):
     return job, None, None
 
 
-def register(app: FastAPI, render, runner, check_same_origin) -> None:
+def gap_rows(runner, sources: set[str] | None) -> list[tuple]:
+    """(job, level, fit) for the jobs the gaps report reads, best first.
+
+    The jobs with a "difficulty for you" estimate for the current profile (= your top
+    results); if there are none yet, the top results' skills only.
+    """
+    cache, profile = Cache.load(), Profile.load()
+    fingerprint = profile.fingerprint() if not profile.is_empty() else None
+    ranked = [r.job for r in runner.state.results]
+    jobs = ranked or cache.active_jobs()
+    jobs = [j for j in jobs if sources is None or j.source in sources]
+    rows = []
+    for job in jobs:
+        fit = cache.get_fit(job.job_id, job.content_hash, fingerprint) if fingerprint else None
+        if fit:
+            rows.append((job, cache.get_level(job.job_id, job.content_hash), fit))
+    if not rows and ranked:
+        rows = [(j, cache.get_level(j.job_id, j.content_hash), None) for j in jobs[: config.GAPS_FALLBACK_JOBS]]
+    return rows
+
+
+def register(app: FastAPI, render, runner, check_same_origin, groups: dict | None = None) -> None:
+    groups = groups or {"all": ("All", None)}
+
+    # --- Your gaps: weaknesses across the jobs you target ------------------------------
+
+    @app.get("/gaps", response_class=HTMLResponse)
+    def gaps_page(request: Request, scope: str = "all", error: str = ""):
+        scope = scope if scope in groups else "all"
+        profile = Profile.load()
+        evidence = collect(gap_rows(runner, groups[scope][1]), profile, employer)
+        report = load_reports().get(scope)
+        return render(
+            request, "gaps.html", scope=scope, groups=groups, evidence=evidence, report=report,
+            stale=bool(report) and report.get("key") != evidence.key(profile),
+            profile_ready=not profile.is_empty(), can_fit=can_assess(Settings.load().provider()),
+            busy=runner.busy, error=error,
+        )
+
+    @app.post("/gaps")
+    async def gaps_run(request: Request, scope: str = "all"):
+        check_same_origin(request)
+        scope = scope if scope in groups else "all"
+        page = f"/gaps?scope={scope}"
+        profile, provider = Profile.load(), Settings.load().provider()
+        if profile.is_empty():
+            return RedirectResponse(f"{page}&error={quote('Add your CV or projects on the Profile page first.')}", status_code=303)
+        if not can_assess(provider):
+            return RedirectResponse(f"{page}&error={quote('The summary needs Claude: choose it on the Settings page.')}", status_code=303)
+        evidence = collect(gap_rows(runner, groups[scope][1]), profile, employer)
+        try:
+            report = summarize(evidence, profile, provider)
+        except (GapsError, ProviderError) as e:
+            return RedirectResponse(f"{page}&error={quote(str(e)[:200])}", status_code=303)
+        save_report(scope, evidence.key(profile), report)
+        return RedirectResponse(f"{page}#report", status_code=303)
     # --- ITC STEM spreadsheet --------------------------------------------------------
 
     @app.get("/itc", response_class=HTMLResponse)

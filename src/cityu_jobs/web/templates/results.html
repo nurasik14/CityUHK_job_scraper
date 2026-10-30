@@ -73,6 +73,7 @@
   <a class="filter filter-toggle" role="switch" aria-checked="{{ 'true' if eligible else 'false' }}"
      href="/results{% set q2 = [base, "" if eligible else "eligible=1"]|select|join("&") %}{{ ('?' ~ q2) if q2 }}">
     <span class="switch" aria-hidden="true"></span> Hide not eligible <span class="filter-count num">{{ hidden_ineligible }}</span></a>
+  <a class="filter" href="/gaps{% if show != 'all' %}?scope={{ show }}{% endif %}">{{ icon("sparkle") }} What am I missing?</a>
   {% endif %}
 </nav>
 

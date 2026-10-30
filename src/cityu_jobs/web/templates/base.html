@@ -51,6 +51,7 @@
         <a href="/"{% if path == "/" %} aria-current="page"{% endif %}>Search</a>
         <a href="/results"{% if path == "/results" or path.startswith("/job/") %} aria-current="page"{% endif %}>Results</a>
         <a href="/profile"{% if path == "/profile" %} aria-current="page"{% endif %}>Profile</a>
+        <a href="/gaps"{% if path == "/gaps" %} aria-current="page"{% endif %}>Gaps</a>
         <a href="/settings"{% if path == "/settings" or path == "/itc" %} aria-current="page"{% endif %}>Settings</a>
       </nav>
       <button type="button" class="btn btn-ghost btn-icon theme-toggle" data-theme-toggle hidden aria-label="Theme: System (click to change)">

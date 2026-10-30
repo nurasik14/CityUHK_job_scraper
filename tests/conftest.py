@@ -61,6 +61,7 @@ def _offline(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(config, "PROFILE_FILE", tmp_path / "profile.json")
     monkeypatch.setattr(config, "LETTERS_DIR", tmp_path / "letters")
     monkeypatch.setattr(config, "TRACKER_FILE", tmp_path / "applications.json")
+    monkeypatch.setattr(config, "GAPS_FILE", tmp_path / "gaps.json")
     monkeypatch.setattr(config, "ITC_DIR", tmp_path / "itc")
 
     def no_network(self, request):

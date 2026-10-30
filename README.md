@@ -1,305 +1,257 @@
-# CityUHK_job_scraper
+# CityU Job Recommender
 
-A self-hosted job recommender for CityU students. It collects Campus Internship
-Scheme, Student Helper and ITC STEM listings, plus **tech internships** from big tech
-(Amazon, Microsoft, NVIDIA, TikTok, Stripe, …) and ~50 smaller tech, AI, fintech and
-quant companies. Claude (through your Claude plan) rates each job, and the app ranks
-them by what you describe and how you weigh **earning money** against **learning /
-building a portfolio**. A calendar shows each job's deadline, start and duration.
+A self-hosted job and internship recommender for City University of Hong Kong students.
+It collects CityU's on-campus jobs and ITC STEM internships plus tech internships from
+66 companies, ranks them by what you want to do and how much you care about earning
+versus learning, estimates how hard each one is **for you** from your CV, and helps you
+apply.
 
-Each job has its own page with the employer, **how to apply** (email, AIMS job number or
-the company's application page) and every field of the listing. Add your CV and projects
-on the **Profile** page to see a **difficulty for you** estimate (1 = well within reach,
-5 = long shot, with blockers such as "PhD students only") and to have Claude write a
-**cover letter**, an application email and drafts for common form questions. The app
-never submits anything: you check the text and send it yourself.
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/web-FastAPI-009688?logo=fastapi&logoColor=white)
+![Claude](https://img.shields.io/badge/AI-Claude%20via%20Claude%20Code-D97757)
+![Ollama](https://img.shields.io/badge/embeddings-Ollama%20(local)-000000)
+![Tests](https://img.shields.io/badge/tests-325%20passing%2C%20offline-3c8456)
 
-> **Status (2026-10-25): first version complete, not yet tested live.** The full
-> pipeline and the localhost web UI are built and checked offline. The full AIMS
-> scrape still has to be tried with a real login. See
-> [MULTI_AGENT_PLAN.md](MULTI_AGENT_PLAN.md).
+![Results page with match scores, difficulty for you and the calendar](docs/screenshots/results.png)
 
-How it works, stage by stage, with the ML concepts explained:
-[docs/how-it-works.md](docs/how-it-works.md). What is stored about each job:
-[docs/data-model.md](docs/data-model.md). Full design: [architecture.md](architecture.md).
+> **About the screenshots.** They use a demo dataset: real, public internship listings plus
+> *fictional* CityU jobs, a fictional ITC STEM list and a fictional student ("Alex Chan").
+> Real AIMS and ITC listings sit behind the CityU login and are not published here.
+> Rebuild it with [`scripts/make_demo_data.py`](scripts/make_demo_data.py).
 
-## Privacy: everything stays on your machine
+## Features
 
-- **Your password never reaches the tool.** You type it only into the real CityU
-  login page, in a browser window on your own computer. The tool keeps only the
-  session cookies AIMS gives the browser afterwards.
-- **The session file is a secret.** `.data/aims_session.json` logs anyone who has it
-  into AIMS as you, until it expires. It's readable only by your user, git-ignored,
-  and never printed. Don't share or commit it. Delete it to log out of the tool.
-- **Which AI sees what.** By default, job ratings come from **Claude**, run through the
-  Claude Code CLI (`claude -p`) with your **Claude plan** login (Pro/Max), so there is
-  no API key in this app. That means **job descriptions are sent to Anthropic**. Your
-  search text is not: matching (embeddings) always runs locally in
-  [Ollama](https://ollama.com). Pick "Ollama, free and local" on the Settings page to
-  keep everything on your machine. If `ANTHROPIC_API_KEY` is set in your shell, the
-  app removes it before starting `claude`, so you are never billed per use by accident.
-- **The web app is local only.** It listens on `127.0.0.1`, so other computers can't
-  reach it. Form submissions from other websites are refused, so a web page you visit
-  can't trigger the login window or change your settings.
-- **Your profile (CV, projects) is personal data.** It is stored in
-  `.data/profile.json` (readable only by you). Only the CV's text is kept, not the
-  uploaded file. With Claude selected, the profile is **sent to Anthropic** when the app
-  estimates difficulty or writes a letter. Cover letters are saved in `.data/letters/`
-  and your Saved/Applied marks in `.data/applications.json`. "Delete my profile" on the
-  Profile page removes the profile.
-- **Local data.** Scraped jobs, AI ratings and embeddings are cached in
-  `.data/cache.json`, and your Ollama settings are in `.data/settings.json`. The whole
-  `.data/` folder is git-ignored.
-- **Read-only on AIMS.** The scraper only searches and opens job descriptions, with
-  a 1.5 s pause between page loads. It never touches the apply form or any
-  apply/submit button.
-- Whether CityU's rules allow automated access to AIMS is not confirmed. Using it is
-  your call.
+- **One list, many sources.** Campus Internship Scheme and Student Helper jobs (AIMS),
+  ITC STEM internships (College of Computing spreadsheet), and tech internships from
+  19 big tech and 47 smaller tech, AI, fintech and quant companies, plus the SimplifyJobs list.
+- **Ranking you can read.** Semantic match to your description, a department boost, and
+  your earn/learn priorities, combined into a 0–100 score with a per-part breakdown.
+- **AI job analysis.** Claude rates each job's level (1–5), lists the skills it asks for,
+  and reads start dates, durations and deadlines out of the text.
+- **Calendar.** Deadlines, start dates and durations; hover a job to see its timeline.
+- **How to apply, in full.** Employer, application steps, contact or email, and every
+  field of the listing, with Saved/Applied tracking.
+- **Difficulty for you.** Upload your CV: each top result gets a 1–5 difficulty, a verdict,
+  hard blockers ("PhD students only"), what you have, what's missing, and a tip.
+- **Cover letters.** A tailored letter, application email and form-answer drafts that use
+  only facts from your profile. Nothing is ever sent for you.
+- **Your gaps.** The skills your target jobs want that your CV doesn't show, ranked by how
+  many jobs they cost you, with concrete fixes and a short plan.
+- **Private by design.** Runs on `127.0.0.1`; your AIMS password never reaches the app;
+  embeddings run locally; personal files are git-ignored and readable only by you.
 
-## Setup
+## Tour
 
-Prerequisites: Python 3.11+, [uv](https://docs.astral.sh/uv/),
-[Ollama](https://ollama.com) (for embeddings), and, for the default AI,
-[Claude Code](https://claude.com/claude-code) logged in with your Claude plan
-(run `claude` once and log in; `claude auth status` should say `"authMethod": "claude.ai"`).
+### Search
 
-```sh
-uv sync                                # install Python dependencies into .venv/
-uv run playwright install chromium     # one-time browser download for Playwright
+Describe the work you want, pick your department, and set how much earning money and
+learning matter (1–5 each).
 
-ollama pull nomic-embed-text           # embedding model for matching your description (always needed)
-ollama pull llama3.2:3b                # only if you pick Ollama instead of Claude for rating
+![Search page](docs/screenshots/search.png)
+
+### Results and calendar
+
+Each card shows the match score and what it is made of, the AI-rated level and skills,
+and **difficulty for you**. Tabs split CityU jobs, big tech and other tech; *Hide not
+eligible* removes jobs you can't apply for yet. Hover or pin a job to see its deadline,
+start and duration on the calendar.
+
+![Calendar with a pinned job: deadline, start date and duration](docs/screenshots/calendar.png)
+
+### Job page: how to apply, difficulty and cover letter
+
+Everything needed to apply in one place: the employer, the application steps (here, an
+ITC STEM job that asks for a CV by email, with a pre-filled email button), the full
+listing, and the difficulty estimate with what you have and what is missing. *Write my
+cover letter* produces a letter, an email and answer drafts you can edit, copy or download.
+
+![Job page with how to apply, difficulty for you and a generated cover letter](docs/screenshots/job.png)
+
+### Your gaps
+
+The right column is computed by code: the skills your top results ask for most and
+whether your CV shows them. The summary on the left is one Claude request over that
+evidence: weaknesses ranked by impact, each with fixes, effort and example jobs.
+
+![Your gaps: weaknesses ranked by impact, with skill demand vs. CV](docs/screenshots/gaps.png)
+
+### Profile
+
+Upload a CV (PDF, Word, LaTeX, Markdown or text) and add projects and skills. Only the
+extracted text is kept, and you can edit it.
+
+![Profile page with CV upload](docs/screenshots/profile.png)
+
+<details>
+<summary><strong>More screenshots: ITC STEM list, settings, mobile and dark mode</strong></summary>
+
+#### ITC STEM job list
+
+Upload the College of Computing spreadsheet, browse it as a filterable table, and download
+saved lists. A job's page links straight to its row.
+
+![ITC STEM job list page](docs/screenshots/itc.png)
+
+#### Settings
+
+Choose Claude (default, through your Claude plan) or a local Ollama model, the embedding
+model, and the regions to fetch internships for.
+
+![Settings page](docs/screenshots/settings.png)
+
+#### Mobile and dark mode
+
+![Results, job page and gaps on a phone in dark mode](docs/screenshots/mobile-dark.png)
+
+</details>
+
+## How it works
+
+```mermaid
+flowchart LR
+    subgraph Sources
+        A["AIMS<br/>Campus Internship and Student Helper"]
+        I["ITC STEM<br/>spreadsheet"]
+        T["Tech internships<br/>public job-board APIs"]
+    end
+    A --> C[("Local cache")]
+    I --> C
+    T --> C
+    C --> L["Claude<br/>level, skills, dates"]
+    C --> E["Ollama<br/>embeddings"]
+    E --> R["Ranking<br/>match + earn + learn"]
+    L --> R
+    R --> F["Claude + your CV<br/>difficulty for you"]
+    F --> UI["Web UI<br/>results, calendar, how to apply,<br/>cover letters, your gaps"]
 ```
 
-Ollama must be running (`ollama serve`, or the desktop app) at
-`http://localhost:11434`. You can choose other installed Ollama models on the
-app's Settings page.
+1. **Collect.** Playwright reads AIMS in your logged-in session (read-only, 1.5 s between
+   pages); openpyxl reads the ITC STEM spreadsheet; httpx calls public job-board APIs
+   (Greenhouse, Lever, Ashby, SmartRecruiters, Workday, Amazon, Microsoft, TikTok).
+   Everything is cached and re-fetched only after 6 hours.
+2. **Analyse.** Claude rates new or changed listings in batches: level, reason, skills and
+   dates, returned as validated JSON.
+3. **Match and rank.** Ollama embeds your description and each job locally; the score
+   combines similarity, department, hours and level, weighted by your priorities.
+4. **Personalise.** With a profile, Claude estimates difficulty for your top results;
+   letters and the gaps summary build on the same data.
 
-## Running the web app
+More detail: [docs/how-it-works.md](docs/how-it-works.md) (a guided tour of each stage),
+[docs/data-model.md](docs/data-model.md) and [architecture.md](architecture.md) (design
+decisions and their reasons).
+
+## Getting started
+
+**Requirements**
+
+- Python 3.11+ and [uv](https://docs.astral.sh/uv/)
+- [Ollama](https://ollama.com), running at `http://localhost:11434`, for embeddings
+- For the default AI: [Claude Code](https://claude.com/claude-code) logged in with a
+  Claude plan (Pro/Max). Run `claude` once and log in; `claude auth status` should show
+  `"authMethod": "claude.ai"`. No API key is used. Prefer fully local? Choose Ollama in Settings.
+
+**Install**
+
+```sh
+git clone https://github.com/nurasik14/CityUHK_job_scraper.git
+cd CityUHK_job_scraper
+uv sync                              # Python dependencies into .venv/
+uv run playwright install chromium   # browser for the AIMS scraper (one time)
+ollama pull nomic-embed-text         # embedding model (required)
+ollama pull llama3.2:3b              # only if you choose Ollama instead of Claude
+```
+
+**Run**
 
 ```sh
 uv run uvicorn cityu_jobs.web.app:app --reload
 ```
 
-Open <http://127.0.0.1:8000>.
+Open <http://127.0.0.1:8000>, then:
 
-1. **Search page.**
-   - Pick your department (Computer Science is the default). It's a boost, not a filter.
-   - Describe the job you want, e.g. "machine learning research, backend development".
-     The example chips under the box add a phrase when clicked; they only appear when
-     JavaScript is on.
-   - For **Earn money** and **Learn / build a portfolio**, pick one of five levels:
-     **Not important · Low · Medium · High · Top priority** (1–5). On a keyboard, Tab
-     to the group and use the arrow keys.
-   - Tick **Refresh now** to re-scrape even if the data is fresh. Normally a source is
-     re-scraped only if it's more than 6 hours old.
-2. **Results page.** While it works, you see the current stage, the elapsed time and
-   placeholder cards. It's safe to leave the page and come back. Then the top 20 open
-   jobs appear as cards (see below). A summary bar with your search stays at the top
-   while you scroll, with a **Change** link. **Scrape notes** says what was fetched or
-   skipped.
-3. **Settings page.**
-   - **AI that rates jobs:** Claude with your plan (default; Haiku, Sonnet or Opus) or
-     Ollama (free, local). A pill shows whether Claude Code is installed and logged in.
-   - **Ollama:** URL and the embedding model (always used), plus the local LLM used when
-     Ollama is chosen. Chips list the models you have installed.
-   - **Internship regions:** Hong Kong, Mainland China, Singapore & rest of Asia-Pacific
-     and Remote are on by default; Europe & UK and North America are opt-in (they
-     usually need a work visa). Changes apply at the next internship refresh.
+1. **Profile**: upload your CV and add your year of study and projects (optional, but
+   needed for difficulty estimates, letters and gaps).
+2. **Settings → ITC STEM list**: upload the College of Computing job list (optional).
+3. **Search**: describe what you want and click *Search*. Click *Log in to AIMS* when
+   asked to include CityU on-campus jobs.
 
-### Tech internships (outside CityU)
+The first search fetches and rates everything (internships take 2–3 minutes; a full AIMS
+scrape about 35 minutes the first time); later searches take seconds. The
+[user guide](docs/user-guide.md) covers every page in detail.
 
-Fetched on search when the list is over 6 hours old (about 2–3 minutes), from public,
-read-only job-board APIs, the same JSON the companies' careers pages load:
-
-- **Big tech:** Amazon, Microsoft, TikTok (own careers APIs), NVIDIA, Adobe, Intel,
-  Salesforce (Workday), Stripe, Databricks, Airbnb, Cloudflare, Pinterest, Coinbase,
-  Waymo, Anthropic, Palantir, Snowflake, OpenAI, Grab.
-- **Other tech companies:** ~45 AI, fintech, crypto and quant firms, several hiring in
-  Hong Kong or Singapore (Binance, Bybit, OKX, Airwallex, Lalamove, Animoca Brands,
-  AfterShip, Optiver, IMC, Jump, Squarepoint, Point72, HRT, Scale AI, Notion, …).
-- **The [SimplifyJobs](https://github.com/SimplifyJobs/Summer2027-Internships) list:**
-  community-curated internships at hundreds of companies (mostly North America). Its
-  big-tech entries (Google, Meta, Apple, …) count as big tech.
-
-Only internships in tech roles and in your regions are kept. The full company list is in
-`src/cityu_jobs/core/internships/catalog.py`; add a company by adding one line (its
-Greenhouse / Lever / Ashby / SmartRecruiters board name). A board that fails is noted
-under "Scrape notes" and its earlier jobs are kept.
-
-### Calendar
-
-On wide screens the results page has a calendar beside the list (on phones, a
-collapsible "Calendar" panel above it). Rose dots are application deadlines, green dots
-start dates. **Hover or Tab to a job card** and the calendar jumps to it and shows:
-
-- the deadline (filled rose day), the start (filled green day), the end (ringed day) and
-  the duration as a band between them,
-- a strip from today to the end of the job, so long internships fit in one glance,
-- the exact dates, e.g. "Apply by 30 Nov 2026 (in 31 days) · Starts 21 Sep 2026 · 90 days".
-
-"Show on calendar" on a card pins it (for touch screens); Escape unpins. Dates come from
-the listing (AIMS period, ITC start + duration), from what Claude read in the description,
-or, for "Summer 2027"-style internships without dates, from the season. Those are
-drawn striped and labelled "approx.".
-
-The filter row (**All · CityU jobs · Big tech · Other tech**) keeps each job's overall rank
-number, so #7 is the same job under every filter.
-
-The **theme button** in the header cycles **System → Light → Dark**. "System"
-follows your computer's setting, and the choice is remembered in this browser.
-
-### Reading a job card
-
-```
-  ◜ 86 ◝   ★ Top match
-  ◟match◞  Machine Learning Intern                         [ITC STEM]
-           CC · Closes 06 Nov 2026  (⏱ Closes in 5 days)
-           "Build and evaluate ML models for a learning platform…"
-           ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-           Level ●●●●○  "Builds and evaluates ML models for a product team."
-           ▸ Why this score      ▸ Details
-```
-
-The values in this sketch are illustrative, for earn = Not important and learn =
-Top priority.
-
-- **Match score (0–100), in the ring.** It shows how close this job comes to the
-  *best possible job for your priorities*: 100 would be a perfect match. The number
-  is relative to your own priorities. With earn set to Not important, hours don't count,
-  so the best possible job is one that fits your description and is advanced, and
-  that's what 100 means for you. Scores from searches with different priorities
-  aren't comparable.
-- **Top match.** The #1 card is highlighted, with a bigger ring and a short teaser of
-  the job. #2–3 are standard cards. From #4 the cards are quieter, so the best
-  results stand out.
-- **The bar** shows the match score split into its parts, in three colour families.
-  The key is shown once, at the top of the results:
-  - **Relevance** (indigo / slate): how close the job is to your description, plus
-    the department boost.
-  - **Earn** (amber): hours per week, plus a bonus for Student Helper jobs, scaled by
-    your earn priority.
-  - **Learn** (green): the AI-rated level, plus a bonus for internships and ITC STEM,
-    scaled by your learn priority.
-- **Why this score** opens the exact numbers. It lists each part that counted, as
-  points (e.g. relevance 46, dept 12, level 18, internship 10 = 86), plus the raw
-  score, e.g. "Raw score 0.71 of 0.83 possible for your priorities". Points are
-  rounded, so they may add up to one point off.
-- **Closing chip.** Red for 0–3 days left, amber for 4–7, grey for 8–14. There is no
-  chip further out. Closed jobs are never shown.
-- **Level meter**: 1–5 filled dots for the AI's rating, with its one-line reason.
-  "Not rated yet" means the AI hasn't rated the job; it then counts as level 3.
-- **Details** has the full description, requirements, period and any extra
-  honorarium. For AIMS jobs it shows the job number to apply with in AIMS. The tool
-  never links to or touches the apply form.
-
-**The first search is slow: plan for about 45 minutes.**
-
-- **AIMS scrape: about 35 minutes the first time.** That's about 17 s for each of the
-  ~117 jobs (measured: CIS 45 jobs ≈ 13 min, Student Helpers Regular 72, Summer 0).
-  This is deliberate. The scraper waits 1.5 s before every page load, opens one job
-  at a time, and re-runs the search after each job instead of pressing "back". So
-  each job costs three AIMS page loads.
-- **AI rating:** with Claude, 8 jobs per request and 3 requests at a time: about 10 s per
-  16 jobs (measured with Sonnet), so a few minutes for every job the first time. Levels
-  that a local model rated earlier are re-rated once by Claude. With Ollama's
-  `llama3.2:3b`, about 7 s per job on a laptop CPU.
-- **After the first run, searches are fast.** AIMS is re-checked only when its data
-  is over 6 hours old. Even then, only new or changed listings are opened and rated.
-- **You can stop and resume.** Progress is saved every few jobs and when the run
-  stops (Ctrl+C, an expired session, an error). The next run skips the jobs already
-  opened.
-- **Tip:** run `uv run python scripts/scrape_aims.py` once in a terminal (e.g. while
-  doing something else). Later searches in the web app then start from a full cache.
-
-**Switching between local LLM models doesn't re-rate jobs** (switching to Claude does, once). A stored level is reused until the
-listing itself changes. Re-rating everything would take minutes, and 1–5 levels
-mostly agree across models. After a switch, old and new ratings are mixed until
-listings change; the Settings page warns about this. Switching the *embedding* model
-is different: all jobs are re-embedded, because vectors from two models can't be
-compared.
-
-### Logging in to AIMS (the "Log in to AIMS" button)
-
-Campus Internship and Student Helper jobs need your AIMS login:
-
-1. Click **Log in to AIMS** on the search page, or in the "AIMS login needed" banner.
-2. A browser window opens on your computer at the CityU login page. Log in normally,
-   including two-factor. You have 5 minutes.
-3. The window closes and the session cookies are saved. Run your search again.
-
-The app **never opens the login window on its own**. If your session is missing or
-expired when you search, it doesn't stop. It shows the "AIMS login needed" banner,
-ranks the AIMS jobs from the last successful scrape (if any) and the ITC STEM jobs,
-and waits for you to click the button. AIMS sessions expire after a while, so expect
-to log in again from time to time.
-
-### ITC STEM job list (one manual step)
-
-ITC STEM jobs come from the College of Computing's Excel job list. The download
-needs a CityU portal login, which the tool doesn't attempt, so you save the file
-yourself:
-
-1. Open the [College of Computing ITC STEM page](https://www.cityu.edu.hk/en/cc/student-life-and-learning/internship-schemes/itc-stem-internship-scheme)
-   in your browser and download the job list (`.xlsx`).
-2. Upload it on the **ITC STEM list** page (`/itc`, linked from Settings), or save it in
-   `.data/itc/` yourself. The newest `.xlsx` there is used, and the next search re-reads
-   it automatically.
-
-The `/itc` page also shows the whole spreadsheet as a table you can filter, and lets you
-download any saved list. "See it in the ITC STEM list" on an ITC job's page jumps to its
-row. If no file is saved, the results page says so, and you still get the AIMS jobs.
-
-### Job page, profile, difficulty and cover letters
-
-- **Job page** (`/job/<id>`, the "How to apply" button on each card): the employer, how
-  to apply (ITC: the email address and the company's own steps, with a button that opens
-  your mail app with the subject and email filled in; AIMS: the job number to apply with
-  in AIMS; internships: the posting's apply page), the deadline and dates, and **all
-  details** of the listing. Mark jobs **Saved** or **Applied**; the mark shows on the cards.
-- **Profile** (`/profile`): upload a CV (`.pdf`, `.docx`, `.tex`, `.md`, `.txt`), check
-  the extracted text, and add education, skills, projects and experience. Your year of
-  study matters most: many internships are only for penultimate-year or Master's students.
-- **Difficulty for you** (Claude only): after each search, Claude compares your profile
-  with the top 30 results overall and the top 30 of each tab (about 90 jobs, ~1-2 min the
-  first time; cached afterwards until the listing or your profile changes). Cards show
-  the verdict and the main blocker; "Hide not eligible" on the results page filters out
-  jobs you can't apply for. Other jobs can be estimated from their page.
-- **Cover letter**: on a job page, optionally add notes ("I can start in June 2027"),
-  then "Write my cover letter" (~20-40 s). You get a letter (edit, copy or download
-  `.txt`), a short email to send with your CV, and drafts for common application-form
-  questions. The prompt forbids inventing facts not in your profile, but always read it.
-- **Why no auto-apply**: AIMS and most company application forms don't allow automated
-  submissions, and a sent application can't be taken back. The app prepares everything;
-  you press send.
-
-## Command-line scripts
-
-These are for checking things by hand. The web app doesn't need them.
+**Try it with demo data** (no CityU login needed):
 
 ```sh
-uv run python scripts/check_auth.py          # log in to AIMS if needed; confirm the session works
-uv run python scripts/scrape_aims.py         # scrape all AIMS schemes into .data/cache.json
-uv run python scripts/scrape_aims.py cis     # ...or only some: cis, sh_summer, sh_regular
-uv run python scripts/scrape_aims.py --no-login   # stop with "AIMS login needed" instead of opening a window
-uv run python scripts/scrape_aims_test.py    # scrape ONE Campus Internship job to .data/aims_test_job.json
+uv run python scripts/make_demo_data.py /tmp/cityu-demo   # needs one earlier search for the internships
+CITYU_JOBS_DATA_DIR=/tmp/cityu-demo uv run uvicorn cityu_jobs.web.app:app --port 8765
 ```
 
-## Tests
+## Privacy and data
+
+| What | Where | Who sees it |
+|---|---|---|
+| AIMS password | typed only into the real CityU login page | never the app |
+| AIMS session cookies | `.data/aims_session.json` (mode 600) | only you; delete to log out |
+| Jobs, AI ratings, embeddings | `.data/cache.json` | local |
+| Job descriptions | sent to Anthropic for rating | Anthropic, when Claude is selected |
+| Your search text | embedded locally by Ollama | local only |
+| CV text and profile | `.data/profile.json` (mode 600) | Anthropic, when estimating difficulty, writing letters or gaps |
+| Letters, tracking, gaps | `.data/letters/`, `applications.json`, `gaps.json` | local |
+
+- The whole `.data/` folder is git-ignored. With **Ollama** selected, nothing leaves your
+  computer (difficulty estimates and the gaps summary then need Claude and are skipped).
+- The app listens on `127.0.0.1` only and refuses form posts from other websites.
+- If `ANTHROPIC_API_KEY` is set, it is removed before starting `claude`, so usage always
+  goes through your plan, never per-request billing.
+
+## Responsible use
+
+- **Read-only.** The AIMS scraper only searches and opens job descriptions, slowly; it
+  never touches an apply form. Internship data comes from public APIs that the companies'
+  own careers pages use. Sites whose terms forbid scraping (JobsDB, CTgoodjobs, LinkedIn)
+  are not used.
+- **No automatic applications.** The app prepares letters and emails; you review and send them.
+- **AI output is advice.** Levels, difficulty estimates, letters and gaps can be wrong.
+  Letters are instructed to use only facts from your profile, but always read them.
+- Whether CityU's rules allow automated access to AIMS is not confirmed; using it is your call.
+
+## Project structure
+
+```
+src/cityu_jobs/
+├── config.py                settings and constants
+├── core/                    all logic, no web code
+│   ├── pipeline.py          search = refresh sources + recommend
+│   ├── aims_scraper.py      AIMS listings (Playwright, read-only)
+│   ├── itc_stem_scraper.py  ITC STEM spreadsheet
+│   ├── internships/         job-board catalogue, fetchers, region filter
+│   ├── analysis.py          AI level, skills and dates per job
+│   ├── embeddings.py        Ollama vectors and similarity
+│   ├── ranking.py           match score and its breakdown
+│   ├── dates.py             timelines for the calendar
+│   ├── apply_info.py        employer and how to apply
+│   ├── profile.py           profile storage, CV text extraction
+│   ├── fit.py               difficulty for you
+│   ├── letters.py           cover letters, Saved/Applied tracker
+│   ├── gaps.py              weakness summary
+│   └── ai/providers.py      Claude CLI, Ollama, test fakes
+└── web/                     FastAPI routes, Jinja templates, CSS and JS (no build step)
+scripts/                     AIMS login and scrape helpers, demo data builder
+tests/                       325 offline tests
+docs/                        user guide, how it works, data model, screenshots
+```
+
+## Development
 
 ```sh
 uv run pytest
 ```
 
-All tests run offline: no AIMS login, no network, no `claude` process, and Ollama
-isn't needed (fakes stand in for the browser, the job boards and the AI). A test that
-tries to reach the network fails. Tests that use saved AIMS pages in
-`.data/fixtures/` skip when those pages are missing. The pages contain personal
-data, so they aren't in git.
+The tests run fully offline: no AIMS login, no network, no `claude` process and no Ollama
+(fakes stand in for the browser, the job boards and the AI; a test that tries the network
+fails). Tests that use saved AIMS pages in `.data/fixtures/` are skipped when those pages
+are absent, since they contain personal data.
 
-## Stack
-
-Python, Playwright (browser automation), BeautifulSoup (HTML parsing), openpyxl
-(ITC STEM spreadsheets), httpx (job-board APIs, Ollama), the Claude Code CLI (Claude
-ratings on your plan), Ollama (embeddings, optional local LLM), and FastAPI + Jinja2 +
-uvicorn for the localhost web UI. A CLI is planned later.
+**Stack:** Python, FastAPI, Jinja2, uvicorn, Playwright, BeautifulSoup, openpyxl, httpx,
+pypdf, the Claude Code CLI and Ollama. The front end is plain HTML, CSS and a small
+JavaScript file, with light and dark themes and keyboard and screen-reader support.

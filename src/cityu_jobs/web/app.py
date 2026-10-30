@@ -9,10 +9,12 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import json
+import re
 import shutil
 import subprocess
 
 import httpx
+from markupsafe import Markup, escape
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -106,6 +108,18 @@ def _priority(value: str | None) -> int:
         return 3
 
 
+def link_jobs(text: str, refs: dict | None) -> Markup:
+    """Turn job numbers the AI cites ("J8") into links titled with the job (text is escaped)."""
+    def link(match: re.Match) -> str:
+        ref = (refs or {}).get(match.group(0))
+        if not ref:
+            return match.group(0)
+        title = ref["title"] + (f" · {ref['employer']}" if ref.get("employer") else "")
+        return f'<a href="/job/{escape(ref["id"])}">{escape(title)}</a>'
+
+    return Markup(re.sub(r"\bJ\d+\b", link, str(escape(text or ""))))
+
+
 def create_app(runner: TaskRunner | None = None, claude_status_fn=None) -> FastAPI:
     """Build the app. Tests pass a TaskRunner with a fake search function and a fake Claude check."""
     app = FastAPI(title="CityU Job Recommender")
@@ -113,6 +127,7 @@ def create_app(runner: TaskRunner | None = None, claude_status_fn=None) -> FastA
     templates = Jinja2Templates(directory=WEB_DIR / "templates")
     # "2 Dec 2026": the same style as the calendar script.
     templates.env.filters["day"] = lambda d: f"{d.day} {d.strftime('%b %Y')}" if d else ""
+    templates.env.filters["link_jobs"] = link_jobs
     # "claude:sonnet" -> "Claude Sonnet"; local models keep their Ollama name.
     templates.env.filters["model_name"] = lambda m: (
         "Claude " + m.split(":", 1)[1].capitalize() if str(m).startswith("claude:") else str(m)
@@ -198,7 +213,7 @@ def create_app(runner: TaskRunner | None = None, claude_status_fn=None) -> FastA
             max_score=max_possible_score(prefs) if prefs else 1.0,
         )
 
-    extra_routes.register(app, render, runner, _check_same_origin)
+    extra_routes.register(app, render, runner, _check_same_origin, RESULT_GROUPS)
 
     @app.get("/api/status")
     def status():

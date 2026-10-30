@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, banner %}
+{% block title %}Your gaps · CityU Job Recommender{% endblock %}
+{% block content %}
+{% set ev = evidence %}
+{% set n = ev.jobs|length %}
+<p class="eyebrow">Your gaps</p>
+<h1>What these jobs want that your CV doesn't show yet</h1>
+<p class="lede">Your top results' requirements, compared with your CV and projects: the skills they ask for most,
+  what is missing, and what to do about it first.</p>
+
+{% if error %}{% call banner("danger", "Couldn't make the summary", role="alert") %}<p>{{ error }}</p>{% endcall %}{% endif %}
+{% if not profile_ready %}
+{% call banner("warn", "Add your profile first", role="status") %}<p>The comparison needs your CV or projects: add them on the <a href="/profile">Profile page</a>, then run a search.</p>{% endcall %}
+{% elif not n %}
+{% call banner("warn", "No jobs to compare yet", role="status") %}<p><a href="/">Run a search</a> first: the comparison reads your top results.</p>{% endcall %}
+{% endif %}
+
+<nav class="filters" aria-label="Which jobs">
+  {% for key, (label, _sources) in groups.items() %}
+  <a class="filter" href="/gaps{% if key != 'all' %}?scope={{ key }}{% endif %}"{% if key == scope %} aria-current="page"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+
+<div class="job-layout">
+  <div class="stack" id="report">
+    <section class="card gaps-run" aria-labelledby="run-title">
+      <div class="status-row">
+        <h2 id="run-title" class="flush">{{ icon("sparkle") }} Summary of your weaknesses</h2>
+        {% if report %}<span class="hint">{{ report.created_at[:16]|replace("T", " ") }} · {{ report.jobs_analysed }} jobs · {{ report.model|model_name }}</span>{% endif %}
+      </div>
+      {% if report and stale %}
+      <p class="stale-note">{{ icon("alert") }} Your results or profile changed since this summary. Refresh it to match.</p>
+      {% endif %}
+      {% if not report %}
+      <p>Claude reads the evidence on this page ({{ n }} job{{ "s" if n != 1 }}{% if ev.has_fit %}, each already compared with your CV{% endif %})
+        and groups it into a few weaknesses, ordered by how many jobs they cost you, with concrete fixes.</p>
+      {% endif %}
+      {% if can_fit and profile_ready and n %}
+      <form method="post" action="/gaps?scope={{ scope }}" data-wait="Summarising… about 30–60 seconds.">
+        <button type="submit" class="btn {{ 'btn-primary' if not report or stale else '' }}" {% if busy %}disabled{% endif %}>
+          {{ icon("sparkle") }} {{ "Refresh the summary" if report else "Summarise my weaknesses" }}</button>
+        <p class="hint" data-wait-message aria-live="polite">{% if busy %}A search is running; try when it has finished.{% endif %}</p>
+      </form>
+      {% elif not can_fit %}
+      <p class="hint">The summary needs Claude: choose it on the <a href="/settings">Settings page</a>. The skill counts on the right work without it.</p>
+      {% endif %}
+    </section>
+
+    {% if report %}
+    {% if report.headline %}<p class="gaps-headline">{{ report.headline|link_jobs(report.refs) }}</p>{% endif %}
+
+    <ol class="weaknesses">
+      {% for w in report.weaknesses %}
+      <li class="card weakness sev-{{ w.severity }}">
+        <div class="weakness-head">
+          <h3>{{ w.area }}</h3>
+          <span class="pill sev"><span class="dot"></span>{{ w.severity|capitalize }}</span>
+          <span class="tag">{{ {"skill": "Skill to learn", "experience": "Needs real experience", "evidence": "Not shown in CV", "eligibility": "Eligibility"}[w.kind] }}</span>
+        </div>
+        {% if w.jobs_affected and report.jobs_analysed %}
+        <div class="affects">
+          <span class="meter" aria-hidden="true"><i style="width: {{ (100 * w.jobs_affected / report.jobs_analysed)|round|int }}%"></i></span>
+          <span class="hint">affects about {{ w.jobs_affected }} of {{ report.jobs_analysed }} jobs</span>
+        </div>
+        {% endif %}
+        <p>{{ w.why|link_jobs(report.refs) }}</p>
+        <h4>How to close it <span class="hint">· takes {{ w.effort }}</span></h4>
+        <ul class="fix-list">{% for f in w.fix %}<li>{{ icon("check") }}<span>{{ f|link_jobs(report.refs) }}</span></li>{% endfor %}</ul>
+        {% if w.jobs %}
+        <p class="hint example-jobs">For example:
+          {% for j in w.jobs %}<a href="/job/{{ j.id }}">{{ j.title }}{% if j.employer %} · {{ j.employer }}{% endif %}</a>{{ "; " if not loop.last }}{% endfor %}</p>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+
+    <div class="grid-2 gaps-extra">
+      {% if report.strengths %}
+      <section class="card card-quiet">
+        <h2>What already works</h2>
+        <ul class="plain strengths">{% for s in report.strengths %}<li><strong>{{ s.skill }}</strong> <span class="hint">{{ s.evidence }}</span></li>{% endfor %}</ul>
+      </section>
+      {% endif %}
+      {% if report.cv_fixes %}
+      <section class="card card-quiet">
+        <h2>Quick CV fixes</h2>
+        <ul class="fix-list">{% for f in report.cv_fixes %}<li>{{ icon("pen") }}<span>{{ f|link_jobs(report.refs) }}</span></li>{% endfor %}</ul>
+      </section>
+      {% endif %}
+    </div>
+
+    {% if report.plan %}
+    <section class="card" aria-labelledby="plan-title">
+      <h2 id="plan-title">{{ icon("calendar") }} A plan for the next weeks</h2>
+      <ol class="plan">{% for p in report.plan %}<li><span class="plan-when">{{ p.when }}</span><span>{{ p.do|link_jobs(report.refs) }}</span></li>{% endfor %}</ol>
+    </section>
+    {% endif %}
+
+    {% if report.later %}
+    <section class="card card-quiet">
+      <h2>Only time fixes these</h2>
+      <ul class="plain">{% for l in report.later %}<li>{{ icon("clock") }} {{ l|link_jobs(report.refs) }}</li>{% endfor %}</ul>
+    </section>
+    {% endif %}
+    {% endif %}
+  </div>
+
+  <aside class="stack" aria-label="Evidence">
+    <section class="card" aria-labelledby="demand-title">
+      <h2 id="demand-title">Skills these jobs ask for</h2>
+      {% if ev.demand %}
+      <p class="hint">Across {{ n }} job{{ "s" if n != 1 }}{% if not ev.has_fit %} (your top results){% endif %}. “In CV” is a keyword check of your profile.</p>
+      <ul class="demand">
+        {% for d in ev.demand[:15] %}
+        <li class="{{ 'have' if d.in_cv else 'miss' }}">
+          <span class="demand-name">{{ d.skill }}</span>
+          <span class="demand-flag">{{ "In CV" if d.in_cv else "Not in CV" }}</span>
+          <span class="meter" aria-hidden="true"><i style="width: {{ (100 * d.count / n)|round|int }}%"></i></span>
+          <span class="demand-count num">{{ d.count }}<span class="visually-hidden"> of {{ n }} jobs</span></span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="muted">No skills read yet: they come from the AI job ratings during a search.</p>
+      {% endif %}
+    </section>
+
+    {% if ev.verdicts %}
+    <section class="card card-quiet" aria-labelledby="verdict-title">
+      <h2 id="verdict-title">How reachable they are</h2>
+      <ul class="verdicts">
+        {% for v in ["strong match", "good match", "stretch", "long shot", "not eligible"] %}
+        {% if ev.verdicts[v] %}<li class="v-{{ v|replace(' ', '-') }}"><span>{{ verdict_labels[v] }}</span><strong class="num">{{ ev.verdicts[v] }}</strong></li>{% endif %}
+        {% endfor %}
+      </ul>
+      <p class="hint">From each job's “difficulty for you” estimate.</p>
+    </section>
+    {% endif %}
+
+    <section class="card card-quiet">
+      <h2>How this works</h2>
+      <p class="hint">The counts on this side come from code: the skills Claude read from each listing when rating it, checked
+        against your profile's words. The summary is one Claude request with this evidence and your profile; it may be wrong,
+        so treat it as advice. Your profile is sent to Anthropic for it, and the summary is saved in <code>.data/gaps.json</code>.</p>
+    </section>
+  </aside>
+</div>
+{% endblock %}

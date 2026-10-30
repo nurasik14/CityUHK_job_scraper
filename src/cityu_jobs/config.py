@@ -146,5 +146,9 @@ FIT_BATCH_SIZE = 6
 LETTERS_DIR = DATA_DIR / "letters"
 # Saved / applied marks per job.
 TRACKER_FILE = DATA_DIR / "applications.json"
+# "Your gaps" reports (one per results tab), and how many top results to read skills from
+# when no job has a "difficulty for you" estimate yet.
+GAPS_FILE = DATA_DIR / "gaps.json"
+GAPS_FALLBACK_JOBS = 40
 # Uploaded ITC STEM spreadsheets are capped at this size.
 ITC_MAX_BYTES = 10 * 1024 * 1024
