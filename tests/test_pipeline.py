@@ -95,7 +95,7 @@ class _FakePlaywright:
 @pytest.fixture
 def offline(monkeypatch):
     """Stub every browser entry point; returns a dict recording what was called."""
-    calls = {"aims_session": [], "itc": 0, "scrape_aims": []}
+    calls = {"aims_session": [], "itc": 0, "scrape_aims": [], "intern": []}
 
     @contextmanager
     def fake_sync_playwright():
@@ -120,15 +120,26 @@ def offline(monkeypatch):
     monkeypatch.setattr(pipeline, "sync_playwright", fake_sync_playwright)
     monkeypatch.setattr(pipeline, "aims_session", logged_in)
     monkeypatch.setattr(pipeline, "scrape_aims", fake_scrape_aims)
+    def fake_intern(cache, regions, progress=None):
+        calls["intern"].append(list(regions))
+        for source in pipeline.INTERN_SOURCES:
+            cache.mark_scrape_complete(source, set())
+        return ["Tech internships: 0"]
+
     monkeypatch.setattr(pipeline, "scrape_itc_stem", fake_itc)
+    monkeypatch.setattr(pipeline, "scrape_internships", fake_intern)
     return calls
+
+
+ALL_SCRAPED = [f"aims_{k}" for k in SCHEMES] + ["itc_stem", "intern_bigtech", "intern_tech"]
 
 
 def test_refresh_scrapes_stale_sources_non_interactively(cache, offline):
     report = pipeline.refresh(cache=cache)
     assert offline["aims_session"] == [False]  # never the headed login
     assert offline["scrape_aims"] == [list(SCHEMES)]
-    assert sorted(report.scraped) == sorted([f"aims_{k}" for k in SCHEMES] + ["itc_stem"])
+    assert sorted(report.scraped) == sorted(ALL_SCRAPED)
+    assert offline["intern"] == [["hk", "china", "apac", "remote"]]  # the default regions
     assert not report.login_needed
     assert cache.path.exists()
 
@@ -137,14 +148,19 @@ def test_refresh_skips_fresh_sources(cache, offline):
     pipeline.refresh(cache=cache)
     report = pipeline.refresh(cache=cache)
     assert report.scraped == []
-    assert sorted(report.skipped) == sorted([f"aims_{k}" for k in SCHEMES] + ["itc_stem"])
-    assert len(offline["aims_session"]) == 1 and offline["itc"] == 1
+    assert sorted(report.skipped) == sorted(ALL_SCRAPED)
+    assert len(offline["aims_session"]) == 1 and offline["itc"] == 1 and len(offline["intern"]) == 1
 
 
 def test_refresh_force_rescrapes(cache, offline):
     pipeline.refresh(cache=cache)
     pipeline.refresh(cache=cache, force=True)
-    assert len(offline["aims_session"]) == 2 and offline["itc"] == 2
+    assert len(offline["aims_session"]) == 2 and offline["itc"] == 2 and len(offline["intern"]) == 2
+
+
+def test_refresh_passes_chosen_regions(cache, offline):
+    pipeline.refresh(sources=("intern",), cache=cache, intern_regions=["hk", "europe"])
+    assert offline["intern"] == [["hk", "europe"]]
 
 
 def test_refresh_expired_session_sets_login_needed_and_keeps_cached_jobs(cache, offline, monkeypatch):

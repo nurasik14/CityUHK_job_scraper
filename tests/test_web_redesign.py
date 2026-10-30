@@ -245,9 +245,10 @@ def test_progress_state_shows_elapsed_and_polls():
 # --- Settings -----------------------------------------------------------------------
 
 
-def test_settings_has_only_ollama_fields():
+def test_settings_fields_and_no_secrets():
     client, _ = _client()
     html = client.get("/settings").text
-    names = set(re.findall(r'<input[^>]*name="([^"]+)"', html))
-    assert names == {"ollama_url", "llm_model", "embed_model"}
+    names = set(re.findall(r'<(?:input|select)[^>]*name="([^"]+)"', html))
+    assert names == {"ai_provider", "claude_model", "ollama_url", "llm_model", "embed_model", "intern_regions"}
     assert "api" not in " ".join(names).lower() and "password" not in html.lower()
+    assert re.search(r'name="ai_provider" value="claude" checked', html)  # Claude is the default

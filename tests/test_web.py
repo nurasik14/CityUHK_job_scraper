@@ -105,7 +105,9 @@ def test_submit_then_results():
     call = search.calls[0]
     assert call["prefs"] == Preferences("CS", "machine learning", earn=2, learn=5)
     assert call["force_refresh"] is True
-    assert call["provider"].llm_model == config.DEFAULT_LLM_MODEL
+    # Default AI (owner decision 2026-10-30): Claude via the plan for rating, Ollama for embeddings.
+    assert call["provider"].llm_model == f"claude:{config.DEFAULT_CLAUDE_MODEL}"
+    assert call["provider"].embed_model == config.DEFAULT_EMBED_MODEL
 
     page = client.get("/results")
     assert page.status_code == 200
@@ -249,7 +251,9 @@ def test_settings_page_lists_installed_models(monkeypatch):
     page = client.get("/settings")
     assert page.status_code == 200
     assert "llama3.2:3b" in page.text and "nomic-embed-text" in page.text
-    assert "api_key" not in page.text.lower() and "api key" not in page.text.lower()  # owner decision: Ollama only
+    # Claude runs through the `claude` CLI's own login: the app never asks for or stores an API key.
+    assert 'name="api_key"' not in page.text and "password" not in page.text.lower()
+    assert "Logged in with your Claude plan" in page.text
 
 
 def test_settings_page_when_ollama_down(monkeypatch):
@@ -269,7 +273,7 @@ def test_settings_saved_and_blanks_use_defaults(monkeypatch):
     client, runner = _client(search)
     response = client.post(
         "/settings",
-        data={"ollama_url": " http://127.0.0.1:9999 ", "llm_model": "qwen2.5:7b", "embed_model": " "},
+        data={"ai_provider": "ollama", "ollama_url": " http://127.0.0.1:9999 ", "llm_model": "qwen2.5:7b", "embed_model": " "},
         headers=ORIGIN,
         follow_redirects=False,
     )
@@ -286,6 +290,32 @@ def test_settings_saved_and_blanks_use_defaults(monkeypatch):
     _wait(runner)
     provider = search.calls[0]["provider"]
     assert (provider.base_url, provider.llm_model) == ("http://127.0.0.1:9999", "qwen2.5:7b")
+
+
+def test_settings_claude_model_and_regions_saved(monkeypatch):
+    monkeypatch.setattr(web_app.httpx, "get", lambda url, timeout: httpx.Response(200, json={"models": []}))
+    search = FakeSearch()
+    client, runner = _client(search)
+    client.post(
+        "/settings",
+        content="ai_provider=claude&claude_model=haiku&intern_regions=hk&intern_regions=europe&intern_regions=mars",
+        headers={**ORIGIN, "content-type": "application/x-www-form-urlencoded"},
+    )
+    saved = Settings.load()
+    assert (saved.ai_provider, saved.claude_model) == ("claude", "haiku")
+    assert saved.intern_regions == ["hk", "europe"]  # unknown regions dropped
+    _search(client)
+    _wait(runner)
+    assert search.calls[0]["provider"].llm_model == "claude:haiku"
+
+
+def test_settings_bad_values_fall_back_to_defaults(monkeypatch):
+    monkeypatch.setattr(web_app.httpx, "get", lambda url, timeout: httpx.Response(200, json={"models": []}))
+    client, _ = _client()
+    client.post("/settings", data={"ai_provider": "gpt", "claude_model": "huge"}, headers=ORIGIN)
+    saved = Settings.load()
+    assert (saved.ai_provider, saved.claude_model) == (config.DEFAULT_AI_PROVIDER, config.DEFAULT_CLAUDE_MODEL)
+    assert saved.intern_regions == list(config.DEFAULT_INTERN_REGIONS)  # none ticked -> defaults
 
 
 def test_corrupt_settings_file_falls_back_to_defaults():

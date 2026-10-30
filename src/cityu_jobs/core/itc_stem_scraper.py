@@ -96,6 +96,7 @@ def manual_files(college: str) -> list[Path]:
 # specific fields ("closing date", "no. of positions") come before generic ones ("position").
 _FIELD_ALIASES: list[tuple[str, list[str]]] = [
     ("honorarium", ["honorarium"]),
+    ("location", ["location", "work place", "workplace", "venue"]),
     ("ref", ["ref", "reference", "job no", "job code", "job id", "post no", "position no"]),
     ("closing_date", ["closing", "deadline", "apply by", "application due"]),
     ("weekly_hours", ["per week", "weekly", "hour*", "hrs"]),
@@ -128,6 +129,17 @@ _FIELD_PATTERNS = [(name, [_keyword_pattern(k) for k in keywords]) for name, key
 _HEADER_SEARCH_ROWS = 15
 
 
+# Text that was UTF-8 but got decoded as Windows-1252 somewhere upstream ("€“" for "–").
+_MOJIBAKE = (("â€“", "–"), ("â€”", "—"), ("â€™", "’"), ("â€œ", "“"), ("â€\x9d", "”"), ("â€˜", "‘"),
+             ("€“", "–"), ("€”", "—"), ("\u00c2\u00a0", " "))
+
+
+def fix_mojibake(text: str) -> str:
+    for bad, good in _MOJIBAKE:
+        text = text.replace(bad, good)
+    return text
+
+
 def _cell_text(value) -> str:
     if value is None:
         return ""
@@ -135,7 +147,8 @@ def _cell_text(value) -> str:
         return value.date().isoformat() if value.time() == datetime.min.time() else value.isoformat()
     if isinstance(value, float) and value.is_integer():
         return str(int(value))
-    return " ".join(str(value).split())
+    # "Â" + no-break space is a no-break space decoded with the wrong encoding upstream.
+    return " ".join(fix_mojibake(str(value)).split())
 
 
 # Free-text fields that may be spread over several columns (e.g. "Preferred Major" and
@@ -320,6 +333,8 @@ def parse_job_list(xlsx_bytes: bytes, source: dict, url: str | None = None) -> l
                     closing_date=_date(_unswap_date(get("closing_date"), posted)),
                     positions=int(n) if (n := _number(get("positions"))) is not None else None,
                     url=url or source["page_url"],
+                    company=company or None,
+                    location=_cell_text(get("location")) or None,
                     raw=raw,
                     content_hash=compute_content_hash(raw),
                 )

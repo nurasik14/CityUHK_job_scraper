@@ -23,6 +23,12 @@ task list and team messages.
 - Cache AI results by job code. Invalidate them when the listing's content hash
   or the embedding model changes.
 - Keep `architecture.md` up to date when a design decision changes.
+- AI: Claude via the owner's Claude plan (`claude -p`, never an API key) is the default
+  LLM since 2026-10-30; embeddings always run in local Ollama. Tests must never start
+  `claude` or reach the network (tests/conftest.py blocks real HTTP).
+- The student's profile (`.data/profile.json`), letters and tracker are personal data:
+  mode 600, never commit, never print them. The app never submits applications.
+- `CITYU_JOBS_DATA_DIR=/some/dir` points the app at another data folder (demos, screenshots).
 
 ## Commands
 

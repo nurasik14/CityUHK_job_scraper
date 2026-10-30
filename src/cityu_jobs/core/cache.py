@@ -96,16 +96,20 @@ class Cache:
     # --- AI results -----------------------------------------------------------
 
     def get_level(self, job_id: str, content_hash: str) -> dict | None:
-        """Cached {"value", "reason", "model", "content_hash"}, only if computed from this content."""
+        """Cached {"value", "reason", "model", "content_hash"[, "skills", "dates"]}, only if computed from this content."""
         level = self._jobs.get(job_id, {}).get("level")
         return level if level and level.get("content_hash") == content_hash else None
 
-    def set_level(self, job_id: str, value: int | None, reason: str, model: str, content_hash: str) -> None:
+    def set_level(
+        self, job_id: str, value: int | None, reason: str, model: str, content_hash: str, extra: dict | None = None
+    ) -> None:
+        """Store an AI level. `extra` holds what strong models also read out: "skills", "dates"."""
         self._jobs[job_id]["level"] = {
             "value": value,
             "reason": reason,
             "model": model,
             "content_hash": content_hash,
+            **(extra or {}),
         }
 
     def get_embedding(self, job_id: str, content_hash: str, model: str) -> list[float] | None:
@@ -120,6 +124,16 @@ class Cache:
 
     def set_embedding(self, job_id: str, vector: list[float], model: str, content_hash: str) -> None:
         self._jobs[job_id]["embedding"] = {"model": model, "content_hash": content_hash, "vector": vector}
+
+    def get_fit(self, job_id: str, content_hash: str, profile: str) -> dict | None:
+        """Cached "difficulty for you", only if made from this listing *and* this profile."""
+        fit = self._jobs.get(job_id, {}).get("fit")
+        if fit and fit.get("content_hash") == content_hash and fit.get("profile") == profile:
+            return fit
+        return None
+
+    def set_fit(self, job_id: str, fit: dict, model: str, content_hash: str, profile: str) -> None:
+        self._jobs[job_id]["fit"] = {**fit, "model": model, "content_hash": content_hash, "profile": profile}
 
     # --- Sources and retention ------------------------------------------------
 

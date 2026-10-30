@@ -9,13 +9,15 @@ each one matters. Each RankedJob keeps its per-term breakdown so the UI can show
 a job ranked where it did.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 from cityu_jobs import config
+from cityu_jobs.core.dates import Timeline
 from cityu_jobs.core.models import Job
 
-_LEARNING_SOURCES = {"aims_cis", "itc_stem"}
+# Internship schemes: CityU's own (CIS, ITC STEM) and tech internships from company boards.
+_LEARNING_SOURCES = {"aims_cis", "itc_stem", "intern_bigtech", "intern_tech"}
 
 
 @dataclass
@@ -42,6 +44,9 @@ class RankedJob:
     similarity: float | None     # raw cosine similarity, before scaling
     level: int | None            # AI level, None = unrated
     level_reason: str = ""       # the AI's one-sentence reason (filled in by the pipeline)
+    skills: list[str] = field(default_factory=list)  # skills the AI read from the listing (Claude only)
+    timeline: Timeline | None = None  # start / end / deadline for the calendar (filled in by the pipeline)
+    fit: dict | None = None      # "difficulty for you" from core/fit.py (top results, Claude + profile only)
 
 
 def _priority(value: int) -> float:

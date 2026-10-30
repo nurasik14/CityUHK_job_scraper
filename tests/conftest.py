@@ -8,6 +8,7 @@ skip when they're missing.
 from datetime import date
 from pathlib import Path
 
+import httpx
 import pytest
 
 from cityu_jobs import config
@@ -47,6 +48,29 @@ def make_job(job_id: str = "aims:T001", **overrides) -> Job:
     job = Job(**values)
     job.content_hash = compute_content_hash(job.raw)
     return job
+
+
+@pytest.fixture(autouse=True)
+def _offline(tmp_path: Path, monkeypatch):
+    """Every test: the real settings file is never read or written, and no real HTTP goes out.
+
+    httpx.MockTransport (used by the provider and fetcher tests) is unaffected; only the
+    real network transport refuses.
+    """
+    monkeypatch.setattr(config, "SETTINGS_FILE", tmp_path / "settings.json")
+    monkeypatch.setattr(config, "PROFILE_FILE", tmp_path / "profile.json")
+    monkeypatch.setattr(config, "LETTERS_DIR", tmp_path / "letters")
+    monkeypatch.setattr(config, "TRACKER_FILE", tmp_path / "applications.json")
+    monkeypatch.setattr(config, "ITC_DIR", tmp_path / "itc")
+
+    def no_network(self, request):
+        raise AssertionError(f"test tried to reach the network: {request.url}")
+
+    monkeypatch.setattr(httpx.HTTPTransport, "handle_request", no_network)
+    # The Settings page asks the `claude` CLI whether it is logged in; never run it in tests.
+    from cityu_jobs.web import app as web_app
+
+    monkeypatch.setattr(web_app, "claude_status", lambda: (True, "Logged in with your Claude plan (test)."))
 
 
 @pytest.fixture

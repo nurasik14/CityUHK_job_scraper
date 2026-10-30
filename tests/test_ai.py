@@ -230,3 +230,27 @@ def test_query_closer_to_matching_job():
     vectors = {j.job_id: embedder.embed([j.description + " " + j.title])[0] for j in (ml, office)}
     sims = similarities(embed_query("machine learning research", embedder), vectors)
     assert sims["aims:ML"] > sims["aims:OF"]
+
+
+# --- Long texts vs the embedding model's context ---------------------------------------
+
+
+def test_fit_context_counts_dense_scripts_as_more_tokens():
+    from cityu_jobs.core.ai.providers import fit_context
+
+    assert fit_context("a" * 100, max_tokens=10) == "a" * 40
+    assert 9 <= len(fit_context("機" * 100, max_tokens=11)) <= 10
+    assert fit_context("short") == "short"
+
+
+def test_embed_falls_back_to_shorter_texts_on_context_errors():
+    def handler(request):
+        body = json.loads(request.content)
+        if any(len(t) > 60 for t in body["input"]):
+            return httpx.Response(400, json={"error": "the input length exceeds the context length"})
+        return httpx.Response(200, json={"embeddings": [[1.0, 0.0] for _ in body["input"]]})
+
+    provider, seen = _ollama(handler, embed_model="other")
+    vectors = provider.embed(["x" * 100, "short"])
+    assert vectors == [[1.0, 0.0], [1.0, 0.0]]
+    assert len(seen) == 4  # the batch, then text 1 (too long), text 1 halved, then text 2

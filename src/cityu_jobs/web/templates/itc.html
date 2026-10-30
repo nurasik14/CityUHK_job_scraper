@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, banner %}
+{% block title %}ITC STEM job list · CityU Job Recommender{% endblock %}
+{% block content %}
+<p class="crumbs"><a href="/settings">{{ icon("left") }} Settings</a></p>
+<p class="eyebrow">ITC STEM Internship Scheme</p>
+<h1>The ITC STEM job list</h1>
+<p class="lede">The College of Computing publishes its ITC STEM jobs as an Excel file behind the CityU portal login.
+  Download it there, upload it here, and its jobs join your next search.</p>
+
+{% if uploaded >= 0 %}{% call banner("ok", None, role="status") %}<p>Uploaded: {{ uploaded }} jobs found. They appear in your next search.</p>{% endcall %}{% endif %}
+{% if error %}{% call banner("danger", "Upload failed", role="alert") %}<p>{{ error }}</p>{% endcall %}{% endif %}
+
+<div class="layout-split">
+  <form class="card" method="post" action="/itc/upload" enctype="multipart/form-data">
+    <h2>{{ icon("upload") }} Upload a new list</h2>
+    <ol class="steps">
+      <li>Open the <a href="{{ itc_page_url }}" rel="noreferrer" target="_blank">College of Computing ITC STEM page {{ icon("external") }}</a>,
+        log in if asked, and download the job list (<code>.xlsx</code>).</li>
+      <li>Choose the file here and upload it. The newest file is the one used.</li>
+    </ol>
+    <div class="field"><label for="file">Job list (.xlsx)</label>
+      <input id="file" name="file" type="file" accept=".xlsx" class="file-input"></div>
+    <button type="submit" class="btn btn-primary">{{ icon("upload") }} Upload</button>
+  </form>
+
+  <section class="card card-quiet" aria-labelledby="files-title">
+    <h2 id="files-title">{{ icon("file") }} Saved lists</h2>
+    {% if files %}
+    <ul class="file-list">
+      {% for f in files %}
+      <li{% if f.name == current %} class="is-current"{% endif %}>
+        <a href="/itc?file={{ f.name|urlencode }}">{{ f.name }}</a>
+        <span class="hint">{{ f.mtime.strftime("%d %b %Y, %H:%M") }} · {{ (f.size / 1024)|round|int }} KB{% if f.name == in_use %} · <strong>in use</strong>{% endif %}</span>
+        <a class="btn btn-ghost btn-compact" href="/itc/file/{{ f.name|urlencode }}" download>Download</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">No list yet. Upload one to add ITC STEM jobs.</p>
+    {% endif %}
+  </section>
+</div>
+
+{% if headers %}
+<section class="sheet-section" aria-labelledby="sheet-title">
+  <div class="sheet-head">
+    <h2 id="sheet-title">{{ current }} <span class="hint">· sheet “{{ sheet }}” · {{ rows|length }} rows</span></h2>
+    <label class="sheet-search"><span class="visually-hidden">Filter rows</span>
+      {{ icon("search") }}<input type="search" placeholder="Filter rows, e.g. AI, Python, company…" data-sheet-filter hidden></label>
+  </div>
+  <div class="sheet-wrap" tabindex="0" role="region" aria-label="Spreadsheet rows (scrolls sideways)">
+    <table class="sheet">
+      <thead><tr>{% for h in headers %}<th scope="col" title="{{ h }}"{% if wide[loop.index0] %} class="wide"{% endif %}><span class="th-label">{{ labels[loop.index0] }}</span></th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for row in rows %}
+        <tr{% if number_col is not none and row[number_col] %} id="itc-row-{{ row[number_col] }}"{% endif %}>
+          {% for cell in row %}<td{% if wide[loop.index0] %} class="wide"{% endif %}>{% if cell.startswith("http") and " " not in cell %}<a href="{{ cell }}" rel="noreferrer" target="_blank">{{ cell }}</a>{% elif "@" in cell and " " not in cell %}<a href="mailto:{{ cell }}">{{ cell }}</a>{% else %}<div class="cell">{{ cell }}</div>{% endif %}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

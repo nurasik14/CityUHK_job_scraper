@@ -36,6 +36,10 @@ class Job:
         closing_date: Last day to apply; jobs past this date are not recommended.
         positions: Number of students required.
         url: Public link to the listing, if there is one (AIMS pages need a login, so None).
+        company: Employer name for jobs outside CityU (internship boards), e.g. "Stripe".
+        location: Where the job is, as the listing writes it, e.g. "Hong Kong; Singapore".
+        start_date, end_date: When the work starts / ends, if the source gives exact dates.
+            Most sources don't; core/dates.py also derives them from `employment_period`.
         raw: Everything the scraper parsed, in the source's own format.
         content_hash: Fingerprint of `raw`. If it changes, the listing was edited and
             the cached AI level and embedding must be recomputed.
@@ -57,14 +61,19 @@ class Job:
     closing_date: date | None = None
     positions: int | None = None
     url: str | None = None
+    company: str | None = None
+    location: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
     raw: dict = field(default_factory=dict)
     content_hash: str = ""
 
     def to_dict(self) -> dict:
-        """JSON-safe dict: the closing date becomes an ISO string like "2026-10-25"."""
+        """JSON-safe dict: dates become ISO strings like "2026-10-25"."""
         data = asdict(self)
-        if self.closing_date is not None:
-            data["closing_date"] = self.closing_date.isoformat()
+        for name in _DATE_FIELDS:
+            if getattr(self, name) is not None:
+                data[name] = getattr(self, name).isoformat()
         return data
 
     @classmethod
@@ -72,9 +81,13 @@ class Job:
         """Inverse of `to_dict()`. Unknown keys are ignored so old cache files still load."""
         known = {f.name for f in fields(cls)}
         values = {k: v for k, v in data.items() if k in known}
-        if values.get("closing_date"):
-            values["closing_date"] = date.fromisoformat(values["closing_date"])
+        for name in _DATE_FIELDS:
+            if values.get(name):
+                values[name] = date.fromisoformat(values[name])
         return cls(**values)
+
+
+_DATE_FIELDS = ("closing_date", "start_date", "end_date")
 
 
 def compute_content_hash(raw: dict) -> str:
@@ -85,5 +98,5 @@ def compute_content_hash(raw: dict) -> str:
 
 def embedding_text(job: Job) -> str:
     """The text that represents a job for semantic search (see core/embeddings.py)."""
-    parts = [job.title, job.job_nature, job.department_name, job.description, job.requirements]
+    parts = [job.title, job.company, job.job_nature, job.department_name, job.description, job.requirements]
     return "\n".join(p for p in parts if p)

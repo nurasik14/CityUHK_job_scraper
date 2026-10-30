@@ -2,12 +2,45 @@
 {% from "_macros.html" import icon, banner %}
 {% block title %}Settings · CityU Job Recommender{% endblock %}
 {% block content %}
-<h1>Settings</h1>
-<p class="lede">The AI runs locally with <a href="https://ollama.com" rel="noreferrer" target="_blank">Ollama</a>,
-  so job text never leaves this computer.</p>
-{% if saved %}{% call banner("ok", None, role="status") %}<p>Saved.</p>{% endcall %}{% endif %}
+<p class="eyebrow">Settings</p>
+<h1>How the app works for you</h1>
+<p class="lede">Choose which AI rates each job, where its embeddings come from, and where you want internships.</p>
+{% if saved %}{% call banner("ok", None, role="status") %}<p>Saved. It applies from your next search.</p>{% endcall %}{% endif %}
 
-<div class="form-narrow stack">
+<form class="form-narrow stack" method="post" action="/settings">
+  <section class="card">
+    <div class="status-row">
+      <h2 class="flush">AI that rates jobs</h2>
+      {% if settings.ai_provider == "claude" %}
+      <span class="pill {{ 'ok' if claude_ready else 'bad' }}"><span class="dot"></span>{{ "Claude ready" if claude_ready else "Claude not ready" }}</span>
+      {% endif %}
+    </div>
+    <fieldset class="field">
+      <legend class="visually-hidden">AI provider</legend>
+      <label class="choice">
+        <input type="radio" name="ai_provider" value="claude" {% if settings.ai_provider == "claude" %}checked{% endif %}>
+        <span><strong>Claude, with your Claude plan</strong> <span class="tag">Recommended</span><br>
+          <span class="hint">Better levels and reasons, reads skills and dates from each listing. Runs through
+            Claude Code (<code>claude</code>), so it uses your Pro/Max plan, not an API key. Job descriptions are sent to Anthropic.</span></span>
+      </label>
+      <label class="choice">
+        <input type="radio" name="ai_provider" value="ollama" {% if settings.ai_provider == "ollama" %}checked{% endif %}>
+        <span><strong>Ollama, free and local</strong><br>
+          <span class="hint">Nothing leaves this computer. Small local models rate less reliably.</span></span>
+      </label>
+    </fieldset>
+    <p class="hint">{{ claude_message }}</p>
+    <div class="field">
+      <label for="claude_model">Claude model</label>
+      <select id="claude_model" name="claude_model" aria-describedby="claude-model-hint">
+        {% for m in claude_models %}
+        <option value="{{ m }}" {% if m == settings.claude_model %}selected{% endif %}>{{ m|capitalize }}{% if m == "haiku" %} (fastest){% elif m == "sonnet" %} (balanced){% else %} (most capable, uses the most of your plan){% endif %}</option>
+        {% endfor %}
+      </select>
+      <p class="hint" id="claude-model-hint">Jobs are rated 8 at a time, so a full first run is about 30–80 requests. Levels from local models are re-rated once by Claude.</p>
+    </div>
+  </section>
+
   <section class="card">
     <div class="status-row">
       <h2 class="flush">Ollama</h2>
@@ -17,32 +50,52 @@
       <span class="pill ok"><span class="dot"></span>Ollama connected · {{ installed|length }} model{{ "s" if installed|length != 1 }}</span>
       {% endif %}
     </div>
+    <p class="hint">Embeddings (matching jobs to what you typed) always run locally in Ollama, with either AI above.</p>
     {% if problem %}
     <p>{{ problem }}</p>
     {% elif installed %}
     <p class="hint" id="installed-label">Installed models</p>
     <ul class="chips" aria-labelledby="installed-label">{% for m in installed %}<li class="chip"><code>{{ m }}</code></li>{% endfor %}</ul>
     {% endif %}
-  </section>
-
-  <form class="card" method="post" action="/settings">
     <div class="field">
       <label for="ollama_url">Ollama URL</label>
       <input id="ollama_url" name="ollama_url" type="url" value="{{ settings.ollama_url }}">
-    </div>
-    <div class="field">
-      <label for="llm_model">Language model <span class="hint">(rates each job's level)</span></label>
-      <input id="llm_model" name="llm_model" value="{{ settings.llm_model }}" list="installed" aria-describedby="llm-hint">
-      <p class="hint" id="llm-hint">Changing it does not re-rate jobs that already have a level.</p>
     </div>
     <div class="field">
       <label for="embed_model">Embedding model <span class="hint">(matches jobs to your search)</span></label>
       <input id="embed_model" name="embed_model" value="{{ settings.embed_model }}" list="installed" aria-describedby="embed-hint">
       <p class="hint" id="embed-hint">Changing it re-embeds every job on the next search.</p>
     </div>
+    <div class="field">
+      <label for="llm_model">Language model <span class="hint">(rates jobs when Ollama is chosen above)</span></label>
+      <input id="llm_model" name="llm_model" value="{{ settings.llm_model }}" list="installed" aria-describedby="llm-hint">
+      <p class="hint" id="llm-hint">Changing it does not re-rate jobs that already have a level.</p>
+    </div>
     <datalist id="installed">{% for m in installed %}<option value="{{ m }}">{% endfor %}</datalist>
     <p class="hint">Install a model with <code>ollama pull &lt;name&gt;</code>.</p>
-    <button type="submit" class="btn btn-primary">Save</button>
-  </form>
-</div>
+  </section>
+
+  <section class="card">
+    <div class="status-row"><h2 class="flush">ITC STEM job list</h2></div>
+    <p class="hint">The College of Computing list sits behind the CityU portal login, so you download it and upload it here.
+      You can also open it as a table, with every column.</p>
+    <a class="btn" href="/itc">{{ icon("file") }} Open / upload the ITC STEM list</a>
+  </section>
+
+  <section class="card">
+    <h2>Internship regions</h2>
+    <fieldset class="field">
+      <legend class="hint">Tech internships from big tech and other tech companies are fetched for these regions.
+        North America and Europe usually need a work visa.</legend>
+      <div class="check-grid">
+        {% for key, label in regions.items() %}
+        <label class="check"><input type="checkbox" name="intern_regions" value="{{ key }}" {% if key in settings.intern_regions %}checked{% endif %}><span>{{ label }}</span></label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <p class="hint">Changes apply at the next refresh of the internship lists (tick “Refresh now” on the search page).</p>
+  </section>
+
+  <div class="form-actions"><button type="submit" class="btn btn-primary">Save settings</button></div>
+</form>
 {% endblock %}

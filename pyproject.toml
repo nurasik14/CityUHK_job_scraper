@@ -11,6 +11,8 @@ dependencies = [
     "jinja2>=3.1.6",
     "openpyxl>=3.1",
     "playwright>=1.50",
+    "pypdf>=6.21.4",
+    "python-multipart>=0.0.32",
     "uvicorn>=0.54.0",
 ]
 

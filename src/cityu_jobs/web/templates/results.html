@@ -7,13 +7,14 @@
 
 {% if task.status == 'running' %}
 {# Progress: app.js polls the status URL, updates the message and m:ss, then reloads. #}
-<section class="card" data-status-url="/api/status">
+<section class="card progress-card" data-status-url="/api/status">
   <h1>{{ "Logging in to AIMS" if task.kind == 'login' else "Searching" }}…</h1>
   <div class="progress-track" aria-hidden="true"></div>
   <p aria-live="polite" data-progress-message>{{ task.message }}</p>
   <p class="hint">{{ icon("clock") }} Elapsed <span class="num" data-elapsed>{{ mmss(task.elapsed_s) }}</span></p>
-  <p class="hint">The first AIMS scrape takes about 35 minutes and rating takes about 7 s per job; later searches
-    reuse the cache. It's safe to leave this page: the search keeps running and the results will be here.</p>
+  <p class="hint">The first AIMS scrape takes about 35 minutes, and the first AI rating of every job takes a few
+    minutes; later searches reuse the cache. It's safe to leave this page: the search keeps running and the results
+    will be here.</p>
 </section>
 {% if task.kind == 'search' %}
 <div class="results skeletons" aria-hidden="true">
@@ -37,7 +38,8 @@
 
 {% if prefs %}
 <div class="results-head">
-  <h1>Top {{ results|length }} of {{ total }} open jobs</h1>
+  <p class="eyebrow">Your matches</p>
+  <h1>Top {{ results|length }} of {{ counts[show] }} {{ "open jobs" if show == "all" else result_groups[show][0]|lower }}</h1>
   <div class="legend" aria-label="How to read the cards">
     <span class="legend-title">How to read the cards:</span>
     {% for group, terms in term_groups %}
@@ -59,6 +61,21 @@
   <a class="btn btn-compact" href="/"><span>Change<span class="hide-sm"> search</span></span></a>
 </div>
 
+{% set elig_q = "eligible=1" if eligible else "" %}
+<nav class="filters" aria-label="Show">
+  {% for key, (label, _sources) in result_groups.items() %}
+  {% set q = [("show=" ~ key) if key != "all" else "", elig_q]|select|join("&") %}
+  <a class="filter" href="/results{{ ('?' ~ q) if q }}"{% if key == show %} aria-current="page"{% endif %}>
+    {{ label }} <span class="filter-count num">{{ counts[key] }}</span></a>
+  {% endfor %}
+  {% if has_fit %}
+  {% set base = ("show=" ~ show) if show != "all" else "" %}
+  <a class="filter filter-toggle" role="switch" aria-checked="{{ 'true' if eligible else 'false' }}"
+     href="/results{% set q2 = [base, "" if eligible else "eligible=1"]|select|join("&") %}{{ ('?' ~ q2) if q2 }}">
+    <span class="switch" aria-hidden="true"></span> Hide not eligible <span class="filter-count num">{{ hidden_ineligible }}</span></a>
+  {% endif %}
+</nav>
+
 {% if report and report.notes %}
 <details class="notes">
   <summary>{{ icon("chevron") }} Scrape notes ({{ report.notes|length }})</summary>
@@ -68,9 +85,42 @@
 {% endif %}
 
 {% if results %}
+<div class="results-layout">
+  {# Calendar: app.js draws month grids from the JSON below and highlights the dates of the job
+     under the pointer or keyboard focus. Without JS the "Coming up" list still works. #}
+  <aside class="calendar-panel" aria-labelledby="cal-title">
+    <details class="card cal-card" data-calendar open>
+      <summary class="cal-summary">{{ icon("calendar") }} <h2 id="cal-title" class="flush">Calendar</h2>
+        <span class="hint cal-hint">Hover or focus a job to see its dates</span></summary>
+      <div class="cal-detail" data-cal-detail aria-live="polite">
+        <p class="hint flush">Rose dots are application deadlines, green dots are start dates.</p>
+      </div>
+      <div class="cal" data-cal-root hidden></div>
+      <ul class="cal-legend" aria-hidden="true">
+        <li><span class="cal-key k-deadline"></span>Deadline</li>
+        <li><span class="cal-key k-start"></span>Start</li>
+        <li><span class="cal-key k-end"></span>End</li>
+        <li><span class="cal-key k-range"></span>Duration</li>
+      </ul>
+      {% set upcoming = [] %}
+      {% for rank, r in results %}{% if r.timeline and r.timeline.deadline %}{% set _ = upcoming.append((r.timeline.deadline, rank, r)) %}{% endif %}{% endfor %}
+      {% if upcoming %}
+      <h3 class="agenda-title">Coming up</h3>
+      <ol class="agenda">
+        {% for d, rank, r in (upcoming|sort(attribute='0'))[:6] %}
+        <li><a href="#job-{{ rank }}" data-cal-link="job-{{ rank }}"><span class="agenda-date num">{{ d.day }} {{ d.strftime("%b") }}</span>
+          <span class="agenda-text ellipsis">{{ r.job.title }}</span></a></li>
+        {% endfor %}
+      </ol>
+      {% endif %}
+      <script type="application/json" id="calendar-data">{{ calendar|tojson }}</script>
+    </details>
+  </aside>
+
 <ol class="results">
-  {% for r in results %}
+  {% for rank, r in results %}
   {% set j = r.job %}
+  {% set t = r.timeline %}
   {% set pct = [[(100 * r.score / max_score)|round|int, 0]|max, 100]|min %}
   {% set tier = "featured" if loop.first else ("standard" if loop.index <= 3 else "quiet") %}
   {% set days_left = (j.closing_date - today).days if j.closing_date else none %}
@@ -78,14 +128,17 @@
   {% for term in term_labels %}{% set v = r.breakdown.get(term, 0) %}{% if v > 0 %}
     {% set _ = points.append((term, (100 * v / max_score)|round|int, v)) %}
   {% endif %}{% endfor %}
-  <li class="card job {{ tier }}" style="--i: {{ [loop.index0, 10]|min }}"
-      aria-label="Rank {{ loop.index }}: {{ j.title }}, score {{ '%.2f'|format(r.score) }} of {{ '%.2f'|format(max_score) }}">
+  <li class="card job {{ tier }}" id="job-{{ rank }}" data-cal-id="job-{{ rank }}" tabindex="-1" style="--i: {{ [loop.index0, 10]|min }}"
+      aria-label="Rank {{ rank }}: {{ j.title }}, score {{ '%.2f'|format(r.score) }} of {{ '%.2f'|format(max_score) }}">
     <div class="job-head">
-      <span class="rank" aria-hidden="true">{{ loop.index }}</span>
+      <span class="rank" aria-hidden="true">{{ rank }}</span>
       <div class="job-title">
         {% if loop.first %}<span class="badge-top">{{ icon("sparkle") }} Top match</span>{% endif %}
         <h2>{{ j.title }}</h2>
         <span class="pill {{ j.source }}"><span class="dot"></span>{{ source_labels.get(j.source, j.source) }}</span>
+        {% set who = employer_of(j) %}{% if who %}<span class="company">{{ who }}</span>{% endif %}
+        {% set st = tracker.get(j.job_id, {}).get("status") %}
+        {% if st %}<span class="pill track-{{ st }}"><span class="dot"></span>{{ "Applied" if st == "applied" else "Saved" }}</span>{% endif %}
       </div>
       {{ match_ring(pct, 72 if loop.first else 56) }}
     </div>
@@ -93,24 +146,48 @@
     {% if loop.first and j.description %}
     {# The teaser is the first paragraph about the job itself, not the ITC "Company:" / "About the company:" ones. #}
     {% set ns = namespace(teaser="") %}
-    {% for para in j.description.split("\n\n") %}{% if not ns.teaser and not para.startswith(("Company: ", "About the company: ")) %}{% set ns.teaser = para %}{% endif %}{% endfor %}
+    {# Skip short heading-like paragraphs ("ROLE OVERVIEW", "About the team:"). #}
+    {% for para in j.description.split("\n\n") %}{% if not ns.teaser and para|length >= 60 and not para.startswith(("Company: ", "About the company: ")) %}{% set ns.teaser = para %}{% endif %}{% endfor %}
     <p class="teaser">{{ (ns.teaser or j.description)|truncate(180, end="…") }}</p>
     {% endif %}
 
     <ul class="meta">
-      {% if j.department_code or j.department_name %}
+      {% if j.location %}
+      <li>{{ icon("pin") }} {{ j.location|truncate(60, end="…") }}</li>
+      {% elif j.department_code or j.department_name %}
       <li>{{ icon("building") }} {{ j.department_code or "" }}{% if j.department_code and j.department_name %} · {% endif %}{{ j.department_name or "" }}</li>
       {% endif %}
       {% if j.weekly_hours is not none %}<li>{{ icon("clock") }} {{ "%g"|format(j.weekly_hours) }} h/week</li>{% endif %}
+      {% if t and t.start %}
+      <li>{{ icon("play") }}
+        {% if t.approximate %}{{ t.label }} <span class="muted">(approx.)</span>
+        {% else %}Starts {{ t.start|day }}{% if t.days %} · {{ t.days }} days{% endif %}{% endif %}</li>
+      {% endif %}
       {% if j.closing_date %}
-      <li>{{ icon("calendar") }} Closes {{ j.closing_date.strftime("%d %b %Y") }}</li>
+      <li>{{ icon("calendar") }} Closes {{ j.closing_date|day }}</li>
       {% if days_left is not none and days_left <= NEAR_DAYS %}
       <li><span class="badge-soon" data-urgency="{{ 'danger' if days_left <= URGENT_DAYS else ('warn' if days_left <= SOON_DAYS else 'neutral') }}">{{ icon("clock") }}
         {% if days_left == 0 %}Closes today{% else %}Closes in {{ days_left }} day{{ "s" if days_left != 1 }}{% endif %}</span></li>
       {% endif %}
+      {% elif t and t.deadline %}
+      <li>{{ icon("calendar") }} Apply by {{ t.deadline|day }}</li>
       {% endif %}
-      <li class="job-id">{{ j.job_id }}</li>
+      {% if j.source.startswith("aims") %}<li class="job-id">{{ j.job_id }}</li>{% endif %}
     </ul>
+
+    {% if r.fit %}
+    {% set f = r.fit %}
+    <p class="fit" data-difficulty="{{ f.difficulty }}">
+      <span class="fit-meter" role="img" aria-label="Difficulty for you {{ f.difficulty }} of 5">{% for i in range(1, 6) %}<i{% if i <= f.difficulty %} class="on"{% endif %}></i>{% endfor %}</span>
+      <strong>{{ verdict_labels.get(f.verdict, f.verdict) }}</strong> <span class="muted">for you</span>
+      {% if f.blockers %}<span class="fit-why">{{ f.blockers[0] }}</span>
+      {% elif f.missing %}<span class="fit-why">Missing: {{ f.missing[:2]|join(", ") }}</span>{% endif %}
+    </p>
+    {% endif %}
+
+    {% if r.skills %}
+    <ul class="skills" aria-label="Skills asked for">{% for s in r.skills %}<li>{{ s }}</li>{% endfor %}</ul>
+    {% endif %}
 
     <div class="bar" aria-hidden="true">
       {% for term, n, v in points %}<span class="seg t-{{ term }}" style="width: {{ (100 * v / max_score)|round(1) }}%" title="{{ term_labels[term]|capitalize }}: {{ n }} points"></span>{% endfor %}
@@ -125,35 +202,53 @@
       {% endif %}
     </div>
 
-    <details class="why">
-      <summary>{{ icon("chevron") }} Why this score</summary>
-      <ul class="why-list">
-        {% for term, n, v in points %}<li><span class="dot t-{{ term }}"></span>{{ term_labels[term]|capitalize }} <strong class="num">{{ n }}</strong></li>{% endfor %}
-      </ul>
-      <p class="hint">Raw score {{ "%.2f"|format(r.score) }} of {{ "%.2f"|format(max_score) }} possible for your priorities.</p>
-    </details>
+    <div class="job-actions">
+      <details class="why">
+        <summary>{{ icon("chevron") }} Why this score</summary>
+        <ul class="why-list">
+          {% for term, n, v in points %}<li><span class="dot t-{{ term }}"></span>{{ term_labels[term]|capitalize }} <strong class="num">{{ n }}</strong></li>{% endfor %}
+        </ul>
+        <p class="hint">Raw score {{ "%.2f"|format(r.score) }} of {{ "%.2f"|format(max_score) }} possible for your priorities.</p>
+      </details>
 
-    <details>
-      <summary>{{ icon("chevron") }} Details</summary>
-      <div class="details-body">
-        <div class="detail-text">{{ j.description }}</div>
-        {% if j.requirements %}<h3>Requirements</h3><div class="detail-text">{{ j.requirements }}</div>{% endif %}
-        {% if j.employment_period %}<p class="hint">Period: {{ j.employment_period }}</p>{% endif %}
-        {% if j.raw._honorarium %}<p class="hint">Extra honorarium: {{ j.raw._honorarium }}</p>{% endif %}
-        {% if j.url %}<p><a href="{{ j.url }}" rel="noreferrer" target="_blank">Open the listing</a></p>
-        {% else %}<p class="hint">Apply in AIMS with job no. {{ j.job_id.split(":", 1)[1] }}.</p>{% endif %}
-      </div>
-    </details>
+      <details>
+        <summary>{{ icon("chevron") }} Details</summary>
+        <div class="details-body">
+          <div class="detail-text">{{ j.description }}</div>
+          {% if j.requirements %}<h3>Requirements</h3><div class="detail-text">{{ j.requirements }}</div>{% endif %}
+          {% if j.employment_period %}<p class="hint">Period: {{ j.employment_period }}</p>{% endif %}
+          {% if j.raw._honorarium %}<p class="hint">Extra honorarium: {{ j.raw._honorarium }}</p>{% endif %}
+          {% if j.source == "itc_stem" %}<p><a href="/itc{% if j.raw['No.'] %}#itc-row-{{ j.raw['No.'] }}{% endif %}">Open it in the ITC STEM list</a></p>
+          {% elif j.url %}<p><a href="{{ j.url }}" rel="noreferrer" target="_blank">Open the listing</a></p>
+          {% else %}<p class="hint">Apply in AIMS with job no. {{ j.job_id.split(":", 1)[1] }}.</p>{% endif %}
+        </div>
+      </details>
+
+      {% if t and (t.start or t.deadline) %}
+      <button type="button" class="btn btn-ghost btn-compact cal-show" data-cal-show="job-{{ rank }}" hidden>{{ icon("calendar") }} Show on calendar</button>
+      {% endif %}
+      {% if j.url and not j.source.startswith("itc") %}
+      <a class="btn btn-ghost btn-compact" href="{{ j.url }}" rel="noreferrer" target="_blank">View posting {{ icon("external") }}<span class="visually-hidden"> (opens in a new tab)</span></a>
+      {% endif %}
+      <a class="btn btn-compact btn-soft" href="/job/{{ j.job_id }}">How to apply {{ icon("chevron") }}<span class="visually-hidden">: {{ j.title }}</span></a>
+    </div>
   </li>
   {% endfor %}
 </ol>
+</div>
 {% else %}
 <section class="card empty">
   {{ icon("search") }}
+  {% if show != "all" and counts["all"] %}
+  <h2>Nothing in “{{ result_groups[show][0] }}” for this search</h2>
+  <p>Try another filter, or widen the internship regions on the <a href="/settings">Settings</a> page.</p>
+  <a class="btn btn-primary" href="/results">Show all results</a>
+  {% else %}
   <h2>No open jobs in the cache yet</h2>
   <p>Check the scrape notes above. AIMS jobs need a login: log in to AIMS, then search again with “Refresh now”.
-    ITC STEM jobs need the job list saved in <code>.data/itc/</code>.</p>
+    ITC STEM jobs need the job list: <a href="/itc">upload it on the ITC page</a>.</p>
   <a class="btn btn-primary" href="/">Back to search</a>
+  {% endif %}
 </section>
 {% endif %}
 

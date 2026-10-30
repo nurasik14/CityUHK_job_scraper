@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, banner %}
+{% block title %}Profile · CityU Job Recommender{% endblock %}
+{% block content %}
+<p class="eyebrow">Your profile</p>
+<h1>What you bring</h1>
+<p class="lede">Upload your CV and add your projects. The app uses them to estimate how hard each job is for you
+  and to write cover letters that only use real facts about you.</p>
+
+{% if saved %}{% call banner("ok", None, role="status") %}<p>Saved. Difficulty estimates are redone for your next search.</p>{% endcall %}{% endif %}
+{% if cv_loaded %}{% call banner("ok", None, role="status") %}<p>Read {{ cv_loaded }} characters from your CV. Check the text below, then save.</p>{% endcall %}{% endif %}
+{% if error %}{% call banner("danger", "Couldn't do that", role="alert") %}<p>{{ error }}</p>{% endcall %}{% endif %}
+
+<div class="layout-split">
+  <div class="stack">
+    <form class="card" method="post" action="/profile/cv" enctype="multipart/form-data">
+      <h2>{{ icon("upload") }} Upload your CV</h2>
+      <div class="field">
+        <label for="cv">CV file <span class="hint">({{ extensions }}, up to 5 MB)</span></label>
+        <input id="cv" name="cv" type="file" accept="{{ extensions|replace(' ', '') }}" class="file-input">
+        {% if profile.cv_filename %}<p class="hint">In use: <strong>{{ profile.cv_filename }}</strong>. Choose a new file to replace it (only its text is stored).</p>{% endif %}
+      </div>
+      <button type="submit" class="btn btn-primary">{{ icon("upload") }} Read CV</button>
+    </form>
+
+    <form class="card" method="post" action="/profile">
+      <h2>{{ icon("pen") }} About you</h2>
+      <div class="grid-2">
+        <div class="field"><label for="name">Name</label><input id="name" name="name" value="{{ profile.name }}" autocomplete="name"></div>
+        <div class="field"><label for="email">Email for applications</label><input id="email" name="email" type="email" value="{{ profile.email }}" autocomplete="email"></div>
+      </div>
+      <div class="field"><label for="phone">Phone <span class="hint">(optional)</span></label><input id="phone" name="phone" value="{{ profile.phone }}" autocomplete="tel"></div>
+      <div class="field">
+        <label for="education">Education</label>
+        <input id="education" name="education" value="{{ profile.education }}" placeholder="e.g. BSc Computer Science, CityU, Year 1 (2026–2030)">
+        <p class="hint">Your year and degree matter most: many internships are only for penultimate-year or Master's students.</p>
+      </div>
+      <div class="field">
+        <label for="skills">Skills</label>
+        <textarea id="skills" name="skills" rows="2" placeholder="e.g. Python, PyTorch, FastAPI, TypeScript, SQL, Git">{{ profile.skills }}</textarea>
+      </div>
+      <div class="field">
+        <label for="projects">Projects</label>
+        <textarea id="projects" name="projects" rows="6" placeholder="One per paragraph: what it does, the stack, a result or number, a link.">{{ profile.projects }}</textarea>
+      </div>
+      <div class="field">
+        <label for="experience">Experience <span class="hint">(jobs, research, competitions)</span></label>
+        <textarea id="experience" name="experience" rows="4">{{ profile.experience }}</textarea>
+      </div>
+      <div class="field">
+        <label for="extra">Anything else <span class="hint">(languages, awards, availability, visa / work permit, GitHub)</span></label>
+        <textarea id="extra" name="extra" rows="3">{{ profile.extra }}</textarea>
+      </div>
+      <div class="field">
+        <label for="cv_text">CV text <span class="hint">(from your upload; edit freely)</span></label>
+        <textarea id="cv_text" name="cv_text" rows="12" class="mono-area">{{ profile.cv_text }}</textarea>
+      </div>
+      <div class="form-actions"><button type="submit" class="btn btn-primary">Save profile</button>
+        {% if profile.updated_at %}<span class="hint">Last saved {{ profile.updated_at[:16]|replace("T", " ") }}</span>{% endif %}</div>
+    </form>
+  </div>
+
+  <aside class="stack" aria-label="About your profile">
+    <section class="card card-quiet">
+      <h2>How it's used</h2>
+      <ul class="aside-list">
+        <li><span class="swatch sw-match"></span><span><strong>Difficulty for you:</strong> for your top results, the AI compares this profile
+          with each listing: 1 = well within reach, 5 = long shot, plus blockers like "PhD only".</span></li>
+        <li><span class="swatch sw-learn"></span><span><strong>Cover letters:</strong> on each job's page, a letter, an email and
+          drafts for common application questions, using only facts from here.</span></li>
+      </ul>
+    </section>
+    <section class="card card-quiet">
+      <h2>Privacy</h2>
+      <p class="hint">Saved only on this computer in <code>.data/profile.json</code> (readable by you only, never committed).
+        {% if uses_claude %}It is sent to <strong>Anthropic (Claude)</strong> when estimating difficulty or writing a letter.
+        {% else %}You use Ollama, so it never leaves this computer (difficulty estimates need Claude).{% endif %}</p>
+      <form method="post" action="/profile/clear" data-confirm="Delete your saved profile and CV text?">
+        <button type="submit" class="btn btn-ghost btn-compact">Delete my profile</button>
+      </form>
+    </section>
+  </aside>
+</div>
+{% endblock %}

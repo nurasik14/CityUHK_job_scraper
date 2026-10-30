@@ -21,12 +21,18 @@ from typing import Protocol
 from playwright.sync_api import sync_playwright
 
 from cityu_jobs import config
-from cityu_jobs.core.ai.providers import EmbeddingProvider, LLMProvider
+from cityu_jobs.core.ai.providers import EmbeddingProvider, LLMProvider, ProviderError
+from cityu_jobs.core.profile import Profile
 from cityu_jobs.core.aims_scraper import SCHEMES, scrape_aims
 from cityu_jobs.core.analysis import analyze_jobs
 from cityu_jobs.core.auth import AimsSessionExpired, aims_session
 from cityu_jobs.core.cache import Cache
+from cityu_jobs.core.dates import job_timeline
 from cityu_jobs.core.embeddings import embed_jobs, embed_query, similarities
+from cityu_jobs.core.fit import assess_fit, can_assess
+from cityu_jobs.core.itc_stem_scraper import manual_files
+from cityu_jobs.core.internships.scraper import SOURCES as INTERN_SOURCES
+from cityu_jobs.core.internships.scraper import scrape_internships
 from cityu_jobs.core.itc_stem_scraper import SOURCE as ITC_SOURCE
 from cityu_jobs.core.itc_stem_scraper import scrape_itc_stem
 from cityu_jobs.core.ranking import Preferences, RankedJob, is_closed, rank
@@ -34,7 +40,7 @@ from cityu_jobs.core.ranking import Preferences, RankedJob, is_closed, rank
 log = logging.getLogger(__name__)
 
 Progress = Callable[[str], None]
-ALL_SOURCES = ("aims", "itc")
+ALL_SOURCES = ("aims", "itc", "intern")
 # Save the cache every this many AI results, so a crash or Ctrl+C keeps most of the work.
 _SAVE_EVERY = 10
 
@@ -63,10 +69,12 @@ def refresh(
     cache: Cache | None = None,
     progress: Progress = _noop,
     stale_after: timedelta = timedelta(hours=config.STALE_AFTER_HOURS),
+    intern_regions: list[str] | None = None,
 ) -> RefreshReport:
-    """Re-scrape the given sources ("aims", "itc") if stale (or if `force`), then save the cache.
+    """Re-scrape the given sources ("aims", "itc", "intern") if stale (or if `force`), then save the cache.
 
     A source is stale if its last *complete* scrape is older than `stale_after`.
+    `intern_regions` defaults to the student's choice on the Settings page.
     """
     cache = cache or Cache.load()
     report = RefreshReport()
@@ -89,7 +97,7 @@ def refresh(
                 report.notes.append("AIMS login needed: showing AIMS jobs from the last successful scrape.")
 
     if "itc" in sources:
-        if force or cache.is_stale(ITC_SOURCE, stale_after):
+        if force or cache.is_stale(ITC_SOURCE, stale_after) or _new_itc_file(cache):
             progress("Fetching ITC STEM job lists...")
             before = cache.last_scraped_at(ITC_SOURCE)
             # Public pages: a plain hidden browser, no AIMS cookies.
@@ -105,11 +113,48 @@ def refresh(
         else:
             report.skipped.append(ITC_SOURCE)
 
+    if "intern" in sources:
+        if force or any(cache.is_stale(s, stale_after) for s in INTERN_SOURCES):
+            progress("Fetching tech internships...")
+            if intern_regions is None:
+                from cityu_jobs.core.settings import Settings  # here, so tests can run without a settings file
+
+                intern_regions = Settings.load().intern_regions
+            report.notes += scrape_internships(cache, intern_regions, progress=progress)
+            report.scraped += list(INTERN_SOURCES)
+            cache.save()  # the next step (AI rating) can take a while
+        else:
+            report.skipped += list(INTERN_SOURCES)
+
     removed = cache.prune(date.today())
     if removed:
         report.notes.append(f"Removed {removed} jobs that closed over {config.CACHE_RETENTION_DAYS} days ago.")
     cache.save()
     return report
+
+
+def _new_itc_file(cache: Cache) -> bool:
+    """A spreadsheet was saved in .data/itc/ (e.g. uploaded on the ITC page) after the last ITC scrape."""
+    last = cache.last_scraped_at(ITC_SOURCE)
+    files = [f for s in config.ITC_STEM_SOURCES if s.get("enabled") for f in manual_files(s["college"])]
+    return last is not None and any(f.stat().st_mtime > last.timestamp() for f in files)
+
+
+# Groups whose top results each get a fit estimate, so every results tab has them.
+FIT_GROUPS = (
+    ("aims_cis", "aims_sh_summer", "aims_sh_regular", "itc_stem"),
+    tuple(INTERN_SOURCES[:1]),
+    tuple(INTERN_SOURCES[1:]),
+)
+
+
+def fit_candidates(ranked: list[RankedJob], top_n: int = config.FIT_TOP_N) -> list[RankedJob]:
+    """Top N overall plus the top N of each group, best first, without repeats."""
+    picked = {id(r): r for r in ranked[:top_n]}
+    for group in FIT_GROUPS:
+        for r in [r for r in ranked if r.job.source in group][:top_n]:
+            picked.setdefault(id(r), r)
+    return sorted(picked.values(), key=lambda r: ranked.index(r))
 
 
 def recommend(
@@ -118,6 +163,7 @@ def recommend(
     cache: Cache | None = None,
     progress: Progress = _noop,
     today: date | None = None,
+    profile: Profile | None = None,
 ) -> list[RankedJob]:
     """Rank the cached, still-open jobs for `prefs`, best first (all of them; the UI shows the top N).
 
@@ -144,7 +190,26 @@ def recommend(
     sims = similarities(embed_query(prefs.query, provider), vectors) if prefs.query.strip() else {}
     ranked = rank(jobs, levels, sims, prefs, today)
     for r in ranked:
-        r.level_reason = (cache.get_level(r.job.job_id, r.job.content_hash) or {}).get("reason", "")
+        cached = cache.get_level(r.job.job_id, r.job.content_hash) or {}
+        r.level_reason = cached.get("reason", "")
+        r.skills = list(cached.get("skills") or [])
+        r.timeline = job_timeline(r.job, cached.get("dates"))
+
+    # "Difficulty for you": needs a profile and Claude. A failure here never loses the ranking.
+    profile = profile if profile is not None else Profile.load()
+    if not profile.is_empty() and can_assess(provider):
+        candidates = fit_candidates(ranked)
+        try:
+            fits = assess_fit(
+                [r.job for r in candidates], cache, provider, profile,
+                progress=lambda done, total: progress(f"Estimating difficulty for you: {done}/{total}"),
+            )
+        except ProviderError as e:
+            log.warning("fit estimates skipped: %s", e)
+            fits = {}
+        cache.save()
+        for r in candidates:
+            r.fit = fits.get(r.job.job_id)
     return ranked
 
 

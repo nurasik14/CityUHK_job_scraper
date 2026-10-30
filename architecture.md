@@ -254,6 +254,10 @@ Alternative: SQLite — revisit if the file gets slow.
   Computing); the user's department is used as a ranking boost.
 
 ### AI provider (`core/ai/providers.py`)
+> **Superseded 2026-10-30 (owner request): Claude via the Claude plan is the default LLM.**
+> See "Changes 2026-10-30" at the end of this section list. The original decision is kept
+> below for the record.
+
 Two small interfaces: `LLMProvider.complete_json(system, user) -> dict` and
 `EmbeddingProvider.embed(texts, kind="document"|"query") -> list[list[float]]`, each
 with a `model` name. **Owner decision (2026-10-25): Ollama only.** No Claude/Anthropic,
@@ -552,17 +556,101 @@ display: inline-flex; align-items: center }`.
 
 **Not doing:** charts per card, a JS framework, client-side re-sorting or filters (out of scope; the owner hasn't asked for them).
 
+### Changes 2026-10-30 (owner request: softer UI, tech internships, calendar, Claude default)
+Owner asked for four things; the details below were decided while implementing and are
+listed so the owner can review them.
+- **Claude as the default LLM (owner decision, reverses "Ollama only").**
+  `ClaudeCLIProvider` runs `claude -p --output-format json --json-schema … --tools ""
+  --strict-mcp-config --setting-sources "" --no-session-persistence` in an empty temp dir,
+  so it bills the student's Claude plan login, never an API key (`ANTHROPIC_API_KEY` is
+  stripped from the child env). Model alias `sonnet` by default (Settings: haiku/sonnet/opus).
+  Embeddings stay on Ollama (`HybridProvider`); Claude has no embedding model.
+  Trust boundary change: job descriptions go to Anthropic; the search query does not.
+- **Batch rating** (implementer's choice): strong models rate 8 jobs per request,
+  3 requests in parallel (`batch_size`, `max_parallel` on the provider; Ollama stays 1/1).
+  The batch answer also carries `skills` (≤4) and dates stated in the text
+  (`start`, `end`, `weeks`, `deadline`), stored next to the level. Measured: 16 jobs in
+  10 s with Sonnet.
+- **Re-rate rule** (implementer's choice, resolves part of "levels reused across models"):
+  a level from a local model is re-rated once when Claude is on; other switches keep
+  the level. Why: the owner switched to Claude to get better ratings.
+- **Tech internships** (`core/internships/`): `catalog.py` (company → public job-board API,
+  tier "big"/"tech"), `fetchers.py` (Greenhouse, Lever, Ashby, SmartRecruiters, Workday,
+  Amazon, Microsoft, TikTok, SimplifyJobs list), `regions.py` (location text → regions),
+  `scraper.py` (parallel fetch, dedupe, `Job` mapping). Sources `intern_bigtech` and
+  `intern_tech`, department code `TECH` (counts for CS via `DEPARTMENT_BOOST_ALIASES`),
+  both get the learning-scheme bonus. Filters: internship title, tech role, the student's
+  regions (default HK, Mainland China, APAC, Remote; Europe and Americas opt-in because
+  of visas). A failed board keeps its earlier jobs. All endpoints are public, read-only
+  JSON; no login, no bot-check evasion.
+- **Dates and calendar**: `Job.start_date/end_date/company/location` added;
+  `core/dates.py` derives a `Timeline` (exact dates → AIMS/ITC period text → Claude-read
+  dates → season like "Summer 2027", marked approximate). The results page embeds the
+  shown jobs' timelines as JSON; `app.js` draws two month grids and highlights the hovered
+  or focused job (deadline, start, end, duration band, today→end strip). No-JS fallback:
+  a "Coming up" deadline list. Filters `?show=all|cityu|bigtech|tech` keep overall ranks.
+- **Soft UI**: warm paper, periwinkle primary, honey (earn) / sage (learn) / rose
+  (deadline) roles, serif headings from system fonts (Charter/Iowan/Georgia), pill nav and
+  buttons, tinted (not solid) selected segments, diffuse warm shadows. Text pairs checked
+  ≥ 4.5:1 and control outlines ≥ 3:1 in both themes.
+
+### Changes 2026-10-30 (owner request: ITC file, full details, CV-based difficulty, letters)
+- **ITC STEM file on the site** (`web/extra_routes.py`, `templates/itc.html`): `/itc`
+  shows the newest (or chosen) `.data/itc/*.xlsx` as a filterable table (header row found
+  like the scraper does; long-text columns wider), `/itc/file/<name>` downloads it (name
+  must match a listed file, so no path traversal), `/itc/upload` saves a new list after
+  checking it parses to ≥1 job. A newer file than the last ITC scrape makes the ITC source
+  stale (`pipeline._new_itc_file`). Mis-decoded text from the sheet ("€“", "Â ") is fixed
+  in `itc_stem_scraper.fix_mojibake` (changes the content hash of affected rows once).
+- **Employer and how to apply** (`core/apply_info.py`, implementer's design): derived from
+  `Job.raw` at display time, so cached jobs get it without a re-scrape. ITC: company
+  column, application-procedure text, submission email, website. AIMS: "CityU · <unit>",
+  job number, contact person; steps never link into AIMS (owner rule: no apply automation).
+  Internships: the posting URL, SimplifyJobs sponsorship note. `facts()` lists every raw
+  field for the "All details" table. ITC `Job.company/location` now set by the scraper.
+- **Profile** (`core/profile.py`): `.data/profile.json`, mode 600, fields name, email,
+  phone, education, skills, projects, experience, extra, cv_text. CV text extraction:
+  PDF via `pypdf` (new dependency), `.docx` by reading `word/document.xml` (no
+  python-docx), rough LaTeX stripping, plain text. Only text is kept, never the file.
+  `fingerprint()` = hash of the profile text, used to invalidate fit estimates.
+- **Difficulty for you** (`core/fit.py`): Claude only (`can_assess`: small local models
+  guess). Batches of 6 jobs + the profile; output difficulty 1-5, verdict, eligible,
+  blockers, matched, missing, tip; validated in code. Cached per job in `cache.json`
+  under `fit`, keyed by content hash *and* profile fingerprint. Run at the end of each
+  search for `pipeline.fit_candidates` (top 30 overall + top 30 per results tab); a
+  provider failure skips estimates but keeps the ranking. Per-job "Estimate it now" button.
+  Results: verdict line on cards, `?eligible=1` hides `eligible: false` jobs.
+- **Letters** (`core/letters.py`): one Claude call with profile, listing, employer, how
+  to apply, optional student notes → subject, cover letter (230-330 words), email,
+  3 form-answer drafts. The system prompt forbids facts not in the profile. Saved in
+  `.data/letters/<job>.json` (mode 600). `mailto:` button pre-fills the email for ITC jobs.
+- **Auto-apply: not built** (implementer's recommendation, owner to confirm). AIMS
+  applications need the student's login and the app's rule is read-only on AIMS; company
+  forms (Workday, Greenhouse…) forbid bots and vary per site; a wrong submission can't
+  be undone. Instead: prefilled email/letter + the apply link + Saved/Applied tracking
+  (`.data/applications.json`).
+- **Trust boundary change**: with Claude selected, the profile (CV text) goes to
+  Anthropic when estimating fit or writing letters. Ollama users get letters locally but
+  no fit estimates.
+
 ### Dependencies approved
-`openpyxl`, `httpx`, `fastapi`, `uvicorn`, `jinja2` (+ `pytest` dev). Nothing else
+`openpyxl`, `httpx`, `fastapi`, `uvicorn`, `jinja2`, `python-multipart` (form/file
+uploads), `pypdf` (CV text) (+ `pytest` dev). Nothing else
 heavy without Architect approval.
 
 ## Data and trust boundaries
 
 - AIMS credentials are typed only into the browser window on the user's machine.
   Session cookies are stored locally.
-- AI runs only on the local Ollama server (owner decision), so job text and the student's
-  query never leave the machine. The only network traffic is to CityU (AIMS, ITC STEM
-  pages) and to localhost Ollama.
+- Default since 2026-10-30: job descriptions are sent to Anthropic (Claude, via the
+  student's own Claude Code login). The search query and embeddings stay on local
+  Ollama. Choosing Ollama on the Settings page restores "nothing leaves the machine".
+- The student's profile (CV text, projects) is stored locally (mode 600) and sent to
+  Anthropic only for difficulty estimates and cover letters. Nothing is ever submitted
+  to an employer by the app.
+- Network traffic: CityU (AIMS, ITC STEM pages), public job-board APIs (Greenhouse,
+  Lever, Ashby, SmartRecruiters, Workday, amazon.jobs, careers.microsoft.com,
+  lifeattiktok.com, raw.githubusercontent.com), Anthropic (through `claude`), localhost Ollama.
 - Unknown: whether CityU's rules allow automated scraping of AIMS — owner's call.
 
 ## Open questions

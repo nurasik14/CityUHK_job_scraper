@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, banner, level_meter %}
+{% block title %}{{ job.title }} · CityU Job Recommender{% endblock %}
+{% block content %}
+{% set t = timeline %}
+<p class="crumbs"><a href="/results">{{ icon("left") }} Back to results</a>{% if rank %} <span class="muted">· #{{ rank }} in your results</span>{% endif %}</p>
+
+<header class="job-hero card">
+  <div class="job-hero-main">
+    <p class="eyebrow">{{ source_labels.get(job.source, job.scheme) }}</p>
+    <h1>{{ job.title }}</h1>
+    <p class="employer">{{ icon("building") }} <strong>{{ info.employer or "Employer not listed" }}</strong>
+      {% if job.location %}<span class="muted"> · {{ icon("pin") }} {{ job.location }}</span>{% endif %}</p>
+    <ul class="meta">
+      {% if t and t.deadline %}<li>{{ icon("calendar") }} Apply by <strong>{{ t.deadline|day }}</strong></li>{% endif %}
+      {% if t and t.start %}<li>{{ icon("play") }}{% if t.approximate %} {{ t.label }} <span class="muted">(approx.)</span>{% else %} Starts {{ t.start|day }}{% if t.days %} · {{ t.days }} days{% endif %}{% endif %}</li>{% endif %}
+      {% if job.weekly_hours is not none %}<li>{{ icon("clock") }} {{ "%g"|format(job.weekly_hours) }} h/week</li>{% endif %}
+      {% if job.positions %}<li>{{ job.positions }} position{{ "s" if job.positions != 1 }}</li>{% endif %}
+      {% if job.source.startswith("aims") %}<li class="job-id">Job no. {{ job.job_id.split(":", 1)[1] }}</li>{% endif %}
+    </ul>
+  </div>
+  <form method="post" action="/job/{{ job.job_id }}/status" class="track">
+    <span class="hint">Track</span>
+    <div class="track-buttons">
+      {% for value, label in [("saved", "Save"), ("applied", "Applied"), ("", "Clear")] %}
+      {% if value or status %}
+      <button type="submit" name="status" value="{{ value }}" class="btn btn-compact {{ 'btn-soft is-on' if value and value == status else 'btn-ghost' }}"
+        {% if value and value == status %}aria-pressed="true"{% endif %}>{{ ("✓ " if value and value == status else "") ~ label }}</button>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </form>
+</header>
+
+{% if error %}{% call banner("danger", "Something went wrong", role="alert") %}<p>{{ error }}</p>{% endcall %}{% endif %}
+
+<div class="job-layout">
+  <div class="stack">
+    <section class="card" aria-labelledby="apply-title">
+      <h2 id="apply-title">{{ icon("check") }} How to apply</h2>
+      <ol class="steps">{% for step in info.steps %}<li>{{ step }}</li>{% endfor %}</ol>
+      <div class="form-actions">
+        {% if info.email %}
+        {% set mail_subject = letter.subject if letter else "Application: " ~ job.title %}
+        {% set mail_body = letter.email if letter else "" %}
+        <a class="btn btn-primary" href="mailto:{{ info.email }}?subject={{ mail_subject|urlencode }}&body={{ mail_body|urlencode }}">{{ icon("mail") }} Email {{ info.email }}</a>
+        {% endif %}
+        {% if info.url and info.method != "aims" %}
+        <a class="btn {{ 'btn-primary' if not info.email else '' }}" href="{{ info.url }}" rel="noreferrer" target="_blank">Open the application page {{ icon("external") }}</a>
+        {% endif %}
+        {% if info.website %}<a class="btn btn-ghost" href="{{ info.website }}" rel="noreferrer" target="_blank">Company website {{ icon("external") }}</a>{% endif %}
+        {% if job.source == "itc_stem" %}
+        <a class="btn btn-ghost" href="/itc{% if itc_number %}#itc-row-{{ itc_number }}{% endif %}">{{ icon("file") }} See it in the ITC STEM list</a>
+        {% endif %}
+      </div>
+      {% if info.email %}<p class="hint">The email button opens your mail app with {{ "the email below" if letter else "a subject line" }} filled in. Attach your CV, check it, then send it yourself.</p>{% endif %}
+    </section>
+
+    <section class="card" id="letter" aria-labelledby="letter-title">
+      <h2 id="letter-title">{{ icon("pen") }} Cover letter & application answers</h2>
+      {% if written %}{% call banner("ok", None, role="status") %}<p>Written. Read it carefully and fix anything that isn't quite you before sending.</p>{% endcall %}{% endif %}
+      {% if not profile_ready %}
+      <p>Add your CV, projects and skills on the <a href="/profile">Profile page</a> first: the letter only uses facts from it.</p>
+      {% else %}
+      <form method="post" action="/job/{{ job.job_id }}/letter" data-wait="Writing… this takes about 20–40 seconds.">
+        <div class="field">
+          <label for="notes">Anything to mention or avoid? <span class="hint">(optional)</span></label>
+          <textarea id="notes" name="notes" rows="2" placeholder="e.g. I can start in June 2027; mention my RAG project; keep it short">{{ letter.notes if letter else "" }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">{{ icon("sparkle") }} {{ "Write it again" if letter else "Write my cover letter" }}</button>
+        <p class="hint" data-wait-message aria-live="polite"></p>
+      </form>
+      {% endif %}
+      {% if letter %}
+      <div class="letter-block">
+        <div class="letter-head"><h3>Cover letter</h3>
+          <span class="letter-actions">
+            <button type="button" class="btn btn-ghost btn-compact" data-copy="#letter-text" hidden>Copy</button>
+            <a class="btn btn-ghost btn-compact" href="/job/{{ job.job_id }}/letter.txt">Download .txt</a>
+          </span></div>
+        <textarea id="letter-text" class="letter-text" rows="18" aria-label="Cover letter (you can edit it here before copying)">{{ letter.letter }}</textarea>
+      </div>
+      {% if letter.email %}
+      <div class="letter-block">
+        <div class="letter-head"><h3>Email to send with your CV</h3>
+          <button type="button" class="btn btn-ghost btn-compact" data-copy="#email-text" hidden>Copy</button></div>
+        <p class="hint">Subject: {{ letter.subject }}</p>
+        <textarea id="email-text" class="letter-text" rows="7" aria-label="Application email">{{ letter.email }}</textarea>
+      </div>
+      {% endif %}
+      {% if letter.answers %}
+      <div class="letter-block">
+        <h3>Drafts for application-form questions</h3>
+        {% for a in letter.answers %}
+        <details class="answer"><summary>{{ icon("chevron") }} {{ a.question }}</summary><p class="detail-text">{{ a.answer }}</p></details>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <p class="hint">Written by {{ letter.model|model_name if letter.model else "the AI" }} on {{ letter.created_at[:10] }}. The app never sends or submits anything for you.</p>
+      {% endif %}
+    </section>
+
+    <section class="card" aria-labelledby="details-title">
+      <h2 id="details-title">{{ icon("file") }} All details from the listing</h2>
+      <dl class="facts">
+        {% for label, value in info.facts %}
+        <div class="fact"><dt>{{ label }}</dt><dd class="detail-text">{% if value.startswith("http") and " " not in value %}<a href="{{ value }}" rel="noreferrer" target="_blank">{{ value }}</a>{% else %}{{ value }}{% endif %}</dd></div>
+        {% endfor %}
+      </dl>
+      {% if not info.facts %}
+      <div class="detail-text">{{ job.description }}</div>
+      {% if job.requirements %}<h3>Requirements</h3><div class="detail-text">{{ job.requirements }}</div>{% endif %}
+      {% endif %}
+      {% if job.source.startswith("intern") and job.description %}
+      <details><summary>{{ icon("chevron") }} Full description</summary><div class="detail-text details-body">{{ job.description }}</div></details>
+      {% endif %}
+    </section>
+  </div>
+
+  <aside class="stack" aria-label="For you">
+    <section class="card" id="fit" aria-labelledby="fit-title">
+      <h2 id="fit-title">Difficulty for you</h2>
+      {% if fit %}
+      <p class="fit fit-big" data-difficulty="{{ fit.difficulty }}">
+        <span class="fit-meter" role="img" aria-label="Difficulty {{ fit.difficulty }} of 5">{% for i in range(1, 6) %}<i{% if i <= fit.difficulty %} class="on"{% endif %}></i>{% endfor %}</span>
+        <strong>{{ verdict_labels.get(fit.verdict, fit.verdict) }}</strong> <span class="muted">{{ fit.difficulty }}/5</span></p>
+      <p class="hint">1 = well within reach · 5 = long shot</p>
+      {% if fit.blockers %}<h3>Blockers</h3><ul class="plain">{% for b in fit.blockers %}<li>⚠ {{ b }}</li>{% endfor %}</ul>{% endif %}
+      {% if fit.matched %}<h3>You have</h3><ul class="skills fit-skills">{% for s in fit.matched %}<li class="have">{{ s }}</li>{% endfor %}</ul>{% endif %}
+      {% if fit.missing %}<h3>You're missing</h3><ul class="skills fit-skills">{% for s in fit.missing %}<li class="miss">{{ s }}</li>{% endfor %}</ul>{% endif %}
+      {% if fit.tip %}<h3>Tip</h3><p>{{ fit.tip }}</p>{% endif %}
+      <p class="hint">An AI estimate from your profile, not a promise. Estimated by {{ fit.model|model_name }}.</p>
+      {% elif not profile_ready %}
+      <p>Add your CV or projects on the <a href="/profile">Profile page</a> to see how hard this job is for you.</p>
+      {% elif not can_fit %}
+      <p>Difficulty estimates need Claude: choose it on the <a href="/settings">Settings page</a>.</p>
+      {% else %}
+      <p>Not estimated yet (estimates are made for your top results).</p>
+      <form method="post" action="/job/{{ job.job_id }}/fit" data-wait="Estimating… about 10–20 seconds.">
+        <button type="submit" class="btn" {% if busy %}disabled{% endif %}>{{ icon("sparkle") }} Estimate it now</button>
+        <p class="hint" data-wait-message aria-live="polite">{% if busy %}A search is running; try when it has finished.{% endif %}</p>
+      </form>
+      {% endif %}
+    </section>
+
+    <section class="card card-quiet">
+      <h2>Job level</h2>
+      {% if level %}<p>{{ level_meter(level) }} Level {{ level }}/5</p><p class="hint">{{ level_reason }}</p>
+      {% else %}<p class="muted">Not rated yet.</p>{% endif %}
+      {% if skills %}<ul class="skills">{% for s in skills %}<li>{{ s }}</li>{% endfor %}</ul>{% endif %}
+    </section>
+
+    <section class="card card-quiet">
+      <h2>Why no auto-apply?</h2>
+      <p class="hint">The app prepares everything but never submits for you: AIMS and most company sites don't allow
+        automated applications, and a sent application can't be taken back. Check the letter, then apply with the buttons under “How to apply”.</p>
+    </section>
+  </aside>
+</div>
+{% endblock %}

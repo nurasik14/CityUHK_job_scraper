@@ -80,7 +80,8 @@ def test_legend_once_per_page():
 def test_top_match_only_on_first_card():
     html = _results_client(*[_ranked(f"aims:{i}", 0.6 - i / 100) for i in range(4)]).get("/results").text
     assert html.count("Top match") == 1
-    assert html.index("Top match") < html.index("Job aims:1")
+    cards = html[html.index('<ol class="results">'):]  # the calendar panel before the list also names jobs
+    assert cards.index("Top match") < cards.index("Job aims:1")
     assert html.count('class="teaser"') == 1
 
 
