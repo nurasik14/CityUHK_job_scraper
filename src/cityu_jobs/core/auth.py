@@ -77,14 +77,16 @@ def is_logged_in(context: BrowserContext) -> bool:
     while every other page answers "Session Timeout".
     """
     page = context.new_page()
+    page.goto(config.AIMS_JOB_SEARCH_URL)
     try:
-        page.goto(config.AIMS_JOB_SEARCH_URL)
         ensure_job_search_page(page)
-        return True
     except AimsSessionExpired:
+        # Not closed on purpose: with an expired session AIMS starts a logout redirect
+        # (meta refresh -> p_idm_logout -> samlLogout.jsp), and page.close() during it can
+        # hang forever. Every caller closes the browser next, which does not hang.
         return False
-    finally:
-        page.close()
+    page.close()
+    return True
 
 
 def ensure_session(playwright: Playwright, interactive: bool = True) -> tuple[Browser, BrowserContext]:

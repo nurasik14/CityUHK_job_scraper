@@ -415,5 +415,7 @@ def scrape_aims(
             cache.save()  # keep finished schemes even if a later one fails
     finally:
         cache.save()
-        page.close()
+    # Closed only after a clean run. After an error (e.g. the session expired, so AIMS is
+    # mid logout redirect) page.close() can hang forever; aims_session() closes the browser.
+    page.close()
     return results

@@ -94,6 +94,19 @@ def test_session_expiry_aborts_without_marking_complete(cache, fake_aims):
     assert cache.last_scraped_at("aims_sh_regular") is None
 
 
+def test_session_expiry_in_scrape_aims_does_not_close_page(tmp_path, fake_aims):
+    """page.close() during AIMS's logout redirect can hang; aims_session's browser.close() cleans up."""
+    fake_aims["fail"]["P26XX002"] = AimsSessionExpired("timeout")
+
+    class NoClosePage(FakePage):
+        def close(self):
+            pytest.fail("page.close() after a session expiry can hang")
+
+    context = type("C", (), {"new_page": lambda self: NoClosePage()})()
+    with pytest.raises(AimsSessionExpired):
+        scrape_aims(context, Cache(tmp_path / "cache.json"), ["sh_regular"])
+
+
 def test_scrape_aims_saves_after_each_scheme(tmp_path, fake_aims):
     cache = Cache(tmp_path / "cache.json")
     scrape_aims(FakeContext(), cache, ["sh_regular"])

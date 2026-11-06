@@ -97,6 +97,33 @@ def test_is_logged_in_checks_job_search_page_not_main_menu():
     assert not auth.is_logged_in(FakeContext(FakePage(title="Session Timeout")))
 
 
+class RedirectingPage(FakePage):
+    """An expired session: AIMS answers with a meta-refresh logout redirect (no dropdown).
+
+    Live 2026-11-06: page.close() while that redirect runs hung forever about half the time,
+    freezing the web app's search at "Opening AIMS..." (and so blocking "Log in to AIMS").
+    """
+
+    def __init__(self):
+        super().__init__(title="Loading .../twbkwbis.p_idm_logout", has_dropdown=False)
+
+    def close(self):
+        pytest.fail("page.close() during the AIMS logout redirect can hang; leave it to browser.close()")
+
+
+def test_is_logged_in_does_not_close_page_mid_logout_redirect():
+    assert not auth.is_logged_in(FakeContext(RedirectingPage()))
+
+
+def test_expired_session_check_closes_only_the_browser(session_file, monkeypatch):
+    monkeypatch.setattr(auth, "login", lambda pw: pytest.fail("must not open the login window"))
+    session_file.write_text("{}")
+    playwright = FakePlaywright(RedirectingPage())
+    with pytest.raises(AimsSessionExpired):
+        auth.ensure_session(playwright, interactive=False)
+    assert playwright.Browser.closed
+
+
 def test_non_interactive_without_session_file_raises_and_opens_no_browser(session_file, monkeypatch):
     monkeypatch.setattr(auth, "login", lambda pw: pytest.fail("must not open the login window"))
     playwright = FakePlaywright(FakePage())
