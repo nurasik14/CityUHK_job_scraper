@@ -53,6 +53,7 @@
 <div class="summary-bar{% if results %} is-sticky{% endif %}">
   <ul class="chips" aria-label="Your search">
     <li class="chip chip-query" title="{{ prefs.query or 'anything' }}">{{ icon("search") }} <span class="ellipsis">“{{ prefs.query or "anything" }}”</span></li>
+    {% if prefs.query %}<li class="chip hide-sm">Search by <strong>{{ search_mode_labels.get(prefs.search_mode, prefs.search_mode) }}</strong></li>{% endif %}
     <li class="chip hide-sm" title="{{ department or 'No department' }}">{{ icon("building") }} {{ prefs.department_code or "No department" }}<span class="visually-hidden">{% if department %} · {{ department }}{% endif %}</span></li>
     <li class="chip hide-sm"><span class="dot t-hours"></span> Earn <strong class="num">{{ prefs.earn }}/5</strong></li>
     <li class="chip hide-sm"><span class="dot t-level"></span> Learn <strong class="num">{{ prefs.learn }}/5</strong></li>

@@ -131,8 +131,9 @@ flowchart LR
    Everything is cached and re-fetched only after 6 hours.
 2. **Analyse.** Claude rates new or changed listings in batches: level, reason, skills and
    dates, returned as validated JSON.
-3. **Match and rank.** Ollama embeds your description and each job locally; the score
-   combines similarity, department, hours and level, weighted by your priorities.
+3. **Match and rank.** Ollama embeds your description and each job locally, and/or a
+   full-text index finds the jobs that contain your words; the score combines that match,
+   department, hours and level, weighted by your priorities.
 4. **Personalise.** With a profile, Claude estimates difficulty for your top results;
    letters and the gaps summary build on the same data.
 
@@ -157,7 +158,7 @@ git clone https://github.com/nurasik14/CityUHK_job_scraper.git
 cd CityUHK_job_scraper
 uv sync                              # Python dependencies into .venv/
 uv run playwright install chromium   # browser for the AIMS scraper (one time)
-ollama pull nomic-embed-text         # embedding model (required)
+ollama pull bge-m3                   # embedding model (needed for the Meaning and Both search modes)
 ollama pull llama3.2:3b              # only if you choose Ollama instead of Claude
 ```
 
@@ -226,7 +227,11 @@ src/cityu_jobs/
 │   ├── itc_stem_scraper.py  ITC STEM spreadsheet
 │   ├── internships/         job-board catalogue, fetchers, region filter
 │   ├── analysis.py          AI level, skills and dates per job
+│   ├── text.py              the compact text / pieces that get embedded
 │   ├── embeddings.py        Ollama vectors and similarity
+│   ├── query.py, places.py  places and companies named in a query
+│   ├── search.py            keyword search (FTS5 BM25), hybrid fusion (RRF), boosts
+│   ├── rerank.py            optional cross-encoder reranker
 │   ├── ranking.py           match score and its breakdown
 │   ├── dates.py             timelines for the calendar
 │   ├── apply_info.py        employer and how to apply
@@ -237,7 +242,7 @@ src/cityu_jobs/
 │   └── ai/providers.py      Claude CLI, Ollama, test fakes
 └── web/                     FastAPI routes, Jinja templates, CSS and JS (no build step)
 scripts/                     AIMS login and scrape helpers, demo data builder
-tests/                       325 offline tests
+tests/                       offline tests (app and evaluation)
 docs/                        user guide, how it works, data model, screenshots
 ```
 
@@ -251,6 +256,53 @@ The tests run fully offline: no AIMS login, no network, no `claude` process and 
 (fakes stand in for the browser, the job boards and the AI; a test that tries the network
 fails). Tests that use saved AIMS pages in `.data/fixtures/` are skipped when those pages
 are absent, since they contain personal data.
+
+## Retrieval evaluation
+
+`eval/` measures how well the app's search finds the right listings: 100 queries (40 "dev"
+for tuning, 60 "test" for the result) over 5,510 public internship listings, with
+recall@10, MRR@10, nDCG@10 and latency. Relevance labels use a fixed
+0/1/2 rubric (`eval/README.md`). The corpus, vectors, labels and scripts are committed, so
+anyone can rerun it without a login, a model or a GPU:
+
+```sh
+uv sync --group eval
+uv run --group eval python -m eval.run
+```
+
+Result on the test queries (nDCG@10): the app's search today scores **0.751**; the best
+method of the first version (keyword search) scored 0.641 (difference +0.110, 95%
+confidence interval +0.058 to +0.170) and the old default (nomic-embed-text vectors) 0.303.
+Most of the gain comes from the **bge-m3** embedding model. The rest: listings are embedded
+as short pieces with their location instead of as one long text, keyword and vector
+rankings are fused, and jobs in a place or from a company named in the query get a boost
+("machine learning intern singapore", "jane street internship").
+
+Choosing how to search:
+
+- *Search by* on the search form picks **Both** (hybrid, the default), **Meaning** (bge-m3
+  vectors) or **Keywords** (SQLite FTS5). Keywords needs no Ollama and no embeddings; the
+  other two need `ollama pull bge-m3`. The default for new searches is `SEARCH_MODE` in
+  `src/cityu_jobs/config.py`.
+- The embedding model is set on the Settings page (default `bge-m3`; a model saved there
+  earlier, such as `nomic-embed-text`, stays until you change it). Changing it re-embeds
+  every job on the next search.
+- An optional **reranker** (bge-reranker-v2-m3) re-reads the 30 best matches. It scored
+  0.803 on the test queries but is off by default, because on the dev queries, where the
+  defaults were decided, it added almost nothing to hybrid search. To use it:
+  `uv sync --group rerank` (torch + sentence-transformers, about 6 GB with the model) and
+  tick "Rerank the best matches" on the Settings page (`RERANK` in `config.py` sets the
+  default for new installs). Without those packages the app logs one line and searches
+  without it. It adds about 0.2 s per search on a laptop GPU; the first search after
+  starting the app also loads the model (about 25 s).
+
+The evaluation runs the app's own search code (`core/search.py`, `core/text.py`,
+`core/query.py`, `core/rerank.py`). The department, hours and level terms are added on top
+in every mode; the evaluation doesn't include them.
+
+How the labels were made, and the limits of the test, are in
+[`eval/README.md`](eval/README.md). The results are in
+[`eval/results/report.md`](eval/results/report.md).
 
 **Stack:** Python, FastAPI, Jinja2, uvicorn, Playwright, BeautifulSoup, openpyxl, httpx,
 pypdf, the Claude Code CLI and Ollama. The front end is plain HTML, CSS and a small

@@ -10,3 +10,6 @@ __pycache__/
 
 # Playwright MCP browser logs/snapshots (local tooling output)
 .playwright-mcp/
+
+# Retrieval eval: scratch for tuning (embedding cache of variants that were tried, backups)
+eval/.tuning/

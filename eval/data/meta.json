@@ -1,0 +1,182 @@
+{
+  "corpus": {
+    "dim": 768,
+    "docs_per_source": {
+      "intern_bigtech": 1465,
+      "intern_tech": 4045
+    },
+    "dtype": "float32",
+    "embed_model": "nomic-embed-text",
+    "excluded_inactive_public": 32,
+    "excluded_login_gated": 232,
+    "fields_added_v2": {
+      "changed_in_cache_since_export": 20,
+      "cross_checked_with_cache": 5490,
+      "fields": [
+        "job_type",
+        "department",
+        "description",
+        "requirements"
+      ],
+      "how": "read out of `text` (title, company, job type, department, description); doc_ids, order and `text` unchanged",
+      "location_changed_in_cache_since_export": 1,
+      "sha256_before": "74c3c69b6abd101cf548be6e6ce28de240155d4c4a21e6d532b5721dc0505467"
+    },
+    "files": {
+      "corpus.jsonl.gz": {
+        "bytes": 1513641,
+        "sha256": "f8c7e4b17356ec60e1d817eb12259dc4a30bbfb7a81204ccb35cff8790e3879e"
+      },
+      "doc_vectors.npy": {
+        "bytes": 16926848,
+        "sha256": "0aa455dbe854ee92827d8a97cef348febc6c4bedc0e0bd8e72c0037f1a4a3431"
+      }
+    },
+    "n_docs": 5510,
+    "ollama_digest_at_export": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+    "scraped_at": {
+      "intern_bigtech": "2026-11-06T08:27:11.261255+08:00",
+      "intern_tech": "2026-11-06T08:27:11.261759+08:00"
+    },
+    "unique_texts": 5300,
+    "vectors_embedded_now": 0,
+    "vectors_reused_from_cache": 5510
+  },
+  "embeddings": {
+    "chunk_vectors.npy": {
+      "bytes": 15802496,
+      "dim": 768,
+      "dtype": "float32",
+      "embedded_texts": 5144,
+      "embedding_seconds": 27.6,
+      "listings_with_extra_pieces": 1014,
+      "model": "nomic-embed-text",
+      "ollama_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+      "prefix": "search_document: ",
+      "rows": 5144,
+      "sha256": "c05eed04d2c3422f4052d92977d4c58615968db9dd489628858fe0997fe0877c",
+      "text": "pieces 2..n of core/text.chunk_texts (version 2: 500 characters, 50 overlap, header on each piece)",
+      "texts_sha256": "da8a1b66dd28f0dc3e7c32320c6b212ff28805dcf1cb0eb52495289d4422ba30"
+    },
+    "chunk_vectors_bge_m3.npy": {
+      "bytes": 10535040,
+      "dim": 1024,
+      "dtype": "float16",
+      "listings_with_extra_pieces": 1014,
+      "model": "bge-m3",
+      "ollama_digest": "7907646426070047a77226ac3e684fbbe8410524f7b4a74d02837e43f2146bab",
+      "prefix": "",
+      "rows": 5144,
+      "sha256": "63909ed0412d81355868cbb7e67c7b36c37f305b216bc6441e17158ed1e305c5",
+      "text": "pieces 2..n of core/text.chunk_texts (version 2: 500 characters, 50 overlap, header on each piece)",
+      "texts_sha256": "da8a1b66dd28f0dc3e7c32320c6b212ff28805dcf1cb0eb52495289d4422ba30"
+    },
+    "doc_vectors_bge_m3.npy": {
+      "bytes": 11284608,
+      "dim": 1024,
+      "dtype": "float16",
+      "embedded_texts": 5510,
+      "embedding_seconds": 78.2,
+      "model": "bge-m3",
+      "ollama_digest": "7907646426070047a77226ac3e684fbbe8410524f7b4a74d02837e43f2146bab",
+      "prefix": "",
+      "rows": 5510,
+      "sha256": "b2a696ff03b89b18b8cf9f7838167efde390b66d08dbcef98391912b6aa72d05",
+      "text": "core/text.compact_text (version 2: header + 500 characters, boilerplate removed)",
+      "texts_sha256": "8dee92258be7f993e3c63aff57382da5190aa2bde5f1ba507e665eb32fe36cd2"
+    },
+    "doc_vectors_compact.npy": {
+      "bytes": 16926848,
+      "dim": 768,
+      "dtype": "float32",
+      "embedded_texts": 5510,
+      "embedding_seconds": 26.5,
+      "model": "nomic-embed-text",
+      "ollama_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+      "prefix": "search_document: ",
+      "rows": 5510,
+      "sha256": "c4c109e561924216b8538a9c55d3a2ceacc67417e28ac087f7f6d717fa51bb80",
+      "text": "core/text.compact_text (version 2: header + 500 characters, boilerplate removed)",
+      "texts_sha256": "8dee92258be7f993e3c63aff57382da5190aa2bde5f1ba507e665eb32fe36cd2"
+    }
+  },
+  "queries": {
+    "categories": {
+      "company": 2,
+      "company+date": 1,
+      "company+location": 2,
+      "company+role": 3,
+      "company+role+location": 2,
+      "constraint": 5,
+      "industry": 4,
+      "location": 3,
+      "multilingual": 6,
+      "role": 24,
+      "role+constraint": 2,
+      "role+date": 1,
+      "role+industry": 1,
+      "role+location": 11,
+      "role+location+date": 1,
+      "skill": 15,
+      "skill+industry": 1,
+      "typo": 5,
+      "vague": 11
+    },
+    "embed_models": {
+      "bge-m3": {
+        "dim": 1024,
+        "file": "query_vectors_bge_m3.npy",
+        "ollama_digest": "7907646426070047a77226ac3e684fbbe8410524f7b4a74d02837e43f2146bab",
+        "prefix": ""
+      },
+      "nomic-embed-text": {
+        "dim": 768,
+        "file": "query_vectors.npy",
+        "ollama_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+        "prefix": "search_query: "
+      }
+    },
+    "files": {
+      "queries.jsonl": {
+        "bytes": 10075,
+        "sha256": "ffcf36183ae550f0201a919b9c6913de229bd2a519f4bd11fa2a66ea0af5355d"
+      },
+      "query_vectors.npy": {
+        "bytes": 307328,
+        "sha256": "673855932d08e56ee2a97898094f95ae33f895ba3e79f910dc0423403074c9c6"
+      },
+      "query_vectors_bge_m3.npy": {
+        "bytes": 409728,
+        "sha256": "92e80109e6faea3370ffcbdf45050fb95cc424602b815fe299db505b44e7b6b5"
+      }
+    },
+    "n_queries": 100,
+    "splits": {
+      "dev": 40,
+      "test": 60
+    }
+  },
+  "rerank": {
+    "device": "cuda",
+    "files": {
+      "rerank_scores.jsonl.gz": {
+        "bytes": 84118,
+        "sha256": "58b12777498190b6d7e9083313e9268255e61d9da58ff046ce20b4cfa8a9b640"
+      }
+    },
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "input": "query + core/text.compact_text of the listing",
+    "max_tokens": 512,
+    "model": "BAAI/bge-reranker-v2-m3",
+    "pairs": 4066,
+    "precision": "fp16",
+    "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "score_decimals": 6,
+    "sentence_transformers": "6.3.0",
+    "systems": {
+      "app_hybrid_rerank": 30,
+      "keyword_rerank": 30
+    },
+    "torch": "2.14.1+cu126"
+  }
+}

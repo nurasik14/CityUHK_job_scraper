@@ -8,7 +8,7 @@ Assertions use only job data, never contact names.
 from datetime import date
 
 from cityu_jobs.core.aims_scraper import aims_to_job, parse_job_detail, parse_matched_count, parse_results
-from cityu_jobs.core.models import embedding_text
+from cityu_jobs.core.models import embedding_text, full_text
 
 from conftest import fixture_text
 
@@ -60,11 +60,12 @@ def test_regular_aims_to_job():
     assert job.requirements.startswith("Computer Skills:")
 
 
-def test_staff_names_not_in_embedding_text():
-    """Contact person and supervisor are kept in raw, but never sent to the AI as job text."""
+def test_staff_names_not_in_job_texts():
+    """Contact person and supervisor are kept in raw, but never indexed or sent to the AI as job text."""
     rows = parse_results(fixture_text("aims_results_sh_regular.html"))
     detail = parse_job_detail(fixture_text("aims_job_detail_sh_regular.html"))
-    text = embedding_text(aims_to_job(rows[0], detail, "sh_regular"))
+    job = aims_to_job(rows[0], detail, "sh_regular")
+    text = full_text(job) + "\n" + embedding_text(job)
     for label in ("Contact Person", "Supervisor"):
         name = detail["fields"].get(label)
         if name and name.upper() != "N/A":

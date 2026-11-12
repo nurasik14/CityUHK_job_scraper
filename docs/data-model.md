@@ -160,9 +160,10 @@ illustrative, and the vector is cut to 3 of its 768 numbers.
         "content_hash": "cf85af3c4798…ffb88"
       },
       "embedding": {
-        "model": "nomic-embed-text",
+        "model": "bge-m3",
         "content_hash": "cf85af3c4798…ffb88",
-        "vector": [0.0132, -0.0481, 0.0275]
+        "text_hash": "9b1c0e52a7d44f10c3e8a6b2",
+        "vectors": [[0.0132, -0.0481, 0.0275], [0.0518, 0.0044, -0.0209]]
       }
     }
   }

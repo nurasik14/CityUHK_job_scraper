@@ -64,7 +64,14 @@
     <div class="field">
       <label for="embed_model">Embedding model <span class="hint">(matches jobs to your search)</span></label>
       <input id="embed_model" name="embed_model" value="{{ settings.embed_model }}" list="installed" aria-describedby="embed-hint">
-      <p class="hint" id="embed-hint">Changing it re-embeds every job on the next search.</p>
+      <p class="hint" id="embed-hint">Default <code>bge-m3</code> (<code>ollama pull bge-m3</code>); <code>nomic-embed-text</code>
+        is smaller but found clearly worse matches in our evaluation. Changing it re-embeds every job on the next search.</p>
+    </div>
+    <div class="field">
+      <label><input type="checkbox" id="rerank" name="rerank"{% if settings.rerank %} checked{% endif %} aria-describedby="rerank-hint">
+        Rerank the best matches</label>
+      <p class="hint" id="rerank-hint">Re-orders the top {{ rerank_top_n }} results with <code>bge-reranker-v2-m3</code> on your GPU
+        (about 0.15 s more per search). Needs <code>uv sync --group rerank</code>; without it, searches run unreranked.</p>
     </div>
     <div class="field">
       <label for="llm_model">Language model <span class="hint">(rates jobs when Ollama is chosen above)</span></label>

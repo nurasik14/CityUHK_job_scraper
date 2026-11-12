@@ -20,6 +20,7 @@ class Settings:
     llm_model: str = config.DEFAULT_LLM_MODEL        # Ollama model that rates levels (if ai_provider == "ollama")
     embed_model: str = config.DEFAULT_EMBED_MODEL    # Ollama model that turns text into vectors (always)
     intern_regions: list[str] = field(default_factory=lambda: list(config.DEFAULT_INTERN_REGIONS))
+    rerank: bool = config.RERANK  # re-order the best matches with the cross-encoder (needs the `rerank` group)
 
     @classmethod
     def load(cls) -> "Settings":
@@ -32,6 +33,8 @@ class Settings:
             return cls()
         known = {f.name for f in fields(cls)}
         values: dict = {k: v for k, v in data.items() if k in known and isinstance(v, str) and v.strip()}
+        if isinstance(data.get("rerank"), bool):
+            values["rerank"] = data["rerank"]
         regions = data.get("intern_regions")
         if isinstance(regions, list):
             values["intern_regions"] = [r for r in regions if r in config.INTERN_REGIONS]

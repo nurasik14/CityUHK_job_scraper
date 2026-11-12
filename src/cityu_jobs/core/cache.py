@@ -9,9 +9,14 @@ Layout of the file (see architecture.md "Cache"):
                                 "level": {...}, "embedding": {...}}}}
 
 Invalidation rule: a stored level or embedding remembers the content hash (and, for
-embeddings, the model) it was computed from. If the job's text changes, its hash
-changes, so the old result simply stops matching and gets recomputed. Nothing has to
-be deleted by hand.
+embeddings, the model and a hash of the exact text that was embedded) it was computed
+from. If the job's text changes, its hash changes, so the old result simply stops matching
+and gets recomputed. Nothing has to be deleted by hand.
+
+An embedding entry is {"model", "content_hash", "text_hash", "vectors": [[...], ...]}: one
+vector per embedded piece of the job (core/embeddings.py). Entries written before
+retrieval v2 have a single "vector" of the job's full text and no "text_hash"; they no
+longer match and are replaced the next time the job is embedded.
 """
 
 import json
@@ -118,12 +123,26 @@ class Cache:
         Vectors from different models live in different spaces, so comparing them is meaningless.
         """
         emb = self._jobs.get(job_id, {}).get("embedding")
-        if emb and emb.get("content_hash") == content_hash and emb.get("model") == model:
+        if emb and emb.get("content_hash") == content_hash and emb.get("model") == model and "vector" in emb:
             return emb["vector"]
         return None
 
     def set_embedding(self, job_id: str, vector: list[float], model: str, content_hash: str) -> None:
         self._jobs[job_id]["embedding"] = {"model": model, "content_hash": content_hash, "vector": vector}
+
+    def get_embeddings(self, job_id: str, content_hash: str, model: str, text_hash: str) -> list[list[float]] | None:
+        """Cached vectors (one per embedded piece), only if made from this content, by this
+        model, *and* from exactly this text (`text_hash`, see core/embeddings.text_hash)."""
+        emb = self._jobs.get(job_id, {}).get("embedding")
+        if (emb and emb.get("content_hash") == content_hash and emb.get("model") == model
+                and emb.get("text_hash") == text_hash and emb.get("vectors")):
+            return emb["vectors"]
+        return None
+
+    def set_embeddings(self, job_id: str, vectors: list[list[float]], model: str, content_hash: str, text_hash: str) -> None:
+        self._jobs[job_id]["embedding"] = {
+            "model": model, "content_hash": content_hash, "text_hash": text_hash, "vectors": vectors,
+        }
 
     def get_fit(self, job_id: str, content_hash: str, profile: str) -> dict | None:
         """Cached "difficulty for you", only if made from this listing *and* this profile."""

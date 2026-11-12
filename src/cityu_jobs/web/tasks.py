@@ -86,7 +86,8 @@ class TaskRunner:
     def start_search(self, prefs: Preferences, settings: Settings, force_refresh: bool = False) -> bool:
         def work() -> None:
             report, results = self._search_fn(
-                prefs, settings.provider(), force_refresh=force_refresh, progress=self._progress
+                prefs, settings.provider(), force_refresh=force_refresh, progress=self._progress,
+                rerank=settings.rerank,
             )
             self.state.report, self.state.results = report, results
             self.state.login_needed = report.login_needed

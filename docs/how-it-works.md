@@ -247,9 +247,12 @@ Three fingerprints handle that:
   recomputed. Nothing has to be deleted by hand. A hash is a cheap way to ask "is this
   exactly the same as before?" without storing and comparing the full text.
 - **Embedding model name.** Vectors from different embedding models live in
-  different spaces. Comparing a `nomic-embed-text` vector with one from another model
-  is meaningless, like comparing GPS coordinates with postcodes. `get_embedding()`
-  returns a stored vector only if both the content hash *and* the model match.
+  different spaces. Comparing a `bge-m3` vector with one from another model
+  is meaningless, like comparing GPS coordinates with postcodes. `get_embeddings()`
+  returns stored vectors only if the content hash, the model *and* the text hash match.
+- **Text hash.** A hash of the exact text that was embedded. What gets embedded is a
+  shortened version of the job (§6), and how it is shortened can change (a new rule, a new
+  length). The hash makes vectors made from an older version of that text stop matching.
 - **Summary hash.** A hash of the job's row in the AIMS results table. If the row is
   unchanged, the scraper skips opening the detail page. This saves AIMS requests, not
   AI calls.
@@ -314,14 +317,20 @@ Ollama.
 
 Code: [`core/embeddings.py`](../src/cityu_jobs/core/embeddings.py)
 
-An **embedding model** turns text into a list of numbers (a vector, 768 numbers for
-`nomic-embed-text`), placed so that texts with similar *meaning* end up close
+An **embedding model** turns text into a list of numbers (a vector, 1024 numbers for
+`bge-m3`), placed so that texts with similar *meaning* end up close
 together. "Build websites" and "frontend developer" share no words but get nearby
 vectors.
 
-Each job is embedded once and cached. The embedded text is title, job nature,
-department, description and requirements joined together (`embedding_text()` in
-`models.py`). `embed_jobs()` sends them in batches of 16 to cut HTTP round trips. Your
+Each job is embedded once and cached. The embedded text is not the whole listing but a
+compact one ([`core/text.py`](../src/cityu_jobs/core/text.py)): title, company, location,
+job type, department and about 500 characters of the description, with company
+boilerplate ("we are an equal opportunity employer", paragraphs a company repeats in
+every listing) removed by simple rules. A long description is cut into several such
+pieces, each embedded with the same header, so a job can have several vectors; its
+similarity is that of its best piece. Embedding whole listings made long ones crowd out
+short ones, and a measured comparison (see `eval/`) showed the short pieces work better.
+`embed_jobs()` sends texts in batches of 16 to cut HTTP round trips. Your
 free-text query is embedded on every search (`embed_query()`). The two are compared
 with **cosine similarity**:
 
@@ -332,17 +341,23 @@ cosine(a, b) = (a · b) / (|a| × |b|)
 This is the cosine of the angle between the vectors: 1 means the same direction (very
 similar), 0 means unrelated. It ignores vector length and looks only at direction.
 Small example: `a = [1, 0]`, `b = [0.6, 0.8]` → `(1·0.6 + 0·0.8) / (1 × 1) = 0.6`.
-The code in `cosine()` is just this formula in plain Python. With a few hundred jobs
-it takes milliseconds, so no numpy or vector database is needed.
+The code in `cosine()` is just this formula in plain Python. With a few thousand jobs
+it takes a fraction of a second, so no numpy or vector database is needed.
 
 In a live check, a CS-flavoured query scored 0.63 against a CS backend job and
 0.50–0.55 against unrelated jobs. Raw similarities sit in a narrow band like this,
 which is why ranking rescales them (§7).
 
-**Query vs document prefixes.** `nomic-embed-text` was trained to see
-`search_query: ` before questions and `search_document: ` before the texts being
-searched. Adding them improves matching. The provider adds them inside `embed()`
-based on `kind`, and only for nomic models.
+**Query vs document prefixes.** Some models, such as `nomic-embed-text` (the default
+before `bge-m3`), were trained to see `search_query: ` before questions and
+`search_document: ` before the texts being searched. The provider adds them inside
+`embed()` based on `kind`, and only for nomic models; `bge-m3` needs none.
+
+**Beyond meaning.** Vector search is one of three search modes; the default fuses it with
+keyword search, and jobs in a place or from a company you name get a boost
+([`core/search.py`](../src/cityu_jobs/core/search.py),
+[`core/query.py`](../src/cityu_jobs/core/query.py); design notes in `architecture.md`,
+"Retrieval v2").
 
 This is **semantic retrieval**: finding relevant items by meaning. It's the
 "retrieval" half of RAG, but here nothing is generated afterwards. The ranked list is
@@ -641,7 +656,7 @@ owner's own calls. Each is a sensible default, not a fixed rule.
 | A cached level is kept when you switch LLM model (only the content hash invalidates it) | Re-rating everything takes minutes; 1–5 levels mostly agree across models | Also require the same `model`, as embeddings do (one line in `Cache.get_level`) |
 | Fetch all ITC STEM lists; department only boosts | Only a handful of files; no mapping table to maintain | Pick lists by department (needs a dept → college table) |
 | Plain `httpx` to call Ollama, not the `ollama` package | One small dependency; you see the raw HTTP | Use the official `ollama` package |
-| `llama3.2:3b` + `nomic-embed-text` by default | Run on a student laptop | Larger Ollama models for better ratings |
+| `llama3.2:3b` + `bge-m3` by default | Run on a student laptop; `bge-m3` found far better matches than `nomic-embed-text` in `eval/` | Larger Ollama models for better ratings |
 | Unrated job counts as level 3 | Neutral: neither boosted nor punished | Hide unrated jobs, or rank them last |
 | Weights 0.45 / 0.10 / 0.20 / 0.08 | Similarity first; the owner's ordering kept | Tune in `config.py`, or learn them from feedback |
 

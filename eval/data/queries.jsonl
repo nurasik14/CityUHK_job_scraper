@@ -1,0 +1,100 @@
+{"qid": "q01", "query": "machine learning intern singapore", "category": "role+location", "split": "test"}
+{"qid": "q02", "query": "NLP or LLM research internship", "category": "role", "split": "test"}
+{"qid": "q03", "query": "quant trading internship hong kong", "category": "role+location", "split": "test"}
+{"qid": "q04", "query": "software engineer intern london summer 2027", "category": "role+location+date", "split": "test"}
+{"qid": "q05", "query": "frontend react internship", "category": "skill", "split": "dev"}
+{"qid": "q06", "query": "data analyst intern remote", "category": "role+location", "split": "dev"}
+{"qid": "q07", "query": "computer vision robotics intern", "category": "role", "split": "test"}
+{"qid": "q08", "query": "CUDA GPU kernels AI infrastructure intern", "category": "skill", "split": "dev"}
+{"qid": "q09", "query": "jane street internship", "category": "company", "split": "test"}
+{"qid": "q10", "query": "tiktok machine learning intern singapore", "category": "company+role+location", "split": "test"}
+{"qid": "q11", "query": "RTL chip design verification intern", "category": "role", "split": "test"}
+{"qid": "q12", "query": "product manager intern AI products", "category": "role", "split": "test"}
+{"qid": "q13", "query": "cybersecurity internship", "category": "role", "split": "dev"}
+{"qid": "q14", "query": "backend developer python internship", "category": "skill", "split": "test"}
+{"qid": "q15", "query": "embedded firmware engineer intern", "category": "role", "split": "dev"}
+{"qid": "q16", "query": "internship open to first year students", "category": "constraint", "split": "test"}
+{"qid": "q17", "query": "something with data and finance", "category": "vague", "split": "dev"}
+{"qid": "q18", "query": "help a company build its websites", "category": "vague", "split": "dev"}
+{"qid": "q19", "query": "intern where I can work on LLM agents", "category": "vague", "split": "dev"}
+{"qid": "q20", "query": "mobile app development intern iOS Android", "category": "skill", "split": "test"}
+{"qid": "q21", "query": "devops cloud kubernetes intern", "category": "skill", "split": "test"}
+{"qid": "q22", "query": "reinforcement learning research intern", "category": "role", "split": "test"}
+{"qid": "q23", "query": "software internship in shanghai", "category": "role+location", "split": "test"}
+{"qid": "q24", "query": "香港 實習", "category": "multilingual", "split": "dev"}
+{"qid": "q25", "query": "机器学习 实习", "category": "multilingual", "split": "test"}
+{"qid": "q26", "query": "quantitative research intern for undergraduates", "category": "role+constraint", "split": "dev"}
+{"qid": "q27", "query": "game development internship unity", "category": "skill", "split": "test"}
+{"qid": "q28", "query": "hardware engineer intern taiwan", "category": "role+location", "split": "dev"}
+{"qid": "q29", "query": "UX design intern", "category": "role", "split": "test"}
+{"qid": "q30", "query": "business development intern in asia", "category": "role+location", "split": "test"}
+{"qid": "q31", "query": "autonomous driving intern", "category": "role", "split": "test"}
+{"qid": "q32", "query": "healthcare data science intern", "category": "role", "split": "test"}
+{"qid": "q33", "query": "e-commerce operations intern", "category": "role", "split": "test"}
+{"qid": "q34", "query": "machien lerning intern", "category": "typo", "split": "test"}
+{"qid": "q35", "query": "search ranking and recommendation systems intern", "category": "role", "split": "dev"}
+{"qid": "q36", "query": "semiconductor process engineering co-op", "category": "role", "split": "dev"}
+{"qid": "q37", "query": "technical writer documentation intern", "category": "role", "split": "dev"}
+{"qid": "q38", "query": "data engineering ETL spark intern", "category": "skill", "split": "dev"}
+{"qid": "q39", "query": "AI safety alignment research intern", "category": "role", "split": "dev"}
+{"qid": "q40", "query": "low latency C++ developer intern at a trading firm", "category": "skill+industry", "split": "test"}
+{"qid": "q41", "query": "internship in tokyo or seoul", "category": "location", "split": "test"}
+{"qid": "q42", "query": "space satellite software intern", "category": "industry", "split": "test"}
+{"qid": "q43", "query": "google software engineering intern", "category": "company+role", "split": "test"}
+{"qid": "q44", "query": "meta internship 2027", "category": "company+date", "split": "dev"}
+{"qid": "q45", "query": "nvidia deep learning intern", "category": "company+role", "split": "dev"}
+{"qid": "q46", "query": "citadel or two sigma quant internship", "category": "company", "split": "test"}
+{"qid": "q47", "query": "bytedance intern beijing", "category": "company+location", "split": "dev"}
+{"qid": "q48", "query": "apple hardware internship", "category": "company+role", "split": "test"}
+{"qid": "q49", "query": "shopee or grab internship singapore", "category": "company+location", "split": "dev"}
+{"qid": "q50", "query": "hsbc technology internship hong kong", "category": "company+role+location", "split": "test"}
+{"qid": "q51", "query": "data science intern new york", "category": "role+location", "split": "dev"}
+{"qid": "q52", "query": "software engineering internship in canada", "category": "role+location", "split": "dev"}
+{"qid": "q53", "query": "machine learning internship in europe", "category": "role+location", "split": "test"}
+{"qid": "q54", "query": "backend intern seattle", "category": "role+location", "split": "dev"}
+{"qid": "q55", "query": "research intern in hong kong", "category": "role+location", "split": "test"}
+{"qid": "q56", "query": "internship in sydney or melbourne", "category": "location", "split": "test"}
+{"qid": "q57", "query": "intern jobs in shenzhen", "category": "location", "split": "dev"}
+{"qid": "q58", "query": "paid internship I can do remotely from hong kong", "category": "constraint", "split": "test"}
+{"qid": "q59", "query": "summer 2027 internship for sophomores", "category": "constraint", "split": "dev"}
+{"qid": "q60", "query": "internship that does not need a work visa sponsorship", "category": "constraint", "split": "dev"}
+{"qid": "q61", "query": "part-time internship during the semester", "category": "constraint", "split": "test"}
+{"qid": "q62", "query": "fall 2027 co-op software", "category": "role+date", "split": "test"}
+{"qid": "q63", "query": "i like math and coding, what internship fits me", "category": "vague", "split": "dev"}
+{"qid": "q64", "query": "job where i can build AI tools for doctors", "category": "vague", "split": "test"}
+{"qid": "q65", "query": "something creative with computers", "category": "vague", "split": "test"}
+{"qid": "q66", "query": "internship to learn how big systems scale", "category": "vague", "split": "test"}
+{"qid": "q67", "query": "work on self driving or drones", "category": "vague", "split": "test"}
+{"qid": "q68", "query": "help scientists analyse data", "category": "vague", "split": "test"}
+{"qid": "q69", "query": "I want to make games", "category": "vague", "split": "dev"}
+{"qid": "q70", "query": "startup internship where I can ship features fast", "category": "vague", "split": "test"}
+{"qid": "q71", "query": "sofware enginer internshp", "category": "typo", "split": "test"}
+{"qid": "q72", "query": "datascience intrn", "category": "typo", "split": "dev"}
+{"qid": "q73", "query": "cyber securty intern", "category": "typo", "split": "dev"}
+{"qid": "q74", "query": "quantitive analyst internship", "category": "typo", "split": "test"}
+{"qid": "q75", "query": "前端开发实习", "category": "multilingual", "split": "test"}
+{"qid": "q76", "query": "數據分析實習", "category": "multilingual", "split": "test"}
+{"qid": "q77", "query": "стажировка программист", "category": "multilingual", "split": "test"}
+{"qid": "q78", "query": "machine learning стажировка", "category": "multilingual", "split": "dev"}
+{"qid": "q79", "query": "golang microservices intern", "category": "skill", "split": "dev"}
+{"qid": "q80", "query": "rust systems programming internship", "category": "skill", "split": "test"}
+{"qid": "q81", "query": "pytorch model training intern", "category": "skill", "split": "test"}
+{"qid": "q82", "query": "sql and tableau analytics intern", "category": "skill", "split": "test"}
+{"qid": "q83", "query": "typescript full stack internship", "category": "skill", "split": "test"}
+{"qid": "q84", "query": "compiler LLVM intern", "category": "skill", "split": "test"}
+{"qid": "q85", "query": "distributed systems storage intern", "category": "role", "split": "test"}
+{"qid": "q86", "query": "site reliability engineering intern", "category": "role", "split": "dev"}
+{"qid": "q87", "query": "quantitative developer intern", "category": "role", "split": "test"}
+{"qid": "q88", "query": "hardware verification UVM intern", "category": "skill", "split": "dev"}
+{"qid": "q89", "query": "computer graphics rendering intern", "category": "role", "split": "test"}
+{"qid": "q90", "query": "speech recognition audio ML intern", "category": "role", "split": "dev"}
+{"qid": "q91", "query": "recommendation algorithm intern e-commerce", "category": "role+industry", "split": "test"}
+{"qid": "q92", "query": "fintech payments software intern", "category": "industry", "split": "dev"}
+{"qid": "q93", "query": "biotech computational biology intern", "category": "industry", "split": "test"}
+{"qid": "q94", "query": "energy or climate tech internship", "category": "industry", "split": "dev"}
+{"qid": "q95", "query": "robotics software ROS intern", "category": "skill", "split": "dev"}
+{"qid": "q96", "query": "network engineering intern", "category": "role", "split": "test"}
+{"qid": "q97", "query": "mechanical engineering intern", "category": "role", "split": "test"}
+{"qid": "q98", "query": "marketing intern at a tech company", "category": "role", "split": "dev"}
+{"qid": "q99", "query": "operations research optimization intern", "category": "role", "split": "dev"}
+{"qid": "q100", "query": "PhD research intern large language models", "category": "role+constraint", "split": "test"}

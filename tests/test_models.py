@@ -14,7 +14,7 @@ from cityu_jobs.core.aims_scraper import (
     summary_hash,
 )
 from cityu_jobs.core.departments import load_departments
-from cityu_jobs.core.models import Job, compute_content_hash, embedding_text
+from cityu_jobs.core.models import Job, compute_content_hash, embedding_text, full_text
 
 from conftest import fixture_text, make_job
 
@@ -46,9 +46,10 @@ def test_content_hash_changes_with_content():
     assert compute_content_hash({"a": 1}) != compute_content_hash({"a": 2})
 
 
-def test_embedding_text_skips_empty_parts():
+def test_job_texts_skip_empty_parts():
     job = make_job(title="T", job_nature=None, department_name="D", description="Desc", requirements="")
-    assert embedding_text(job) == "T\nD\nDesc"
+    assert full_text(job) == "T\nD\nDesc"       # what keyword search indexes
+    assert embedding_text(job) == "T\nD\nDesc"  # the compact text; the same for a job this small
 
 
 # --- AIMS mapping on synthetic input (always runs) --------------------------------
@@ -149,6 +150,7 @@ def test_aims_to_job_on_fixtures():
     assert job.closing_date == date(2026, 10, 25)
     assert job.positions == 1
     assert job.description  # free-text sections were mapped
+    assert "you have applied" not in full_text(job).lower()
     assert "you have applied" not in embedding_text(job).lower()
     # The job round-trips through the cache format unchanged.
     assert Job.from_dict(json.loads(json.dumps(job.to_dict()))) == job

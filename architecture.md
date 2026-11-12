@@ -131,7 +131,12 @@ src/cityu_jobs/
     cache.py           JSON cache: load/save, invalidation, retention
     ai/providers.py    LLM + embedding interfaces; Ollama + Fake (tests)
     analysis.py        AI level rating
-    embeddings.py      job/query text, embedding, cosine
+    text.py            compact text / pieces that get embedded; boilerplate rules
+    embeddings.py      embedding (one or more vectors per job), cosine
+    places.py          gazetteer: places a query may name, and how listings write them
+    query.py           query understanding: place / remote / company -> boost
+    search.py          keyword index (FTS5 BM25), weighted RRF fusion, boost, relevance per mode
+    rerank.py          optional cross-encoder reranker (needs the `rerank` dependency group)
     ranking.py         score formula
     pipeline.py        refresh -> analyze -> embed -> rank (what interfaces call)
   web/                 FastAPI app, templates/, static/
@@ -175,10 +180,13 @@ rejected because every later stage would need two code paths.
    "job": {...}, "content_hash": "...", "summary_hash": "...",
    "active": true, "first_seen": "...", "last_seen": "...",
    "level": {"value": 4, "reason": "...", "model": "llama3.2:3b", "content_hash": "..."},
-   "embedding": {"model": "nomic-embed-text", "content_hash": "...", "vector": [...]}}}}
+   "embedding": {"model": "bge-m3", "content_hash": "...", "text_hash": "...", "vectors": [[...], ...]}}}}
 ```
-- Level is reused only if its `content_hash` matches; embedding only if both
-  `content_hash` and `model` match.
+- Level is reused only if its `content_hash` matches; embedding only if `content_hash`,
+  `model` and `text_hash` all match. `text_hash` fingerprints the exact text(s) that were
+  embedded (retrieval v2, 2026-11-12), so vectors made from the old full text, or with
+  another text format, are redone automatically. Entries from before v2 have one `vector`
+  and no `text_hash`; they simply stop matching.
 - `summary_hash` (hash of the AIMS results-table row) lets the AIMS scraper **skip
   opening the detail page** for a job whose row hasn't changed — fewer AIMS requests.
 - Jobs missing from the latest successful scrape of their source become
@@ -290,7 +298,8 @@ research or engineering. Invalid output → retry once → else `level = None`
 ### Score (`core/ranking.py`)
 All inputs are scaled to 0–1:
 ```
-sim      = cosine similarity, min-max scaled over the candidate jobs
+sim      = relevance to the query, min-max scaled over the candidate jobs: the cosine
+           similarity, or an RRF score in keyword/hybrid mode (see "Search modes")
 dept     = 1 if the job's department code is in DEPARTMENT_BOOST_ALIASES for the user's
            department (CS → {CS, CC}; others → just their own code), else 0
 hours    = min(weekly_hours / 20, 1)          (unknown → 0.5)
@@ -645,10 +654,112 @@ listed so the owner can review them.
   Anthropic when estimating fit or writing letters. Ollama users get letters locally but
   no fit estimates.
 
+### Retrieval evaluation (2026-11-07, owner request for a client)
+`eval/` is a standalone harness. It is not part of the app and changes no app behaviour.
+- It compares keyword search (SQLite FTS5 BM25), the production vector search and an RRF
+  hybrid on 42 labelled queries (version 1; version 2 below extends it to 100 queries and
+  17 systems, and the frozen v1 results are in `eval/results/before_v1/`).
+- The corpus is the active public `intern_tech`/`intern_bigtech` listings only, with the
+  exact full listing text and the cached production vectors of that time. Login-gated AIMS/ITC listings
+  are never exported (asserted in `export_corpus.py`).
+- Labels come from Claude Fable (`claude-fable-5-2`) via `prelabel.py` and the app's
+  `ClaudeCLIProvider`, one call per query.
+- Constants (tokenizer, column weights, RRF k = 60, pool depth 20) were fixed before any
+  label existed.
+- Details and limitations are in `eval/README.md`. The keyword and fusion code now lives
+  in the app (`core/search.py`, next section); `eval/retrievers.py` only wraps it.
+
+### Search modes (2026-11-07, owner request) [Delegated]
+The query's relevance (the `sim` term of the score) can come from three retrievers,
+chosen per search with "Search by" on the search form (`Preferences.search_mode`):
+- **vector** ("Meaning"): cosine of nomic-embed-text vectors, as before.
+- **keyword** ("Keywords"): SQLite FTS5 with BM25 over title, company, location and
+  the full listing text (weights 3/2/2/1, Porter stemming, CJK bigrams, every query word quoted
+  so FTS5 syntax can't break). A matching job scores 1/(60 + BM25 rank), others 0. If no
+  job contains a query word, the term is left out, as for an empty query. Needs no
+  embeddings, so this mode skips Ollama.
+- **hybrid** ("Both"): Reciprocal Rank Fusion (k = 60) of the keyword and vector top 100;
+  jobs outside both get 0.
+
+rank() min-max scales all three the same way, so the weighted score is unchanged. The
+breakdown key stays `similarity`; `RankedJob.similarity` is the raw value and
+`RankedJob.search_mode` says which mode made it. Only open jobs are indexed. Building the
+index takes ~0.5 s for ~5,700 listings (a search ~30 ms), so the last index is kept in
+memory and rebuilt when a job id or content hash changes. `config.SEARCH_MODE` was
+`"vector"` until retrieval v2 (next section), which made it `"hybrid"`.
+`eval/results/report.md` measures this same code (`eval/retrievers.py` imports it).
+Alternatives: weighted score fusion (needs BM25 and cosine on one scale, and its weight
+would be tuned on the labels); an on-disk FTS index (not needed at this size).
+
+### Retrieval v2 (2026-11-12, owner request) [Delegated]
+The first evaluation showed vector search far behind keyword search (nDCG@10 0.337 vs
+0.715 on 42 queries) and dragging the hybrid down. Four changes, each in the shared core,
+each measured in `eval/` on 100 queries (40 dev for tuning, 60 test for the headline):
+
+- **What gets embedded** (`core/text.py`). Not the whole listing any more, but a compact
+  text: title, company, location, job type, department and ~500 characters of the
+  description with company boilerplate removed by rules (fixed patterns, plus paragraphs a
+  company repeats under 3+ job titles). With `config.EMBED_CHUNKS` (default on) a long
+  description is cut into ~500-character pieces, each embedded with the header, and a job
+  scores as its best piece. `embeddings.embed_jobs` returns one or more vectors per job;
+  the cache key gained `text_hash` (see "Cache"), so old vectors are redone on the next
+  search with no manual step. Keyword search still indexes the full text
+  (`models.full_text`).
+- **Embedding model**: `config.DEFAULT_EMBED_MODEL` is `bge-m3` (was `nomic-embed-text`).
+  Still any Ollama model, set on the Settings page; a saved setting wins over the default.
+- **Query understanding** (`core/query.py`, `core/places.py`). Places, "remote" and company
+  names in the query are recognised by rules. In every search mode
+  `search.fuse_and_boost` gives `relevance = Σ weight_i / (60 + rank_i) + boost / 61`, where
+  the boost is `BOOST_LOCATION` for a job in a named place (and again for "remote") plus
+  `BOOST_COMPANY` for a named company. A boost, never a filter. CityU's own jobs have no
+  location field and count as Hong Kong. Vector mode keeps its plain cosine when the query
+  names nothing; hybrid fuses the two full rankings with `HYBRID_WEIGHTS`.
+- **Optional reranker** (`core/rerank.py`): bge-reranker-v2-m3 re-orders the top
+  `RERANK_TOP_N` by reading query and compact text together. `config.RERANK` is off by
+  default. torch + sentence-transformers live in the optional `rerank` dependency group
+  (CUDA build from PyTorch's cu126 index on Linux); without them `load_reranker()` logs one
+  line and the search is simply not reranked.
+
+Decisions (all taken on dev by `eval/tune.py`, recorded in `eval/results/tuning_dev.json`;
+an alternative had to beat the simpler setting by 0.005 nDCG@10):
+
+| setting | chosen | alternatives tried |
+|---|---|---|
+| embedding model | bge-m3 | nomic-embed-text (far worse) |
+| embedded text | pieces of ~500 characters, boilerplate removed | one compact text of 300 / 500 / 800 characters, rules off, pieces of 1,000 |
+| boost weights | place 0.25, company 0.5 | 0 to 2 each; larger weights were as good, none was clearly better |
+| query words | searched as typed | without the recognised words (clearly worse) |
+| fusion weights | keyword 1 : vector 1 | vector at 0 to 2 |
+| default mode | hybrid | keyword, vector |
+| reranker | off by default (gain on hybrid below the threshold) | on; first stage keyword / vector / hybrid; top 10 / 20 / 30 |
+
+Result on the 60 test queries (nDCG@10; `eval/results/report.md`):
+the new default (hybrid: keyword + bge-m3 pieces, with the boost) scores 0.751, against
+0.641 for v1 keyword search (+0.110, 95% CI +0.058 to +0.170), 0.465 for v1 hybrid and
+0.303 for v1 vector search, the old default. With the reranker 0.803. Nearly all of the
+gain comes from bge-m3 (0.642 alone vs 0.231 for nomic-embed-text on the same compact
+text); the compact text by itself did not help nomic-embed-text (0.231 vs 0.303 on the
+full text). The reranker's default was decided on dev (+0.004 on hybrid) and left off even
+though test later showed +0.052: changing it after seeing test would have been tuning on
+test. Turning it on is the owner's call: a "Rerank the best matches" checkbox on the Settings
+page (`Settings.rerank`, default `config.RERANK`), passed through `pipeline.search()` →
+`recommend()` → `_relevance()`. The author's own install has it on.
+
+Costs to know about: pieces roughly double the vectors (about 10,600 for 5,500 listings),
+so `cache.json` grows; the pipeline now rewrites it after the embedding step only when
+something was embedded. The first vector/hybrid search after the upgrade re-embeds every
+open job (a few minutes with bge-m3 on a laptop GPU). Cosines are computed with
+`math.sumprod` (about 0.2 s for all vectors). ByteDance and TikTok are not treated as the
+same company: the boards list them separately and their listings do not mention each other.
+Alternatives not built: a vector index (not needed at this size), learned fusion or boost
+weights (too few queries), an LLM query parser (rules are instant and offline).
+
 ### Dependencies approved
 `openpyxl`, `httpx`, `fastapi`, `uvicorn`, `jinja2`, `python-multipart` (form/file
-uploads), `pypdf` (CV text) (+ `pytest` dev). Nothing else
-heavy without Architect approval.
+uploads), `pypdf` (CV text) (+ `pytest` dev). `numpy` only in the `eval` dependency group
+(the evaluation harness; the app never imports it). `torch` and `sentence-transformers`
+only in the optional `rerank` group (owner request 2026-11-12; the app imports them lazily
+and works without them). Nothing else heavy without Architect approval.
 
 ## Data and trust boundaries
 
@@ -663,6 +774,8 @@ heavy without Architect approval.
 - Network traffic: CityU (AIMS, ITC STEM pages), public job-board APIs (Greenhouse,
   Lever, Ashby, SmartRecruiters, Workday, amazon.jobs, careers.microsoft.com,
   lifeattiktok.com, raw.githubusercontent.com), Anthropic (through `claude`), localhost Ollama.
+  Only with the optional reranker switched on (`config.RERANK`): huggingface.co, to download
+  and check the reranker model; the query and listings are scored locally and are not sent.
 - Unknown: whether CityU's rules allow automated scraping of AIMS — owner's call.
 
 ## Open questions

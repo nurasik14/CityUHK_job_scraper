@@ -34,8 +34,8 @@ class FakeSearch:
         self.release = threading.Event()
         self.release.set()
 
-    def __call__(self, prefs, provider, force_refresh=False, progress=lambda m: None):
-        self.calls.append({"prefs": prefs, "provider": provider, "force_refresh": force_refresh})
+    def __call__(self, prefs, provider, force_refresh=False, progress=lambda m: None, rerank=None):
+        self.calls.append({"prefs": prefs, "provider": provider, "force_refresh": force_refresh, "rerank": rerank})
         progress("Rating job levels: 1/2")
         self.release.wait(5)
         if self.error:
@@ -78,7 +78,8 @@ def test_index_renders_with_cs_preselected():
     page = client.get("/")
     assert page.status_code == 200
     assert '<option value="CS" selected>CS - Computer Science</option>' in page.text
-    assert page.text.count("<option") == 211  # 210 departments + the divider
+    # 210 departments + the divider, and the "Search by" choices.
+    assert page.text.count("<option") == 211 + len(config.SEARCH_MODES)
     assert 'name="query"' in page.text and 'name="earn"' in page.text and 'name="learn"' in page.text
 
 
@@ -132,6 +133,33 @@ def test_form_values_are_cleaned():
     prefs = search.calls[0]["prefs"]
     assert prefs == Preferences(None, "data", earn=5, learn=3)
     assert search.calls[0]["force_refresh"] is False
+
+
+def test_search_mode_select_defaults_to_config():
+    client, _ = _client()
+    page = client.get("/").text
+    assert '<select id="search_mode" name="search_mode"' in page
+    assert f'<option value="{config.SEARCH_MODE}" selected>' in page
+    for mode, label in web_app.SEARCH_MODE_LABELS.items():
+        assert f'value="{mode}"' in page and label in page
+
+
+def test_search_mode_is_accepted_kept_and_shown():
+    search = FakeSearch()
+    client, runner = _client(search)
+    _search(client, search_mode="hybrid")
+    _wait(runner)
+    assert search.calls[0]["prefs"].search_mode == "hybrid"
+    assert '<option value="hybrid" selected>Both</option>' in client.get("/").text  # the form keeps it
+    assert "Search by <strong>Both</strong>" in client.get("/results").text
+
+
+def test_unknown_search_mode_falls_back_to_default():
+    search = FakeSearch()
+    client, runner = _client(search)
+    _search(client, search_mode="telepathy")
+    _wait(runner)
+    assert search.calls[0]["prefs"].search_mode == config.SEARCH_MODE
 
 
 def test_progress_shown_while_running_and_second_search_refused():
@@ -307,6 +335,21 @@ def test_settings_claude_model_and_regions_saved(monkeypatch):
     _search(client)
     _wait(runner)
     assert search.calls[0]["provider"].llm_model == "claude:haiku"
+
+
+def test_settings_rerank_toggle_saved_and_passed_to_search(monkeypatch):
+    monkeypatch.setattr(web_app.httpx, "get", lambda url, timeout: httpx.Response(200, json={"models": []}))
+    search = FakeSearch()
+    client, runner = _client(search)
+    assert Settings.load().rerank is config.RERANK
+    assert 'name="rerank"' in client.get("/settings").text
+    client.post("/settings", content="rerank=on", headers={**ORIGIN, "content-type": "application/x-www-form-urlencoded"})
+    assert Settings.load().rerank is True
+    _search(client)
+    _wait(runner)
+    assert search.calls[0]["rerank"] is True
+    client.post("/settings", content="ai_provider=claude", headers={**ORIGIN, "content-type": "application/x-www-form-urlencoded"})
+    assert Settings.load().rerank is False  # unticked box = off
 
 
 def test_settings_bad_values_fall_back_to_defaults(monkeypatch):

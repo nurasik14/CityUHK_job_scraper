@@ -28,12 +28,14 @@ class Preferences:
         See config.DEPARTMENT_BOOST_ALIASES for codes that also count (CS also matches CC).
     query: free text describing the job they want.
     earn, learn: priorities from 1 (don't care) to 5 (very important).
+    search_mode: how the query is matched: "vector", "keyword" or "hybrid" (config.SEARCH_MODES).
     """
 
     department_code: str | None
     query: str
     earn: int = 3
     learn: int = 3
+    search_mode: str = field(default_factory=lambda: config.SEARCH_MODE)
 
 
 @dataclass
@@ -41,12 +43,13 @@ class RankedJob:
     job: Job
     score: float
     breakdown: dict[str, float]  # term name -> its contribution to the score
-    similarity: float | None     # raw cosine similarity, before scaling
+    similarity: float | None     # raw relevance before scaling (cosine, or an RRF score; see search_mode)
     level: int | None            # AI level, None = unrated
     level_reason: str = ""       # the AI's one-sentence reason (filled in by the pipeline)
     skills: list[str] = field(default_factory=list)  # skills the AI read from the listing (Claude only)
     timeline: Timeline | None = None  # start / end / deadline for the calendar (filled in by the pipeline)
     fit: dict | None = None      # "difficulty for you" from core/fit.py (top results, Claude + profile only)
+    search_mode: str | None = None  # the mode that produced `similarity`; None when there is none
 
 
 def _priority(value: int) -> float:
@@ -100,8 +103,9 @@ def rank(
 ) -> list[RankedJob]:
     """Score open jobs and return them best first.
 
-    levels: {job_id: AI level 1-5 or None}. sims: {job_id: cosine similarity to the query};
-    a job without a similarity counts as the worst match.
+    levels: {job_id: AI level 1-5 or None}. sims: {job_id: relevance to the query, higher =
+    better}: the cosine similarity in "vector" mode, an RRF score in "keyword"/"hybrid" mode
+    (core/search.py), as prefs.search_mode says. A job without one counts as the worst match.
     """
     open_jobs = [j for j in jobs if not is_closed(j, today)]
     scaled = _min_max({j.job_id: sims[j.job_id] for j in open_jobs if j.job_id in sims})
@@ -122,7 +126,11 @@ def rank(
             "level": learn * config.WEIGHT_LEVEL * (0.5 if level is None else (level - 1) / 4),
             "learning_scheme": learn * config.WEIGHT_LEARNING_SCHEME * float(job.source in _LEARNING_SOURCES),
         }
-        ranked.append(RankedJob(job, sum(terms.values()), terms, sims.get(job.job_id), level))
+        sim = sims.get(job.job_id)
+        ranked.append(
+            RankedJob(job, sum(terms.values()), terms, sim, level,
+                      search_mode=None if sim is None else prefs.search_mode)
+        )
 
     # Highest score first; job_id breaks ties so the order is always the same.
     ranked.sort(key=lambda r: (-r.score, r.job.job_id))

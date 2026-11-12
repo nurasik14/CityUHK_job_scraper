@@ -1,8 +1,8 @@
 """The whole flow, in two steps. Interfaces (web UI, later a CLI) only call this module.
 
 1. `refresh()`  — scrape sources whose data is older than STALE_AFTER_HOURS into the cache.
-2. `recommend()` — rate levels and embed jobs that need it (cache-aware), embed the query,
-   and rank the open jobs.
+2. `recommend()` — rate levels and embed jobs that need it (cache-aware), match the query
+   (by meaning, keywords or both: core/search.py), and rank the open jobs.
 
 `search()` runs both. Everything here is synchronous and may take minutes (scraping, local
 LLM calls), so the web UI runs it in a background thread and shows `progress` messages.
@@ -35,7 +35,10 @@ from cityu_jobs.core.internships.scraper import SOURCES as INTERN_SOURCES
 from cityu_jobs.core.internships.scraper import scrape_internships
 from cityu_jobs.core.itc_stem_scraper import SOURCE as ITC_SOURCE
 from cityu_jobs.core.itc_stem_scraper import scrape_itc_stem
+from cityu_jobs.core.models import Job
 from cityu_jobs.core.ranking import Preferences, RankedJob, is_closed, rank
+from cityu_jobs.core.rerank import load_reranker, rerank_relevance
+from cityu_jobs.core.search import relevance, search_index
 
 log = logging.getLogger(__name__)
 
@@ -157,6 +160,33 @@ def fit_candidates(ranked: list[RankedJob], top_n: int = config.FIT_TOP_N) -> li
     return sorted(picked.values(), key=lambda r: ranked.index(r))
 
 
+def _relevance(
+    prefs: Preferences, jobs: list[Job], vectors: dict[str, list[list[float]]], provider: AIProvider,
+    rerank: bool | None = None,
+) -> dict[str, float]:
+    """{job_id: how well the job matches prefs.query, higher = better}, for rank()'s similarity term.
+
+    - vector: cosine similarity of the embeddings (a job's best piece).
+    - keyword: 1 / (60 + BM25 rank) for jobs containing a query word, 0 for the rest.
+    - hybrid: weighted Reciprocal Rank Fusion of the keyword and vector rankings.
+    In every mode, jobs in a place or from a company the query names get a boost
+    (core/query.py), and with reranking on (`rerank`, default config.RERANK) the best matches are re-ordered by a
+    cross-encoder (core/rerank.py; skipped with a log line if torch is not installed).
+    rank() min-max scales the values, so all modes fit the same weighted score.
+    """
+    index = search_index(jobs)  # rebuilt only when the open jobs or their content change
+    sims = None
+    if prefs.search_mode != "keyword":
+        sims = similarities(embed_query(prefs.query, provider), vectors)
+    scores = relevance(prefs.search_mode, prefs.query, index, sims)
+    if (config.RERANK if rerank is None else rerank) and scores:
+        reranker = load_reranker()
+        if reranker is not None:
+            texts = index.embedding_texts
+            scores = rerank_relevance(scores, prefs.query, lambda job_id: texts[job_id][0], reranker.scores)
+    return scores
+
+
 def recommend(
     prefs: Preferences,
     provider: AIProvider,
@@ -164,12 +194,16 @@ def recommend(
     progress: Progress = _noop,
     today: date | None = None,
     profile: Profile | None = None,
+    rerank: bool | None = None,
 ) -> list[RankedJob]:
     """Rank the cached, still-open jobs for `prefs`, best first (all of them; the UI shows the top N).
 
-    Only open jobs are rated and embedded, so closed listings cost no AI calls.
-    Raises ProviderError if Ollama is not reachable.
+    Only open jobs are rated, embedded and indexed, so closed listings cost no AI calls.
+    `prefs.search_mode` picks how the query is matched (see `_relevance`).
+    Raises ProviderError if Ollama is not reachable ("vector" and "hybrid" modes).
     """
+    if prefs.search_mode not in config.SEARCH_MODES:
+        raise ValueError(f"unknown search mode {prefs.search_mode!r}; expected one of {config.SEARCH_MODES}")
     cache = cache or Cache.load()
     today = today or date.today()
     jobs = [j for j in cache.active_jobs() if not is_closed(j, today)]
@@ -181,13 +215,18 @@ def recommend(
 
     levels = analyze_jobs(jobs, cache, provider, progress=rating_progress)
     cache.save()
-    vectors = embed_jobs(
-        jobs, cache, provider, progress=lambda done, total: progress(f"Embedding jobs: {done}/{total}")
-    )
-    cache.save()
+    vectors: dict[str, list[list[float]]] = {}
+    if prefs.search_mode != "keyword":  # keyword search needs no embeddings (and no Ollama)
+        embedded = []
+        vectors = embed_jobs(
+            jobs, cache, provider, texts=search_index(jobs).embedding_texts,
+            progress=lambda done, total: (embedded.append(done), progress(f"Embedding jobs: {done}/{total}")),
+        )
+        if embedded:  # the cache file is large (it holds every vector): only rewrite it when something changed
+            cache.save()
 
     progress("Ranking...")
-    sims = similarities(embed_query(prefs.query, provider), vectors) if prefs.query.strip() else {}
+    sims = _relevance(prefs, jobs, vectors, provider, rerank) if prefs.query.strip() else {}
     ranked = rank(jobs, levels, sims, prefs, today)
     for r in ranked:
         cached = cache.get_level(r.job.job_id, r.job.content_hash) or {}
@@ -218,8 +257,9 @@ def search(
     provider: AIProvider,
     force_refresh: bool = False,
     progress: Progress = _noop,
+    rerank: bool | None = None,
 ) -> tuple[RefreshReport, list[RankedJob]]:
     """refresh() then recommend() on one shared cache: what the UI's search button does."""
     cache = Cache.load()
     report = refresh(force=force_refresh, cache=cache, progress=progress)
-    return report, recommend(prefs, provider, cache=cache, progress=progress)
+    return report, recommend(prefs, provider, cache=cache, progress=progress, rerank=rerank)

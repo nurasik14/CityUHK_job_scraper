@@ -96,7 +96,35 @@ def compute_content_hash(raw: dict) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def embedding_text(job: Job) -> str:
-    """The text that represents a job for semantic search (see core/embeddings.py)."""
+def full_text(job: Job) -> str:
+    """Everything a listing says, as one text: what keyword search indexes (core/search.py).
+
+    Until retrieval v2 this was also the text that got embedded.
+    """
     parts = [job.title, job.company, job.job_nature, job.department_name, job.description, job.requirements]
     return "\n".join(p for p in parts if p)
+
+
+def listing_fields(job: Job) -> dict:
+    """The fields core/text.py builds the compact text from (the eval corpus has the same keys)."""
+    return {
+        "title": job.title,
+        "company": job.company or "",
+        "location": job.location or "",
+        "job_type": job.job_nature or "",
+        "department": job.department_name or "",
+        "description": job.description or "",
+        "requirements": job.requirements or "",
+    }
+
+
+def embedding_text(job: Job, boilerplate: frozenset[str] = frozenset()) -> str:
+    """The compact text that represents a job for semantic search and reranking.
+
+    Title, company, location, job type, department and the first ~500 characters of the
+    description without company boilerplate (core/text.py, version 2). `boilerplate` is
+    `text.repeated_paragraphs()` over the jobs being embedded; core/embeddings.py passes it.
+    """
+    from cityu_jobs.core.text import compact_text
+
+    return compact_text(listing_fields(job), boilerplate)

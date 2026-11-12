@@ -46,6 +46,17 @@
       </div>
     </div>
 
+    <div class="field">
+      <label for="search_mode">Search by</label>
+      <select id="search_mode" name="search_mode" aria-describedby="search-mode-hint">
+        {% for mode, label in search_mode_labels.items() %}
+        <option value="{{ mode }}" {% if mode == prefs.search_mode %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <p class="hint" id="search-mode-hint">Meaning finds jobs about the same thing in other words; Keywords finds
+        jobs that contain your words (names, places, tools); Both combines the two.</p>
+    </div>
+
     <div class="priorities">
       {% for name, label in [("earn", "Earn money"), ("learn", "Learn / build a portfolio")] %}
       <fieldset class="field">

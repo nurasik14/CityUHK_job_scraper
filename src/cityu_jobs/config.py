@@ -54,13 +54,19 @@ CLAUDE_MAX_PARALLEL = 3
 
 OLLAMA_URL = "http://localhost:11434"
 DEFAULT_LLM_MODEL = "llama3.2:3b"
-DEFAULT_EMBED_MODEL = "nomic-embed-text"
+# Embedding model (`ollama pull bge-m3`, 1.2 GB). Chosen on the retrieval evaluation's dev
+# queries: bge-m3 found far better matches than the earlier default "nomic-embed-text"
+# (eval/results/report.md). Any Ollama embedding model can be set on the Settings page;
+# cached vectors are kept per model and redone when it changes.
+DEFAULT_EMBED_MODEL = "bge-m3"
+EMBED_MODELS = ("bge-m3", "nomic-embed-text")  # the two that were evaluated (suggestions on the Settings page)
 # The student's choices from the settings page (Ollama URL and model names; no secrets).
 SETTINGS_FILE = DATA_DIR / "settings.json"
 # Seconds to wait for one AI request. Local models on a laptop CPU can be slow.
 LLM_TIMEOUT_S = 120
 EMBED_TIMEOUT_S = 60
 # nomic-embed-text reads up to 2048 tokens and Ollama refuses longer input; stay below it.
+# (The compact texts of retrieval v2 are ~150 tokens, so this only guards odd inputs.)
 EMBED_MAX_TOKENS = 1800
 
 # --- Ranking (see architecture.md "Score"; every input is scaled to 0-1) --------
@@ -82,6 +88,45 @@ DEPARTMENT_BOOST_ALIASES = {"CS": {"CS", "CC", "TECH"}}
 FULL_WEEKLY_HOURS = 20
 # Number of jobs shown on the results page.
 RESULTS_LIMIT = 30
+# How the query's relevance is measured (core/search.py; the student can change it per search):
+# "vector" (embeddings, meaning), "keyword" (FTS5 BM25, words) or "hybrid" (RRF of both).
+# "hybrid" was the best of the three on the evaluation's dev queries. It needs Ollama for
+# the embeddings; "keyword" works without it.
+SEARCH_MODE = "hybrid"
+SEARCH_MODES = ("vector", "keyword", "hybrid")
+
+# --- Retrieval v2 (core/search.py, core/query.py, core/rerank.py) -----------------------
+# Every value in this block was chosen on the 40 "dev" queries of the retrieval evaluation
+# and then checked once on the 60 "test" queries: eval/results/report.md, "Tuned on dev".
+
+# What gets embedded for a listing (core/text.py). True: its description is cut into
+# ~500-character pieces, each embedded with the listing's header, and the listing scores as
+# its best piece. False: one compact text (header + the first ~500 characters) per listing.
+# Pieces were better for vector search on dev (nDCG@10 0.668 vs 0.648 with bge-m3); they cost
+# about twice the vectors (only a fifth of the listings are long enough to have several).
+EMBED_CHUNKS = True
+# Hybrid mode: weights of (keyword ranking, vector ranking) in the Reciprocal Rank Fusion.
+# Equal weights were best on dev once the vector side used bge-m3.
+HYBRID_WEIGHTS = (1.0, 1.0)
+# Query understanding: bonus for a job in a place / from a company that the query names,
+# in units of "ranked first by one more search" (search.fuse_and_boost). 0 switches it off.
+# The smallest weights within noise of the best on dev; larger ones (up to 2) were as good.
+BOOST_LOCATION = 0.25
+BOOST_COMPANY = 0.5
+# Search with the query as typed (False) or without the recognised place / company words
+# (True). Dropping the words was clearly worse on dev.
+QUERY_STRIP_NAMES = False
+# Cross-encoder reranking of the best RERANK_TOP_N matches (core/rerank.py). Needs the
+# optional packages (`uv sync --group rerank`: torch + sentence-transformers, ~3 GB, and a
+# 2.3 GB model download on first use). Without them the app logs one line and skips it.
+# Off by default: on dev it helped hybrid search by only +0.004 nDCG@10 (keyword search alone
+# by +0.06), for ~0.2 s more per search on a laptop GPU. On the test queries, scored after
+# this was decided, it added +0.05 (95% CI +0.005 to +0.10). Set True to use it.
+RERANK = False
+RERANK_MODEL = "BAAI/bge-reranker-v2-m3"
+RERANK_TOP_N = 30
+# Tokens of "query + listing" the reranker reads; the compact listing text is ~150 tokens.
+RERANK_MAX_TOKENS = 512
 
 # --- ITC STEM -------------------------------------------------------------------
 

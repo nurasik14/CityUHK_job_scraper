@@ -220,7 +220,7 @@ def test_embed_jobs_recomputes_after_model_change(cache):
     other = FakeProvider(dim=32)  # a different embed_model name
     vectors = embed_jobs([job], cache, other)
     assert other.embed_calls == 1
-    assert len(vectors[job.job_id]) == 32
+    assert len(vectors[job.job_id]) == 1 and len(vectors[job.job_id][0]) == 32  # one piece, from the new model
 
 
 def test_query_closer_to_matching_job():

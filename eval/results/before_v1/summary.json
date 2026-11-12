@@ -1,0 +1,384 @@
+{
+  "bootstrap_ndcg@10": {
+    "hybrid-keyword": {
+      "high": -0.08476535071153707,
+      "low": -0.25838249911127575,
+      "mean": -0.17080473800315418,
+      "n": 42,
+      "resamples": 10000,
+      "seed": 20261107
+    },
+    "hybrid-vector": {
+      "high": 0.2709173563922526,
+      "low": 0.14519790923005002,
+      "mean": 0.20712373565220293,
+      "n": 42,
+      "resamples": 10000,
+      "seed": 20261107
+    }
+  },
+  "command": "uv run --group eval python -m eval.run",
+  "counts": {
+    "included": 42,
+    "judged": 42,
+    "judged_pairs": 1679,
+    "no_relevant": [],
+    "not_judged": [],
+    "queries": 42,
+    "relevant_pairs": 932,
+    "unjudged_in_top10": {
+      "hybrid": 0,
+      "keyword": 0,
+      "vector": 0
+    }
+  },
+  "data": {
+    "corpus": {
+      "n_docs": 5510,
+      "scraped_on": "2026-11-06",
+      "sha256": "74c3c69b6abd101cf548be6e6ce28de240155d4c4a21e6d532b5721dc0505467"
+    },
+    "doc_vectors_sha256": "0aa455dbe854ee92827d8a97cef348febc6c4bedc0e0bd8e72c0037f1a4a3431",
+    "qrels": {
+      "file": "qrels.jsonl",
+      "rows": 1679,
+      "sha256": "61ded8c0eabbeac9735a336262d0d1a320d19756243cc2d193b6528edc181a4e"
+    },
+    "queries_sha256": "3128581f63ee680566aef00143ea45d25c2b79026400c0926d399df9fbe76f05"
+  },
+  "generated_at": "2026-11-12T08:16:37+00:00",
+  "hardware": {
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12500H",
+    "cpu_count": 16,
+    "numpy": "2.5.4",
+    "platform": "Linux-7.2.13-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.14.8",
+    "sqlite": "3.51.2"
+  },
+  "label_coverage": {
+    "labelled_pairs": 1679,
+    "pool_depth": 20,
+    "pooled_pairs": 1679,
+    "queries_fully_labelled": 42
+  },
+  "latency": {
+    "keyword_index_build_ms": 164.881697,
+    "search": {
+      "hybrid": {
+        "n": 210,
+        "p50_ms": 10.1474485,
+        "p95_ms": 12.801955200000002
+      },
+      "keyword": {
+        "n": 210,
+        "p50_ms": 8.4987225,
+        "p95_ms": 10.46836405
+      },
+      "vector": {
+        "n": 210,
+        "p50_ms": 1.059228,
+        "p95_ms": 4.349086800000004
+      }
+    }
+  },
+  "metrics": {
+    "hybrid": {
+      "mrr@10": 0.8664965986394558,
+      "n_queries": 42,
+      "ndcg@10": 0.5443859448765409,
+      "recall@10": 0.3175089060652055
+    },
+    "keyword": {
+      "mrr@10": 0.9232804232804233,
+      "n_queries": 42,
+      "ndcg@10": 0.7151906828796951,
+      "recall@10": 0.3822646790510986
+    },
+    "vector": {
+      "mrr@10": 0.7738095238095238,
+      "n_queries": 42,
+      "ndcg@10": 0.3372622092243379,
+      "recall@10": 0.20250172371286634
+    }
+  },
+  "per_category": {
+    "company": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.6379327918968386,
+        "recall@10": 0.36
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 1.0,
+        "recall@10": 0.4
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 0.5,
+        "ndcg@10": 0.18729727305649846,
+        "recall@10": 0.24
+      }
+    },
+    "company+role+location": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.7257130583977572,
+        "recall@10": 0.2727272727272727
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.9477344873475498,
+        "recall@10": 0.30303030303030304
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.3368626739607331,
+        "recall@10": 0.15151515151515152
+      }
+    },
+    "constraint": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.8259896754927477,
+        "recall@10": 0.23255813953488372
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 1.0,
+        "recall@10": 0.23255813953488372
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.694355946562825,
+        "recall@10": 0.23255813953488372
+      }
+    },
+    "industry": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.28084369391618874,
+        "recall@10": 0.19444444444444445
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.8091026734983539,
+        "recall@10": 0.2777777777777778
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.31212640393368274,
+        "recall@10": 0.25
+      }
+    },
+    "location": {
+      "hybrid": {
+        "mrr@10": 0.5,
+        "ndcg@10": 0.3600546145772341,
+        "recall@10": 0.4
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.7622369974983191,
+        "recall@10": 0.8
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 0.0,
+        "ndcg@10": 0.0,
+        "recall@10": 0.0
+      }
+    },
+    "multilingual": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.6419725288508786,
+        "recall@10": 0.5
+      },
+      "keyword": {
+        "mrr@10": 0.5,
+        "ndcg@10": 0.2325903212605806,
+        "recall@10": 0.05
+      },
+      "n_queries": 2,
+      "vector": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.5946886798036201,
+        "recall@10": 0.5
+      }
+    },
+    "role": {
+      "hybrid": {
+        "mrr@10": 0.9,
+        "ndcg@10": 0.6048067417038026,
+        "recall@10": 0.3644331998972054
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.8651523539435413,
+        "recall@10": 0.49524212592684447
+      },
+      "n_queries": 15,
+      "vector": {
+        "mrr@10": 0.8222222222222223,
+        "ndcg@10": 0.3619283528971833,
+        "recall@10": 0.20998118761982262
+      }
+    },
+    "role+constraint": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.4609258495239391,
+        "recall@10": 0.3333333333333333
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.46019602753637145,
+        "recall@10": 0.18518518518518517
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.36401585235313466,
+        "recall@10": 0.2962962962962963
+      }
+    },
+    "role+location": {
+      "hybrid": {
+        "mrr@10": 0.8333333333333334,
+        "ndcg@10": 0.5098724303681581,
+        "recall@10": 0.2422922502334267
+      },
+      "keyword": {
+        "mrr@10": 0.7777777777777778,
+        "ndcg@10": 0.6224129561415801,
+        "recall@10": 0.30274976657329594
+      },
+      "n_queries": 6,
+      "vector": {
+        "mrr@10": 0.638888888888889,
+        "ndcg@10": 0.24864630334276114,
+        "recall@10": 0.1730438842203548
+      }
+    },
+    "role+location+date": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.4217098988691434,
+        "recall@10": 0.2903225806451613
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.6007375373055283,
+        "recall@10": 0.3225806451612903
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.24771242258281992,
+        "recall@10": 0.1935483870967742
+      }
+    },
+    "skill": {
+      "hybrid": {
+        "mrr@10": 0.8775510204081634,
+        "ndcg@10": 0.5308374390566776,
+        "recall@10": 0.29414421592394574
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.75215673673617,
+        "recall@10": 0.399922863102903
+      },
+      "n_queries": 7,
+      "vector": {
+        "mrr@10": 0.7619047619047619,
+        "ndcg@10": 0.27606652843282053,
+        "recall@10": 0.1145225929089515
+      }
+    },
+    "skill+industry": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.5159958223394445,
+        "recall@10": 0.5555555555555556
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.5159958223394445,
+        "recall@10": 0.5555555555555556
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.4765115457480956,
+        "recall@10": 0.3888888888888889
+      }
+    },
+    "typo": {
+      "hybrid": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.5134098410366168,
+        "recall@10": 0.2777777777777778
+      },
+      "keyword": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.09781856279914673,
+        "recall@10": 0.1111111111111111
+      },
+      "n_queries": 1,
+      "vector": {
+        "mrr@10": 1.0,
+        "ndcg@10": 0.7747906119969975,
+        "recall@10": 0.4444444444444444
+      }
+    },
+    "vague": {
+      "hybrid": {
+        "mrr@10": 0.4166666666666667,
+        "ndcg@10": 0.33016386663343894,
+        "recall@10": 0.14646464646464644
+      },
+      "keyword": {
+        "mrr@10": 0.7037037037037037,
+        "ndcg@10": 0.4673819089818423,
+        "recall@10": 0.24090909090909088
+      },
+      "n_queries": 3,
+      "vector": {
+        "mrr@10": 0.5,
+        "ndcg@10": 0.24289796169203526,
+        "recall@10": 0.10606060606060606
+      }
+    }
+  },
+  "settings": {
+    "bootstrap": {
+      "resamples": 10000,
+      "seed": 20261107
+    },
+    "hybrid": {
+      "depth": 100,
+      "method": "reciprocal rank fusion",
+      "rrf_k": 60
+    },
+    "k": 10,
+    "keyword": {
+      "cjk": "character bigrams",
+      "column_weights": {
+        "company": 2.0,
+        "location": 2.0,
+        "text": 1.0,
+        "title": 3.0
+      },
+      "tokenizer": "porter unicode61 remove_diacritics 2"
+    },
+    "latency": {
+      "repeats": 5,
+      "warmup_queries": 3
+    }
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "end_to_end": {
+    "app_hybrid": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 145.85450550000002,
+      "p95_ms": 155.74039700000003
+    },
+    "app_hybrid_rerank": {
+      "includes": [
+        "query embedding",
+        "cross-encoder"
+      ],
+      "n": 300,
+      "p50_ms": 306.91868850000003,
+      "p95_ms": 357.32374375
+    },
+    "app_vector": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 137.454789,
+      "p95_ms": 146.26204225
+    },
+    "bge_chunks": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 133.34878750000001,
+      "p95_ms": 141.65489374999999
+    },
+    "bge_chunks_qu": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 136.8996515,
+      "p95_ms": 150.56948155
+    },
+    "bge_compact": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 132.374523,
+      "p95_ms": 143.54944995
+    },
+    "hybrid": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 43.6998355,
+      "p95_ms": 64.41103635
+    },
+    "hybrid_alt_weights": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 143.5493085,
+      "p95_ms": 156.01588135
+    },
+    "hybrid_bge_chunks": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 142.4822705,
+      "p95_ms": 152.11329494999998
+    },
+    "hybrid_bge_compact": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 141.242435,
+      "p95_ms": 150.9376213
+    },
+    "keyword_rerank": {
+      "includes": [
+        "cross-encoder"
+      ],
+      "n": 300,
+      "p50_ms": 190.190268,
+      "p95_ms": 224.13395855,
+      "same_top10_as_stored_scores": "97/100"
+    },
+    "nomic_chunks": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 37.145378,
+      "p95_ms": 61.00277815000002
+    },
+    "nomic_compact": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 34.181143500000005,
+      "p95_ms": 51.96522060000002
+    },
+    "vector": {
+      "includes": [
+        "query embedding"
+      ],
+      "n": 300,
+      "p50_ms": 32.70856,
+      "p95_ms": 48.622405050000005
+    }
+  },
+  "hardware": {
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12500H",
+    "cpu_count": 16,
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.2.13-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.14.8",
+    "sqlite": "3.51.2",
+    "torch": "2.14.1+cu126"
+  },
+  "measured_at": "2026-11-12T15:10:29+00:00",
+  "query_embedding": {
+    "bge-m3": {
+      "n": 300,
+      "p50_ms": 85.49370400000001,
+      "p95_ms": 95.03890670000001
+    },
+    "nomic-embed-text": {
+      "n": 300,
+      "p50_ms": 14.667555,
+      "p95_ms": 21.1961892
+    }
+  },
+  "repeats": 3,
+  "rerank": {
+    "candidates": 30,
+    "device": "cuda",
+    "max_abs_difference_to_stored_scores": 0.0051133918724060035,
+    "model": "BAAI/bge-reranker-v2-m3",
+    "n": 582,
+    "p50_ms": 185.9054055,
+    "p95_ms": 220.76667960000003,
+    "pairs_compared": 4066,
+    "precision": "fp16"
+  }
+}

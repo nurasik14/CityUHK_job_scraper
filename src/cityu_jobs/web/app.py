@@ -47,6 +47,8 @@ RESULT_GROUPS = {
     "bigtech": ("Big tech", {"intern_bigtech"}),
     "tech": ("Other tech", {"intern_tech"}),
 }
+# "Search by" choices on the search form (config.SEARCH_MODES), in display order.
+SEARCH_MODE_LABELS = {"vector": "Meaning", "keyword": "Keywords", "hybrid": "Both"}
 # Score terms in display order, with short labels.
 TERM_LABELS = {
     "similarity": "relevance",  # "match" is the overall 0-100 score
@@ -137,6 +139,7 @@ def create_app(runner: TaskRunner | None = None, claude_status_fn=None) -> FastA
         term_labels=TERM_LABELS,
         term_groups=TERM_GROUPS,
         result_groups=RESULT_GROUPS,
+        search_mode_labels=SEARCH_MODE_LABELS,
         employer_of=employer,
         verdict_labels={"strong match": "Strong match", "good match": "Good match", "stretch": "Stretch",
                         "long shot": "Long shot", "not eligible": "Not eligible"},
@@ -162,6 +165,7 @@ def create_app(runner: TaskRunner | None = None, claude_status_fn=None) -> FastA
             query=form.get("query", "").strip(),
             earn=_priority(form.get("earn")),
             learn=_priority(form.get("learn")),
+            search_mode=mode if (mode := form.get("search_mode")) in config.SEARCH_MODES else config.SEARCH_MODE,
         )
         runner.start_search(prefs, Settings.load(), force_refresh=form.get("refresh") == "on")
         return RedirectResponse("/results", status_code=303)
@@ -246,6 +250,7 @@ def create_app(runner: TaskRunner | None = None, claude_status_fn=None) -> FastA
             claude_ready=claude_ready,
             claude_message=claude_message,
             claude_models=config.CLAUDE_MODELS,
+            rerank_top_n=config.RERANK_TOP_N,
             regions=config.INTERN_REGIONS,
         )
 
@@ -266,6 +271,7 @@ def create_app(runner: TaskRunner | None = None, claude_status_fn=None) -> FastA
             embed_model=form.get("embed_model", "").strip() or defaults.embed_model,
             # The regions fieldset is always on the form; ticking none means "use the defaults".
             intern_regions=regions or defaults.intern_regions,
+            rerank=form.get("rerank") == "on",
         ).save()
         return RedirectResponse("/settings?saved=1", status_code=303)
 
