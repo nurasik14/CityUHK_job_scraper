@@ -326,10 +326,11 @@ Each job is embedded once and cached. The embedded text is not the whole listing
 compact one ([`core/text.py`](../src/cityu_jobs/core/text.py)): title, company, location,
 job type, department and about 500 characters of the description, with company
 boilerplate ("we are an equal opportunity employer", paragraphs a company repeats in
-every listing) removed by simple rules. A long description is cut into several such
-pieces, each embedded with the same header, so a job can have several vectors; its
-similarity is that of its best piece. Embedding whole listings made long ones crowd out
-short ones, and a measured comparison (see `eval/`) showed the short pieces work better.
+every listing) removed by simple rules. One vector per job. Embedding whole listings with
+nomic-embed-text let long ones crowd out short ones; the measured fix (see `eval/`) was the
+bge-m3 model, which tells short listings apart. Cutting long descriptions into pieces and
+scoring a job by its best piece (`config.EMBED_CHUNKS`) is still possible, but it tied with
+the compact text in hybrid search while costing twice the vectors.
 `embed_jobs()` sends texts in batches of 16 to cut HTTP round trips. Your
 free-text query is embedded on every search (`embed_query()`). The two are compared
 with **cosine similarity**:

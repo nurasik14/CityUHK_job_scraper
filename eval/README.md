@@ -23,19 +23,20 @@ and `tuning_dev.json`).
 
 | | system | nDCG@10 | recall@10 | MRR@10 |
 |---|---|---|---|---|
-| before | v1 keyword (the best of version 1) | 0.641 | 0.216 | 0.881 |
-| before | v1 hybrid | 0.465 | 0.173 | 0.838 |
-| before | v1 vector (what the app used by default) | 0.303 | 0.107 | 0.726 |
-| after | `app_hybrid`: the app's new default | **0.751** | 0.241 | 0.940 |
-| after | `app_hybrid_rerank`: with the optional reranker | **0.803** | 0.252 | 0.938 |
+| before | v1 keyword (the best of version 1) | 0.641 | 0.214 | 0.881 |
+| before | v1 hybrid | 0.465 | 0.171 | 0.838 |
+| before | v1 vector (what the app used by default) | 0.303 | 0.105 | 0.726 |
+| after | `app_hybrid`: the app's new default | **0.754** | 0.237 | 0.935 |
+| after | `app_hybrid_rerank`: with the optional reranker | **0.803** | 0.249 | 0.930 |
 
-- `app_hybrid` − v1 keyword: **+0.110**, 95% CI [+0.058, +0.170]. − v1 hybrid: **+0.286**,
-  CI [+0.233, +0.339]. − v1 vector: +0.448, CI [+0.373, +0.519].
-- `app_hybrid_rerank` − v1 keyword: +0.162, CI [+0.087, +0.244]; − `app_hybrid`: +0.052,
-  CI [+0.005, +0.099].
+- `app_hybrid` − v1 keyword: **+0.114**, 95% CI [+0.059, +0.176]. − v1 hybrid: **+0.290**,
+  CI [+0.236, +0.343]. − v1 vector: +0.452, CI [+0.378, +0.520].
+- `app_hybrid_rerank` − v1 keyword: +0.162, CI [+0.086, +0.246]; − `app_hybrid`: +0.049.
+- The app embeds one compact text per listing (`config.EMBED_CHUNKS = False`). Dev had
+  picked pieces; see "Why long listings won with nomic-embed-text" for why that was undone.
 - What made the difference: **bge-m3**. With the same compact text, bge-m3 scores 0.642 and
-  nomic-embed-text 0.231. Fusing keyword search with bge-m3 gives 0.738; query understanding
-  adds +0.013 to that (+0.020 on keyword search alone, +0.030 on vector search alone).
+  nomic-embed-text 0.231. Fusing keyword search with bge-m3 gives 0.739; query understanding
+  adds +0.015 to that (+0.020 on keyword search alone, +0.030 on vector search alone).
 - What did not help: the compact text on its own. With nomic-embed-text it scored *lower*
   than the full text (0.231 vs 0.303, CI of the difference [−0.100, −0.045]). Scoring a
   listing by its best piece was better than one compact text for nomic (+0.056) and, less
@@ -46,6 +47,41 @@ and `tuning_dev.json`).
 - Latency on the author's laptop (i5-12500H, RTX 4050): the hybrid search itself takes
   22 ms (p50); with the bge-m3 query embedding through Ollama 146 ms; with the reranker on
   30 candidates 307 ms. v1 keyword search took 8 ms.
+
+## Why long listings won with nomic-embed-text
+
+Measured on the 5,510 listings and the first 42 queries (one vector per listing, v1);
+rerun with `uv run --group eval python eval/length_bias.py`.
+Short = under 300 characters (4,447 listings, mostly title + company), long = over 1,000 (1,057).
+
+| | short listings | long listings |
+|---|---|---|
+| mean cosine to the queries | 0.570 | 0.571 |
+| spread of scores within one query (std) | 0.011 | 0.045 |
+| best score per query | 0.609 | 0.708 |
+| 10th-best score per query | 0.594 | 0.676 |
+| cosine between two random listings of the group | 0.963 | 0.792 |
+
+Long listings do not score higher on average. nomic-embed-text gives nearly every short
+listing the same vector (two random short listings: cosine 0.963), so within a query their
+scores barely differ and the right one cannot stand out; long listings differ from each other,
+so a few always stick out. A top 10 takes only the extremes: even the 10th-best long listing
+beats the best short one, hence 9.8 of every vector top 10 were long listings.
+
+| embedding | long listings in the vector top 10 | cosine between two short listings |
+|---|---|---|
+| nomic, full text (v1) | 9.8 | 0.963 |
+| nomic, compact text | 9.7 | 0.963 |
+| nomic, best of ~500-character pieces | 10.0 | — |
+| bge-m3, compact text (the app) | 3.8 | 0.640 |
+| bge-m3, best of pieces | 6.2 | — |
+
+The fix was the model: bge-m3 tells short listings apart. Shorter text alone did not help, and
+scoring a listing by its best piece brings part of the bias back (a long listing gets ~6
+chances to score high). Pieces won on dev for vector search (0.668 vs 0.648) but tied in the
+default hybrid mode on test (0.738 vs 0.739) at twice the vectors and search time, so the app
+uses the compact text. That last choice was made with the test numbers in view; the report
+shows both variants.
 
 ## Reproduce the results
 
@@ -321,6 +357,7 @@ uv run --group eval --group rerank python -m eval.run --live-embed --live-rerank
 | `prelabel.py` | relevance labels with Claude |
 | `systems.py`, `retrievers.py`, `metrics.py`, `run.py` | the systems, the metrics, the runner |
 | `compare_v1.py` | check a `--systems v1` run against `results/before_v1/` |
+| `length_bias.py` | the length-bias tables in "Why long listings won with nomic-embed-text" |
 | `data/corpus.jsonl.gz`, `*.npy`, `queries.jsonl`, `rerank_scores.jsonl.gz`, `meta.json` | inputs |
 | `data/pool.json`, `pool_dev_tuning.json`, `labels_fable.jsonl`, `qrels.jsonl` | pools, labels with reasons, labels the metrics read |
 | `results/` | `report.md`, `summary.json`, `per_query.jsonl`, `tuning_dev.json`, `live_latency.json` |

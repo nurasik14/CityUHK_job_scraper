@@ -699,9 +699,9 @@ each measured in `eval/` on 100 queries (40 dev for tuning, 60 test for the head
 - **What gets embedded** (`core/text.py`). Not the whole listing any more, but a compact
   text: title, company, location, job type, department and ~500 characters of the
   description with company boilerplate removed by rules (fixed patterns, plus paragraphs a
-  company repeats under 3+ job titles). With `config.EMBED_CHUNKS` (default on) a long
-  description is cut into ~500-character pieces, each embedded with the header, and a job
-  scores as its best piece. `embeddings.embed_jobs` returns one or more vectors per job;
+  company repeats under 3+ job titles). With `config.EMBED_CHUNKS` (default off) a long
+  description is instead cut into ~500-character pieces, each embedded with the header, and
+  a job scores as its best piece. `embeddings.embed_jobs` returns one or more vectors per job;
   the cache key gained `text_hash` (see "Cache"), so old vectors are redone on the next
   search with no manual step. Keyword search still indexes the full text
   (`models.full_text`).
@@ -726,7 +726,7 @@ an alternative had to beat the simpler setting by 0.005 nDCG@10):
 | setting | chosen | alternatives tried |
 |---|---|---|
 | embedding model | bge-m3 | nomic-embed-text (far worse) |
-| embedded text | pieces of ~500 characters, boilerplate removed | one compact text of 300 / 500 / 800 characters, rules off, pieces of 1,000 |
+| embedded text | dev chose pieces of ~500 characters; the app uses one compact text of ~500 (see below) | compact text of 300 / 500 / 800 characters, rules off, pieces of 1,000 |
 | boost weights | place 0.25, company 0.5 | 0 to 2 each; larger weights were as good, none was clearly better |
 | query words | searched as typed | without the recognised words (clearly worse) |
 | fusion weights | keyword 1 : vector 1 | vector at 0 to 2 |
@@ -734,8 +734,8 @@ an alternative had to beat the simpler setting by 0.005 nDCG@10):
 | reranker | off by default (gain on hybrid below the threshold) | on; first stage keyword / vector / hybrid; top 10 / 20 / 30 |
 
 Result on the 60 test queries (nDCG@10; `eval/results/report.md`):
-the new default (hybrid: keyword + bge-m3 pieces, with the boost) scores 0.751, against
-0.641 for v1 keyword search (+0.110, 95% CI +0.058 to +0.170), 0.465 for v1 hybrid and
+the new default (hybrid: keyword + bge-m3 compact text, with the boost) scores 0.754, against
+0.641 for v1 keyword search (+0.114, 95% CI +0.059 to +0.176), 0.465 for v1 hybrid and
 0.303 for v1 vector search, the old default. With the reranker 0.803. Nearly all of the
 gain comes from bge-m3 (0.642 alone vs 0.231 for nomic-embed-text on the same compact
 text); the compact text by itself did not help nomic-embed-text (0.231 vs 0.303 on the
@@ -745,8 +745,13 @@ test. Turning it on is the owner's call: a "Rerank the best matches" checkbox on
 page (`Settings.rerank`, default `config.RERANK`), passed through `pipeline.search()` →
 `recommend()` → `_relevance()`. The author's own install has it on.
 
-Costs to know about: pieces roughly double the vectors (about 10,600 for 5,500 listings),
-so `cache.json` grows; the pipeline now rewrites it after the embedding step only when
+Pieces vs compact text: dev picked pieces (0.668 vs 0.648 for vector search), but in the
+default hybrid mode they tied on test (0.738 vs 0.739), while doubling the vectors (about
+11,200 instead of 5,700), doubling the app's cosine time and favouring long listings again
+(a long listing gets ~6 chances to score high: 6.2 of the vector top 10 are long listings
+with pieces, 3.8 with compact text; `eval/length_bias.py`). The owner switched the app to compact text
+(`EMBED_CHUNKS = False`) after seeing that; it is a choice made with the test numbers in
+view, and the report shows both. The pipeline now rewrites it after the embedding step only when
 something was embedded. The first vector/hybrid search after the upgrade re-embeds every
 open job (a few minutes with bge-m3 on a laptop GPU). Cosines are computed with
 `math.sumprod` (about 0.2 s for all vectors). ByteDance and TikTok are not treated as the

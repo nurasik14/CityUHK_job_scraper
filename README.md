@@ -270,12 +270,12 @@ uv sync --group eval
 uv run --group eval python -m eval.run
 ```
 
-Result on the test queries (nDCG@10): the app's search today scores **0.751**; the best
-method of the first version (keyword search) scored 0.641 (difference +0.110, 95%
-confidence interval +0.058 to +0.170) and the old default (nomic-embed-text vectors) 0.303.
-Most of the gain comes from the **bge-m3** embedding model. The rest: listings are embedded
-as short pieces with their location instead of as one long text, keyword and vector
-rankings are fused, and jobs in a place or from a company named in the query get a boost
+Result on the test queries (nDCG@10): the app's search today scores **0.754**; the best
+method of the first version (keyword search) scored 0.641 (difference +0.114, 95%
+confidence interval +0.059 to +0.176) and the old default (nomic-embed-text vectors) 0.303.
+Most of the gain comes from the **bge-m3** embedding model. The rest: each listing is
+embedded as a compact text with its title, company and location instead of as one long
+text, keyword and vector rankings are fused, and jobs in a place or from a company named in the query get a boost
 ("machine learning intern singapore", "jane street internship").
 
 Choosing how to search:

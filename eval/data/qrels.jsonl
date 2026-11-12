@@ -114,6 +114,7 @@
 {"doc_id": "intern:simplify:1535643d-2ad1-4c13-bd66-f7ad6cb1ee9d", "label": 0, "qid": "q02"}
 {"doc_id": "intern:simplify:1795d6df-fcca-45dc-836d-41a82dc36894", "label": 0, "qid": "q02"}
 {"doc_id": "intern:simplify:2ad246b5-cec8-494e-8ed3-f7165ae5ea88", "label": 0, "qid": "q02"}
+{"doc_id": "intern:simplify:2c2db121-8cc0-42be-a379-525e93f06a6b", "label": 2, "qid": "q02"}
 {"doc_id": "intern:simplify:2e492cf4-1ab3-4d87-8635-ac464c92fb94", "label": 0, "qid": "q02"}
 {"doc_id": "intern:simplify:2f6cedc3-6aa5-4caa-825b-45cf2ac41248", "label": 0, "qid": "q02"}
 {"doc_id": "intern:simplify:336b94ac-b891-4459-bd54-23d89446c8e2", "label": 0, "qid": "q02"}
@@ -124,6 +125,7 @@
 {"doc_id": "intern:simplify:5d9f6eaa-a78b-4ea6-adcb-8168b145206f", "label": 0, "qid": "q02"}
 {"doc_id": "intern:simplify:69d6ccc7-ad4b-42d6-ad99-56d14805e531", "label": 0, "qid": "q02"}
 {"doc_id": "intern:simplify:6c1ee26b-247c-49d8-b539-c99c9800e8fa", "label": 2, "qid": "q02"}
+{"doc_id": "intern:simplify:74c89fde-4677-4b10-b706-43f45065e8e4", "label": 2, "qid": "q02"}
 {"doc_id": "intern:simplify:77d6016a-c39e-4d1c-8e5a-1ff56302a8eb", "label": 2, "qid": "q02"}
 {"doc_id": "intern:simplify:810e50c9-00ba-458d-bdb0-89ae72adc9f9", "label": 2, "qid": "q02"}
 {"doc_id": "intern:simplify:8dd02cc4-88fb-4046-8f93-5fdfada18ccb", "label": 0, "qid": "q02"}
@@ -235,6 +237,7 @@
 {"doc_id": "intern:simplify:45121612-e5f7-499d-a2b8-403f1234f051", "label": 1, "qid": "q03"}
 {"doc_id": "intern:simplify:4a95ac52-7825-4a68-a0be-ce8dd225c94e", "label": 1, "qid": "q03"}
 {"doc_id": "intern:simplify:501aa792-9adc-45ac-b213-6e5af6627213", "label": 0, "qid": "q03"}
+{"doc_id": "intern:simplify:52de2161-f7a7-417a-b7a4-3aa062dbeb34", "label": 1, "qid": "q03"}
 {"doc_id": "intern:simplify:55c03818-d743-45eb-bb1d-d9d6f3cdcc5b", "label": 1, "qid": "q03"}
 {"doc_id": "intern:simplify:589e122b-8999-49a6-8442-c90ddb3b04bf", "label": 1, "qid": "q03"}
 {"doc_id": "intern:simplify:5e3974fd-50a7-4c68-acb3-5b5dd8ae7d0f", "label": 1, "qid": "q03"}
@@ -505,6 +508,7 @@
 {"doc_id": "intern:simplify:c9d7a6a4-c813-465b-a38f-7316e0ba7b4d", "label": 0, "qid": "q06"}
 {"doc_id": "intern:simplify:d0c99133-455b-4c9d-be96-3c3a60640926", "label": 2, "qid": "q06"}
 {"doc_id": "intern:simplify:d3e3302c-314b-4f84-aa21-6fa5e88e2bb8", "label": 1, "qid": "q06"}
+{"doc_id": "intern:simplify:d96c7046-d27a-4556-802b-4ae6a576f5e4", "label": 2, "qid": "q06"}
 {"doc_id": "intern:simplify:dd16f64f-a794-4611-9dcc-8913da108e5e", "label": 1, "qid": "q06"}
 {"doc_id": "intern:simplify:dd54ada4-0bdc-4fb7-97d1-fa950f4ce4cd", "label": 1, "qid": "q06"}
 {"doc_id": "intern:simplify:ddb283e1-9746-4079-9650-03b28434dd98", "label": 1, "qid": "q06"}
@@ -537,6 +541,7 @@
 {"doc_id": "intern:wd:nvidia:JR2024823", "label": 0, "qid": "q06"}
 {"doc_id": "intern:wd:nvidia:JR2026972", "label": 0, "qid": "q06"}
 {"doc_id": "intern:amazon:10459543", "label": 1, "qid": "q07"}
+{"doc_id": "intern:amazon:10529525", "label": 1, "qid": "q07"}
 {"doc_id": "intern:amazon:10535281", "label": 0, "qid": "q07"}
 {"doc_id": "intern:amazon:10535282", "label": 1, "qid": "q07"}
 {"doc_id": "intern:amazon:10564599", "label": 1, "qid": "q07"}
@@ -579,6 +584,7 @@
 {"doc_id": "intern:simplify:75d16764-30ef-4615-8287-aee8dcab750a", "label": 1, "qid": "q07"}
 {"doc_id": "intern:simplify:7c45d4ef-21c8-4acd-b82a-f56987b07548", "label": 0, "qid": "q07"}
 {"doc_id": "intern:simplify:7eff9698-571b-40ca-9bf2-60dd1a68e0a8", "label": 1, "qid": "q07"}
+{"doc_id": "intern:simplify:8b4d0160-e50b-4b12-a510-29a4243ff741", "label": 1, "qid": "q07"}
 {"doc_id": "intern:simplify:8d49edaf-5e5e-49b5-8b0e-1c75d2c04f76", "label": 1, "qid": "q07"}
 {"doc_id": "intern:simplify:901b53ec-fba2-40bc-89d6-a7200607ee62", "label": 1, "qid": "q07"}
 {"doc_id": "intern:simplify:9ac6c58a-1914-4f2e-94b7-1da1ef0eb239", "label": 1, "qid": "q07"}
@@ -650,6 +656,7 @@
 {"doc_id": "intern:lever:palantir:8f362a1f-1eff-4327-94c1-ff46e2101c69", "label": 0, "qid": "q08"}
 {"doc_id": "intern:simplify:46fd3fa6-a273-49da-b7ac-7cb7fcf894a9", "label": 2, "qid": "q08"}
 {"doc_id": "intern:simplify:4fdb4466-e2bf-4f2d-9bf0-5a2352bf5dfd", "label": 1, "qid": "q08"}
+{"doc_id": "intern:simplify:a65116f6-aec6-435e-99a0-2a17b28b8a2e", "label": 1, "qid": "q08"}
 {"doc_id": "intern:simplify:e99b784e-8115-4c4d-a6d5-084115592c66", "label": 1, "qid": "q08"}
 {"doc_id": "intern:simplify:e9ea1661-68e7-422e-8093-f10f51fb0d07", "label": 1, "qid": "q08"}
 {"doc_id": "intern:tiktok:7577613936331032837", "label": 0, "qid": "q08"}
@@ -887,6 +894,7 @@
 {"doc_id": "intern:simplify:16f3944c-2006-402c-b670-5e04679732c3", "label": 1, "qid": "q100"}
 {"doc_id": "intern:simplify:250628e8-9e7f-4ed2-a31f-d09775e435cb", "label": 0, "qid": "q100"}
 {"doc_id": "intern:simplify:25f07d22-2f89-46ac-9f25-c3134e08b023", "label": 2, "qid": "q100"}
+{"doc_id": "intern:simplify:3908d24b-c394-4088-bc0c-28c8fd0821d2", "label": 2, "qid": "q100"}
 {"doc_id": "intern:simplify:479c73d2-b816-4d2e-815c-e11f66aaaccc", "label": 1, "qid": "q100"}
 {"doc_id": "intern:simplify:4ca02159-a836-4a7c-86cf-014e77b15a7a", "label": 1, "qid": "q100"}
 {"doc_id": "intern:simplify:58d142d9-2c57-4ca0-8836-120968205a60", "label": 2, "qid": "q100"}
@@ -1031,6 +1039,7 @@
 {"doc_id": "intern:simplify:22021546-205a-467d-b274-f4cf864649f6", "label": 2, "qid": "q12"}
 {"doc_id": "intern:simplify:2afc5cb6-5d17-4a8f-b6e4-6f77835d6041", "label": 2, "qid": "q12"}
 {"doc_id": "intern:simplify:300bff18-a855-45ba-a091-cac4b99a1e29", "label": 1, "qid": "q12"}
+{"doc_id": "intern:simplify:3bcb752a-418d-4efe-88b2-389292a7eed0", "label": 1, "qid": "q12"}
 {"doc_id": "intern:simplify:4200fef6-f177-438c-aaf7-eb7c087f048b", "label": 1, "qid": "q12"}
 {"doc_id": "intern:simplify:5446e738-df78-4160-98ab-eb05d3f23d8f", "label": 2, "qid": "q12"}
 {"doc_id": "intern:simplify:568ea83f-3d19-400d-a4af-21ccfc8d480a", "label": 0, "qid": "q12"}
@@ -1056,6 +1065,7 @@
 {"doc_id": "intern:simplify:eca868f5-7a43-4aba-a570-ae7f93664ff3", "label": 1, "qid": "q12"}
 {"doc_id": "intern:simplify:ee9ccca0-8bd3-4e29-a009-8eb52e728539", "label": 2, "qid": "q12"}
 {"doc_id": "intern:simplify:ef9f0f9b-5794-4b38-a0c7-b641999f1c49", "label": 1, "qid": "q12"}
+{"doc_id": "intern:simplify:f4b6208a-2701-4f97-bf10-b54704e67c32", "label": 1, "qid": "q12"}
 {"doc_id": "intern:simplify:f9a08de0-d633-4b19-b444-8002689fc795", "label": 1, "qid": "q12"}
 {"doc_id": "intern:tiktok:7562148703776688389", "label": 1, "qid": "q12"}
 {"doc_id": "intern:tiktok:7569912114610850101", "label": 0, "qid": "q12"}
@@ -1326,6 +1336,7 @@
 {"doc_id": "intern:simplify:948a7229-20bf-4220-9876-ec5879966d9c", "label": 2, "qid": "q15"}
 {"doc_id": "intern:simplify:99fda289-3315-417b-ba2f-e6522ae9fb61", "label": 2, "qid": "q15"}
 {"doc_id": "intern:simplify:a5543965-f99f-4e02-b07c-19ca612b94e8", "label": 2, "qid": "q15"}
+{"doc_id": "intern:simplify:abb438b3-abf6-4919-bac8-060f8260ed22", "label": 2, "qid": "q15"}
 {"doc_id": "intern:simplify:b5e54246-5cf1-4854-8ea2-77816df0b012", "label": 2, "qid": "q15"}
 {"doc_id": "intern:simplify:c1bfc677-4730-4b31-93f8-ba0df7d7bea1", "label": 2, "qid": "q15"}
 {"doc_id": "intern:simplify:c88eff3d-aa92-400f-81af-bc057b38bc77", "label": 2, "qid": "q15"}
@@ -1437,12 +1448,14 @@
 {"doc_id": "intern:simplify:e7dad441-1919-402c-8936-123968e0e6b3", "label": 1, "qid": "q16"}
 {"doc_id": "intern:simplify:e7fe0540-3440-4b19-aae2-451f5e23bca8", "label": 0, "qid": "q16"}
 {"doc_id": "intern:simplify:ec38611d-5a43-4ef5-8d56-2eeac93dc28d", "label": 1, "qid": "q16"}
+{"doc_id": "intern:simplify:f335ac5c-ae3f-4e1c-a8b2-adfeda3f6d75", "label": 0, "qid": "q16"}
 {"doc_id": "intern:tiktok:7667933335084124469", "label": 1, "qid": "q16"}
 {"doc_id": "intern:tiktok:7677472638675011893", "label": 1, "qid": "q16"}
 {"doc_id": "intern:tiktok:7691567961421728053", "label": 1, "qid": "q16"}
 {"doc_id": "intern:wd:intel:JR0286876", "label": 0, "qid": "q16"}
 {"doc_id": "intern:wd:intel:JR0287227", "label": 1, "qid": "q16"}
 {"doc_id": "intern:wd:intel:JR0287675", "label": 1, "qid": "q16"}
+{"doc_id": "intern:wd:intel:JR0287833", "label": 1, "qid": "q16"}
 {"doc_id": "intern:wd:intel:JR0287886", "label": 1, "qid": "q16"}
 {"doc_id": "intern:wd:intel:JR0287890", "label": 1, "qid": "q16"}
 {"doc_id": "intern:wd:intel:JR0287897", "label": 1, "qid": "q16"}
@@ -1564,6 +1577,7 @@
 {"doc_id": "intern:amazon:10563242", "label": 0, "qid": "q18"}
 {"doc_id": "intern:amazon:10567708", "label": 0, "qid": "q18"}
 {"doc_id": "intern:amazon:10579407", "label": 0, "qid": "q18"}
+{"doc_id": "intern:amazon:10581249", "label": 0, "qid": "q18"}
 {"doc_id": "intern:amazon:10581252", "label": 0, "qid": "q18"}
 {"doc_id": "intern:amazon:10587269", "label": 0, "qid": "q18"}
 {"doc_id": "intern:amazon:3201714", "label": 0, "qid": "q18"}
@@ -1611,6 +1625,7 @@
 {"doc_id": "intern:simplify:a7924bcd-c76d-4800-ae34-6449e43917c3", "label": 2, "qid": "q18"}
 {"doc_id": "intern:simplify:d466fdad-f557-4135-b159-963583eb27df", "label": 2, "qid": "q18"}
 {"doc_id": "intern:sr:grab:744000140389140", "label": 0, "qid": "q18"}
+{"doc_id": "intern:tiktok:7613562053996005637", "label": 0, "qid": "q18"}
 {"doc_id": "intern:tiktok:7626192517295556869", "label": 0, "qid": "q18"}
 {"doc_id": "intern:tiktok:7644986569989032197", "label": 0, "qid": "q18"}
 {"doc_id": "intern:tiktok:7657640284071954741", "label": 0, "qid": "q18"}
@@ -1663,6 +1678,7 @@
 {"doc_id": "intern:amazon:10567744", "label": 1, "qid": "q19"}
 {"doc_id": "intern:amazon:3139827", "label": 0, "qid": "q19"}
 {"doc_id": "intern:ashby:notion:2b587e66-deac-421a-a824-9415ba78b5a7", "label": 0, "qid": "q19"}
+{"doc_id": "intern:ashby:sierra:7af8aa4e-ba84-49ba-bc53-19358f4564ff", "label": 2, "qid": "q19"}
 {"doc_id": "intern:ashby:snowflake:ab028e3c-c1cf-4455-8915-8e4e6b0cc9e8", "label": 0, "qid": "q19"}
 {"doc_id": "intern:gh:cloudflare:8199958", "label": 0, "qid": "q19"}
 {"doc_id": "intern:gh:cloudflare:8245211", "label": 0, "qid": "q19"}
@@ -1801,6 +1817,7 @@
 {"doc_id": "intern:simplify:100aa374-4fc4-4766-87fe-7cdd6b8a5ecc", "label": 1, "qid": "q20"}
 {"doc_id": "intern:simplify:1556f336-95fd-4c5e-bced-3da0d5e2cb99", "label": 2, "qid": "q20"}
 {"doc_id": "intern:simplify:15935af2-c0f0-407b-8c8c-eb831b6401e9", "label": 2, "qid": "q20"}
+{"doc_id": "intern:simplify:2839a9ef-0ef7-4708-bbc5-87007bc1e4ae", "label": 2, "qid": "q20"}
 {"doc_id": "intern:simplify:3b7f6701-dabe-416a-af5f-efb2491cfbd4", "label": 2, "qid": "q20"}
 {"doc_id": "intern:simplify:40a73eb1-1878-4203-a116-82e2ad5c39c2", "label": 2, "qid": "q20"}
 {"doc_id": "intern:simplify:624a2b7b-51e9-4b7e-87d8-5e15ae69b867", "label": 2, "qid": "q20"}
@@ -1897,6 +1914,7 @@
 {"doc_id": "intern:simplify:35a95991-96d0-490a-a3c5-6a80496b8aa1", "label": 1, "qid": "q21"}
 {"doc_id": "intern:simplify:55023fd3-ef60-49f4-ac11-5d1fe01b0a7d", "label": 2, "qid": "q21"}
 {"doc_id": "intern:simplify:56a336eb-1d80-47cd-8cc9-16332d5fdb2d", "label": 0, "qid": "q21"}
+{"doc_id": "intern:simplify:571dc222-d134-45dd-8547-ba1ce9e2c5a4", "label": 0, "qid": "q21"}
 {"doc_id": "intern:simplify:601b1b74-d436-4fd4-bf1e-5c288d6706bc", "label": 1, "qid": "q21"}
 {"doc_id": "intern:simplify:75a57c7c-d53e-471f-ad32-b424227e9f4a", "label": 1, "qid": "q21"}
 {"doc_id": "intern:simplify:7c26ef09-c2c9-47e6-b9a9-1e62b056f9dd", "label": 0, "qid": "q21"}
@@ -1974,12 +1992,15 @@
 {"doc_id": "intern:simplify:65d7082a-180e-4d87-914c-87e9e3d15ae0", "label": 1, "qid": "q22"}
 {"doc_id": "intern:simplify:70557434-b7bd-444b-9ab3-93a161ec0253", "label": 1, "qid": "q22"}
 {"doc_id": "intern:simplify:75e652f6-6c0d-4dca-90c1-9bc0a5e03ad2", "label": 2, "qid": "q22"}
+{"doc_id": "intern:simplify:935c3dc5-adb9-4d56-8fa5-02526cd37a3d", "label": 1, "qid": "q22"}
 {"doc_id": "intern:simplify:9b583ef7-d504-428e-8ae1-cbb29dfeace9", "label": 0, "qid": "q22"}
 {"doc_id": "intern:simplify:9e2e7d36-c343-4fed-b4da-67a7639a8fc0", "label": 1, "qid": "q22"}
 {"doc_id": "intern:simplify:a8275d8b-68c2-4d00-9987-b0ca5a505662", "label": 2, "qid": "q22"}
 {"doc_id": "intern:simplify:b2b7e2a7-9e82-4ddc-a910-d256f40be96a", "label": 0, "qid": "q22"}
 {"doc_id": "intern:simplify:b77751b6-859f-4a04-a1aa-66508bbaf277", "label": 1, "qid": "q22"}
 {"doc_id": "intern:simplify:bb48b7b8-29e9-4f8f-8817-54e325180735", "label": 0, "qid": "q22"}
+{"doc_id": "intern:simplify:c9ad7130-d51b-4977-b457-507b9ff86717", "label": 1, "qid": "q22"}
+{"doc_id": "intern:simplify:e1fc4e73-902b-46f8-a226-2051c83aaee7", "label": 1, "qid": "q22"}
 {"doc_id": "intern:simplify:eaae45a5-af50-478c-8625-bd6b63b17181", "label": 1, "qid": "q22"}
 {"doc_id": "intern:simplify:ed3c7432-cc98-43bc-8361-acf4b6d1672b", "label": 1, "qid": "q22"}
 {"doc_id": "intern:simplify:ee5e38e3-bc10-4546-b6de-d39065ac25f1", "label": 2, "qid": "q22"}
@@ -2149,18 +2170,26 @@
 {"doc_id": "intern:simplify:1138115e-954f-402a-aac8-f6975f97c894", "label": 0, "qid": "q24"}
 {"doc_id": "intern:simplify:13222163-c599-401a-9be8-b9bc44dd84ce", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:1d4ee67a-8393-4129-a473-660742fc87d8", "label": 0, "qid": "q24"}
+{"doc_id": "intern:simplify:2892cb3f-9aea-4076-b536-63a821a5fecd", "label": 1, "qid": "q24"}
+{"doc_id": "intern:simplify:2c50d66a-bdb8-46dc-8a47-f505dcf9f116", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:31217f4f-f656-4fcc-aab4-f5ce406f94e6", "label": 0, "qid": "q24"}
 {"doc_id": "intern:simplify:40cdb642-48b5-49a4-98d3-2f3a48e4fa31", "label": 0, "qid": "q24"}
 {"doc_id": "intern:simplify:495230b7-4be6-447a-9ce2-76170fb240a8", "label": 0, "qid": "q24"}
 {"doc_id": "intern:simplify:4bcd5c66-dd7f-4827-9604-aaf0042ab85a", "label": 0, "qid": "q24"}
 {"doc_id": "intern:simplify:4faaca93-0c42-437d-9ffe-3b46d8d67e62", "label": 1, "qid": "q24"}
+{"doc_id": "intern:simplify:5d49b8ae-c032-452a-9a2c-c036c1e404fc", "label": 1, "qid": "q24"}
+{"doc_id": "intern:simplify:846e81bd-3e27-4c74-a7bb-274584c78e52", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:98829ac8-5a3d-440d-9370-077b910866f2", "label": 0, "qid": "q24"}
 {"doc_id": "intern:simplify:9f53c835-37e0-454c-9b71-662641264345", "label": 0, "qid": "q24"}
+{"doc_id": "intern:simplify:a383cf23-bfbc-40e0-b1b5-006e2219f0b3", "label": 1, "qid": "q24"}
+{"doc_id": "intern:simplify:aff605d9-9409-4af3-8a8e-5135c61ed924", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:b77751b6-859f-4a04-a1aa-66508bbaf277", "label": 0, "qid": "q24"}
 {"doc_id": "intern:simplify:ba733cd9-7086-4e38-bdec-d13b07b8b1d3", "label": 0, "qid": "q24"}
+{"doc_id": "intern:simplify:cfe783b7-14a9-475b-b867-fa47ee7a6ba7", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:dc082ede-bdc2-4400-aa88-dd395f092ae7", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:e3203be3-937d-47e4-b14c-f375df2d2fa8", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:e8ea91cb-3fa7-4221-b767-41057050b8cb", "label": 1, "qid": "q24"}
+{"doc_id": "intern:simplify:eb29386d-11c8-4a14-a2d1-b4e129f64cd6", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:ef5110ac-e253-4654-896d-f186344b7c1d", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:f0c77c3d-ac7c-476b-b0dc-7d681b3ab21f", "label": 1, "qid": "q24"}
 {"doc_id": "intern:simplify:fc7e57ed-e4b3-4658-b094-842e4a64636a", "label": 1, "qid": "q24"}
@@ -2218,7 +2247,11 @@
 {"doc_id": "intern:simplify:33365070-1b3c-4991-85fb-04e2cdc26de7", "label": 1, "qid": "q25"}
 {"doc_id": "intern:simplify:40089e3d-a032-4dd1-845c-110e7d0a7481", "label": 2, "qid": "q25"}
 {"doc_id": "intern:simplify:4b9d78b3-d750-42ee-97cc-51f50e53e928", "label": 2, "qid": "q25"}
+{"doc_id": "intern:simplify:63f022cb-b4f4-4fd9-869e-9bdd55d6fabe", "label": 2, "qid": "q25"}
+{"doc_id": "intern:simplify:646c1eeb-a6b8-40f6-95c7-581780504d2e", "label": 2, "qid": "q25"}
+{"doc_id": "intern:simplify:66b1fe7b-a6c1-4da5-a7f1-d4789239afce", "label": 2, "qid": "q25"}
 {"doc_id": "intern:simplify:682fb06a-92cd-49dc-9d4b-15680c9f6d36", "label": 2, "qid": "q25"}
+{"doc_id": "intern:simplify:7d29e9a8-e116-43c5-a3b9-267f864cddfc", "label": 2, "qid": "q25"}
 {"doc_id": "intern:simplify:8e55e1d9-a6ba-4cf3-b2bd-186d0907c738", "label": 1, "qid": "q25"}
 {"doc_id": "intern:simplify:93ae3a0d-e1e0-4d7a-ad67-4adba9311b49", "label": 2, "qid": "q25"}
 {"doc_id": "intern:simplify:9ec1752c-1474-4db2-b945-15fdc3102303", "label": 1, "qid": "q25"}
@@ -2246,6 +2279,7 @@
 {"doc_id": "intern:tiktok:7666292282597214517", "label": 2, "qid": "q25"}
 {"doc_id": "intern:tiktok:7666294185007565109", "label": 2, "qid": "q25"}
 {"doc_id": "intern:tiktok:7666294579582667013", "label": 2, "qid": "q25"}
+{"doc_id": "intern:tiktok:7667346576033777925", "label": 2, "qid": "q25"}
 {"doc_id": "intern:tiktok:7667350291952765237", "label": 2, "qid": "q25"}
 {"doc_id": "intern:tiktok:7667874197682899205", "label": 0, "qid": "q25"}
 {"doc_id": "intern:tiktok:7667906209610139957", "label": 2, "qid": "q25"}
@@ -2340,6 +2374,7 @@
 {"doc_id": "intern:simplify:3f2a74d0-e723-4bd5-b670-23b753042fbe", "label": 1, "qid": "q26"}
 {"doc_id": "intern:simplify:41e5d607-8e4b-4840-8a89-834022636c99", "label": 0, "qid": "q26"}
 {"doc_id": "intern:simplify:423e3f73-e0d9-47d9-be9e-94bff6e4c579", "label": 0, "qid": "q26"}
+{"doc_id": "intern:simplify:48327e8c-a8f7-4339-83a4-019ef774f663", "label": 2, "qid": "q26"}
 {"doc_id": "intern:simplify:53251689-34f9-4e14-8fd1-42cda602bfe4", "label": 2, "qid": "q26"}
 {"doc_id": "intern:simplify:553e936d-d5c4-4aff-b6a3-b91ff60b0afb", "label": 2, "qid": "q26"}
 {"doc_id": "intern:simplify:6813e05c-291f-4297-bae8-9e6c59d4a809", "label": 1, "qid": "q26"}
@@ -2393,6 +2428,7 @@
 {"doc_id": "intern:simplify:24381402-1346-48ef-9e6d-909cd81ca7d5", "label": 2, "qid": "q27"}
 {"doc_id": "intern:simplify:25f26c89-68c7-42c7-8b1c-a1e4d61f5525", "label": 0, "qid": "q27"}
 {"doc_id": "intern:simplify:2afc5cb6-5d17-4a8f-b6e4-6f77835d6041", "label": 0, "qid": "q27"}
+{"doc_id": "intern:simplify:31ab487e-bda7-4337-94b7-bda1786f13f2", "label": 0, "qid": "q27"}
 {"doc_id": "intern:simplify:33ae8cab-9f3b-486e-9f60-5c43fd1f1e48", "label": 1, "qid": "q27"}
 {"doc_id": "intern:simplify:3ace9955-fb8a-4ca0-a716-7b9d6f86671f", "label": 1, "qid": "q27"}
 {"doc_id": "intern:simplify:3d74d34b-cf5a-4c64-b08a-73afd63a61f6", "label": 1, "qid": "q27"}
@@ -2634,12 +2670,14 @@
 {"doc_id": "intern:amazon:10591956", "label": 0, "qid": "q30"}
 {"doc_id": "intern:amazon:10593299", "label": 1, "qid": "q30"}
 {"doc_id": "intern:amazon:10593322", "label": 1, "qid": "q30"}
+{"doc_id": "intern:amazon:10597425", "label": 0, "qid": "q30"}
 {"doc_id": "intern:ashby:notion:2b587e66-deac-421a-a824-9415ba78b5a7", "label": 0, "qid": "q30"}
 {"doc_id": "intern:gh:appier:6820898", "label": 0, "qid": "q30"}
 {"doc_id": "intern:gh:binance:5013438101", "label": 1, "qid": "q30"}
 {"doc_id": "intern:gh:bybit:4971542101", "label": 0, "qid": "q30"}
 {"doc_id": "intern:gh:bybit:4971569101", "label": 0, "qid": "q30"}
 {"doc_id": "intern:gh:bybit:4974271101", "label": 0, "qid": "q30"}
+{"doc_id": "intern:gh:coinbase:8175873", "label": 0, "qid": "q30"}
 {"doc_id": "intern:gh:drweng:7942281", "label": 0, "qid": "q30"}
 {"doc_id": "intern:gh:drweng:7957735", "label": 0, "qid": "q30"}
 {"doc_id": "intern:gh:drweng:7991196", "label": 0, "qid": "q30"}
@@ -2813,6 +2851,7 @@
 {"doc_id": "intern:wd:nvidia:JR2023654", "label": 0, "qid": "q31"}
 {"doc_id": "intern:wd:nvidia:JR2023655", "label": 0, "qid": "q31"}
 {"doc_id": "intern:wd:nvidia:JR2023656", "label": 0, "qid": "q31"}
+{"doc_id": "intern:wd:nvidia:JR2024002", "label": 1, "qid": "q31"}
 {"doc_id": "intern:wd:nvidia:JR2024171", "label": 2, "qid": "q31"}
 {"doc_id": "intern:wd:nvidia:JR2024423", "label": 0, "qid": "q31"}
 {"doc_id": "intern:wd:nvidia:JR2024823", "label": 0, "qid": "q31"}
@@ -2860,6 +2899,7 @@
 {"doc_id": "intern:simplify:0ff85d31-6c19-40f4-ad7a-e27a92172e0f", "label": 1, "qid": "q32"}
 {"doc_id": "intern:simplify:18803ec8-f589-4545-bb91-2d5378346d55", "label": 1, "qid": "q32"}
 {"doc_id": "intern:simplify:2af97ee6-2371-4003-ba3b-55f2fd5a6550", "label": 0, "qid": "q32"}
+{"doc_id": "intern:simplify:2d6b647d-ac44-4539-b4ac-403a696b90b1", "label": 1, "qid": "q32"}
 {"doc_id": "intern:simplify:2daece64-1f02-4b15-8dd6-e4c4e1ce0b89", "label": 1, "qid": "q32"}
 {"doc_id": "intern:simplify:2e8bb17d-0726-4482-af62-5f868bede92c", "label": 1, "qid": "q32"}
 {"doc_id": "intern:simplify:373613a0-5aec-44b7-b558-00424f8347e1", "label": 1, "qid": "q32"}
@@ -2904,6 +2944,7 @@
 {"doc_id": "intern:simplify:f096f832-5a90-40c5-b282-60a82886331e", "label": 1, "qid": "q32"}
 {"doc_id": "intern:simplify:f09f0a56-4999-4d19-afb4-894ea819d401", "label": 1, "qid": "q32"}
 {"doc_id": "intern:simplify:f4933265-5ae6-420b-b9b2-7b0c2bb825af", "label": 0, "qid": "q32"}
+{"doc_id": "intern:simplify:f51fcb61-d19e-4ed3-81ec-258f5931b9db", "label": 1, "qid": "q32"}
 {"doc_id": "intern:simplify:f93a68c5-be5c-43a5-9f4c-2deab0e77c2a", "label": 0, "qid": "q32"}
 {"doc_id": "intern:tiktok:7577613936331032837", "label": 1, "qid": "q32"}
 {"doc_id": "intern:tiktok:7595507388230568245", "label": 1, "qid": "q32"}
@@ -3530,6 +3571,7 @@
 {"doc_id": "intern:simplify:30ef7e36-6232-4c97-a0a2-f1e7acec8ee7", "label": 2, "qid": "q39"}
 {"doc_id": "intern:simplify:41101dfb-9fa5-4eac-b1cf-f6c93e3c3f48", "label": 2, "qid": "q39"}
 {"doc_id": "intern:simplify:468b84e5-6585-46ca-a0bc-c17392fa706d", "label": 0, "qid": "q39"}
+{"doc_id": "intern:simplify:479c73d2-b816-4d2e-815c-e11f66aaaccc", "label": 2, "qid": "q39"}
 {"doc_id": "intern:simplify:54ebc350-017d-43b1-a766-7a50553bca1e", "label": 0, "qid": "q39"}
 {"doc_id": "intern:simplify:5deaeeac-9451-4c30-96a6-fd4a16eccee7", "label": 0, "qid": "q39"}
 {"doc_id": "intern:simplify:628318f8-ee8f-45d1-9737-0c3b6ca4a924", "label": 2, "qid": "q39"}
@@ -3652,10 +3694,12 @@
 {"doc_id": "intern:simplify:1a06ffe6-c658-4376-9126-92f68023b3b9", "label": 0, "qid": "q40"}
 {"doc_id": "intern:simplify:1aced91a-6fa5-4f69-8d6c-d3036f8c30df", "label": 2, "qid": "q40"}
 {"doc_id": "intern:simplify:2e670f26-fa85-4586-a044-ad138d073cf3", "label": 1, "qid": "q40"}
+{"doc_id": "intern:simplify:2ef5d7c2-ef83-459f-af78-5a0340ba59fe", "label": 1, "qid": "q40"}
 {"doc_id": "intern:simplify:41449f01-bdeb-458c-9422-d62de8a1f245", "label": 0, "qid": "q40"}
 {"doc_id": "intern:simplify:6d5e8652-a493-422e-ba2a-0811ef8f8cff", "label": 2, "qid": "q40"}
 {"doc_id": "intern:simplify:9f53c835-37e0-454c-9b71-662641264345", "label": 0, "qid": "q40"}
 {"doc_id": "intern:simplify:b03555c3-944d-4213-aab1-95db2f80fabf", "label": 1, "qid": "q40"}
+{"doc_id": "intern:simplify:b1d0db5d-2ecc-4ad8-8fdd-ad33cabd3059", "label": 1, "qid": "q40"}
 {"doc_id": "intern:simplify:b26371db-d53d-469b-b8e0-1f50db3f6004", "label": 1, "qid": "q40"}
 {"doc_id": "intern:simplify:b7dfb785-5310-43d6-a62f-4ed0b0a01714", "label": 0, "qid": "q40"}
 {"doc_id": "intern:simplify:b97c016f-9c98-43d8-b626-302f1ee28c77", "label": 0, "qid": "q40"}
@@ -3899,6 +3943,7 @@
 {"doc_id": "intern:simplify:36eda7d6-d1c3-433b-a403-7b764e131176", "label": 1, "qid": "q43"}
 {"doc_id": "intern:simplify:3cb45823-f475-44c7-aaca-4a1335faf6ff", "label": 1, "qid": "q43"}
 {"doc_id": "intern:simplify:49dad85f-a6af-4fb4-b6e9-20402bab7e9d", "label": 1, "qid": "q43"}
+{"doc_id": "intern:simplify:510dff44-a111-4a88-8662-b07d88568e6a", "label": 1, "qid": "q43"}
 {"doc_id": "intern:simplify:68895e12-9a1f-4ca5-8dfb-b050f2ea8a43", "label": 1, "qid": "q43"}
 {"doc_id": "intern:simplify:747b784e-260a-408e-9aaa-b44aae10b4e9", "label": 1, "qid": "q43"}
 {"doc_id": "intern:simplify:75c9bd55-d962-405d-8b35-8302935fa982", "label": 0, "qid": "q43"}
@@ -4092,6 +4137,7 @@
 {"doc_id": "intern:simplify:d3f54d58-9f89-4689-b91d-f9e03013c3ca", "label": 1, "qid": "q45"}
 {"doc_id": "intern:simplify:e1fc4e73-902b-46f8-a226-2051c83aaee7", "label": 1, "qid": "q45"}
 {"doc_id": "intern:simplify:eaae45a5-af50-478c-8625-bd6b63b17181", "label": 2, "qid": "q45"}
+{"doc_id": "intern:simplify:f31085c4-ae70-460e-b177-6cf684b48359", "label": 1, "qid": "q45"}
 {"doc_id": "intern:simplify:fb3a1722-d295-4e12-998b-a2815107d43c", "label": 1, "qid": "q45"}
 {"doc_id": "intern:tiktok:7525650208522193159", "label": 1, "qid": "q45"}
 {"doc_id": "intern:tiktok:7594673408735349045", "label": 0, "qid": "q45"}
@@ -4670,6 +4716,7 @@
 {"doc_id": "intern:simplify:0a2d8d42-726b-49fe-9136-60580662f2da", "label": 0, "qid": "q51"}
 {"doc_id": "intern:simplify:0a3f57fc-708c-4b77-9a27-a3fcff485267", "label": 2, "qid": "q51"}
 {"doc_id": "intern:simplify:1cc17ed5-3841-485e-bfcd-d41dec899b72", "label": 1, "qid": "q51"}
+{"doc_id": "intern:simplify:27d35509-4d8d-4dd3-9313-54dfaee11170", "label": 1, "qid": "q51"}
 {"doc_id": "intern:simplify:2d6b647d-ac44-4539-b4ac-403a696b90b1", "label": 1, "qid": "q51"}
 {"doc_id": "intern:simplify:2f4c5900-989e-4b19-afdd-c5d973e9b552", "label": 1, "qid": "q51"}
 {"doc_id": "intern:simplify:3d10c362-0c0a-4092-936e-46903e7fea25", "label": 0, "qid": "q51"}
@@ -4682,6 +4729,7 @@
 {"doc_id": "intern:simplify:6c74498a-09f5-4f4d-8cbc-8697e435f29d", "label": 2, "qid": "q51"}
 {"doc_id": "intern:simplify:752e7b9a-ef6d-4bb0-883b-ec5cc4e3207c", "label": 2, "qid": "q51"}
 {"doc_id": "intern:simplify:77ad91df-64e7-4538-98d7-6c44639adb63", "label": 2, "qid": "q51"}
+{"doc_id": "intern:simplify:7f1252c2-2dd8-4334-9c9c-8ace10b21273", "label": 2, "qid": "q51"}
 {"doc_id": "intern:simplify:9540c6d5-a3f9-44ef-bbc8-f2e6f966e07c", "label": 1, "qid": "q51"}
 {"doc_id": "intern:simplify:9ba8a150-c15e-4995-a5d1-3cc11163c254", "label": 0, "qid": "q51"}
 {"doc_id": "intern:simplify:9eb5db83-d537-441b-9c55-31a3f7b3746b", "label": 2, "qid": "q51"}
@@ -4895,13 +4943,17 @@
 {"doc_id": "intern:simplify:080013e5-3799-4094-8bd3-80591859bd88", "label": 2, "qid": "q53"}
 {"doc_id": "intern:simplify:0e636bf2-1fa3-4d8c-bdba-8a04ae7b2206", "label": 2, "qid": "q53"}
 {"doc_id": "intern:simplify:21479fdc-ebba-40c6-9d9e-8c263e7e7296", "label": 1, "qid": "q53"}
+{"doc_id": "intern:simplify:22d552c2-2ca2-491c-bcbd-f6c23cb08d84", "label": 2, "qid": "q53"}
 {"doc_id": "intern:simplify:249847ab-d7a0-4993-a3ae-0dd0e2e831ed", "label": 1, "qid": "q53"}
 {"doc_id": "intern:simplify:250628e8-9e7f-4ed2-a31f-d09775e435cb", "label": 0, "qid": "q53"}
 {"doc_id": "intern:simplify:2649142c-09b6-4a9e-84cd-10f97d29c2c1", "label": 2, "qid": "q53"}
 {"doc_id": "intern:simplify:2fca6415-3647-4392-83e0-0848058f855b", "label": 2, "qid": "q53"}
 {"doc_id": "intern:simplify:34237b64-67e9-4cd9-be04-b033bc4dfe90", "label": 1, "qid": "q53"}
+{"doc_id": "intern:simplify:6491aa79-4030-43bf-9522-9f00fafdfe61", "label": 2, "qid": "q53"}
 {"doc_id": "intern:simplify:66b1fe7b-a6c1-4da5-a7f1-d4789239afce", "label": 1, "qid": "q53"}
 {"doc_id": "intern:simplify:9c648fd4-14e8-4044-af8a-cf68219f8195", "label": 1, "qid": "q53"}
+{"doc_id": "intern:simplify:aecef2e9-da18-4866-9323-61bd88a7681b", "label": 2, "qid": "q53"}
+{"doc_id": "intern:simplify:b947f29d-d045-476f-8e18-ffab71e754ee", "label": 2, "qid": "q53"}
 {"doc_id": "intern:simplify:bc77c289-ab13-4062-adf6-da8e0aa72034", "label": 1, "qid": "q53"}
 {"doc_id": "intern:simplify:c7d8c2f2-7484-461a-acdb-a0a8efece281", "label": 1, "qid": "q53"}
 {"doc_id": "intern:simplify:c9c49f01-51e4-4d6b-99a4-24bad0192c34", "label": 2, "qid": "q53"}
@@ -5040,6 +5092,7 @@
 {"doc_id": "intern:simplify:c56751ac-6762-423d-9796-8d62264d5cac", "label": 1, "qid": "q54"}
 {"doc_id": "intern:simplify:cd7682b8-7722-4a26-9813-42ece290a387", "label": 1, "qid": "q54"}
 {"doc_id": "intern:simplify:dab6f443-d39a-4bca-acad-451c8b347549", "label": 1, "qid": "q54"}
+{"doc_id": "intern:simplify:e6698a06-642e-483b-8dfb-1d1b5ec9299c", "label": 1, "qid": "q54"}
 {"doc_id": "intern:simplify:e91b16a1-3d02-4a4f-a1f4-9e894c60c881", "label": 0, "qid": "q54"}
 {"doc_id": "intern:simplify:f8f882fd-ee8e-4b25-ae90-0f2a5746e3ed", "label": 1, "qid": "q54"}
 {"doc_id": "intern:simplify:f968b448-0edf-43ed-9f4c-8954bef0183b", "label": 1, "qid": "q54"}
@@ -5153,6 +5206,7 @@
 {"doc_id": "intern:microsoft:200064449", "label": 1, "qid": "q55"}
 {"doc_id": "intern:microsoft:200064977", "label": 1, "qid": "q55"}
 {"doc_id": "intern:microsoft:200065169", "label": 1, "qid": "q55"}
+{"doc_id": "intern:microsoft:200065202", "label": 1, "qid": "q55"}
 {"doc_id": "intern:microsoft:200065702", "label": 1, "qid": "q55"}
 {"doc_id": "intern:simplify:1396b282-ae49-4b5f-a315-27c109ef26fd", "label": 1, "qid": "q55"}
 {"doc_id": "intern:simplify:48c4cfa3-389b-4a66-abd7-a1d6cb9708a5", "label": 1, "qid": "q55"}
@@ -5491,19 +5545,23 @@
 {"doc_id": "intern:simplify:1396b282-ae49-4b5f-a315-27c109ef26fd", "label": 0, "qid": "q58"}
 {"doc_id": "intern:simplify:15541ad0-6422-49de-b84d-968855e502c2", "label": 0, "qid": "q58"}
 {"doc_id": "intern:simplify:18803ec8-f589-4545-bb91-2d5378346d55", "label": 1, "qid": "q58"}
+{"doc_id": "intern:simplify:1cf14ab5-bc9d-4842-9fb3-7f423c965a86", "label": 1, "qid": "q58"}
 {"doc_id": "intern:simplify:1e080067-6ebc-4e83-be3e-6231a1a8ff1d", "label": 0, "qid": "q58"}
 {"doc_id": "intern:simplify:249847ab-d7a0-4993-a3ae-0dd0e2e831ed", "label": 1, "qid": "q58"}
 {"doc_id": "intern:simplify:31553e6b-5e69-46b9-8944-9d7097c8df02", "label": 0, "qid": "q58"}
 {"doc_id": "intern:simplify:41101dfb-9fa5-4eac-b1cf-f6c93e3c3f48", "label": 1, "qid": "q58"}
 {"doc_id": "intern:simplify:48c4cfa3-389b-4a66-abd7-a1d6cb9708a5", "label": 1, "qid": "q58"}
+{"doc_id": "intern:simplify:4df32e9a-c2bf-41b5-a2d3-5bffe9caf0b5", "label": 1, "qid": "q58"}
 {"doc_id": "intern:simplify:6a849ae3-5b64-44ef-8bcc-a7bb32766d9f", "label": 1, "qid": "q58"}
 {"doc_id": "intern:simplify:7446a6fa-1e34-44e8-8b3a-46688131ec9f", "label": 0, "qid": "q58"}
 {"doc_id": "intern:simplify:8d699dd6-89fb-4c17-8319-47d01a7f9bf3", "label": 0, "qid": "q58"}
 {"doc_id": "intern:simplify:a105f8ab-2cdc-4f08-8687-fb4a75573615", "label": 1, "qid": "q58"}
+{"doc_id": "intern:simplify:b0499e19-6c89-4fd0-bfe4-a99d188b71f1", "label": 1, "qid": "q58"}
 {"doc_id": "intern:simplify:c3e5404d-596e-4408-ba27-d60a17fb1680", "label": 1, "qid": "q58"}
 {"doc_id": "intern:simplify:c9d7a6a4-c813-465b-a38f-7316e0ba7b4d", "label": 0, "qid": "q58"}
 {"doc_id": "intern:simplify:d0c99133-455b-4c9d-be96-3c3a60640926", "label": 1, "qid": "q58"}
 {"doc_id": "intern:simplify:e7dad441-1919-402c-8936-123968e0e6b3", "label": 0, "qid": "q58"}
+{"doc_id": "intern:simplify:fc8cae17-5e4e-43fc-802d-41864d7e3c10", "label": 1, "qid": "q58"}
 {"doc_id": "intern:sr:grab:744000152841949", "label": 0, "qid": "q58"}
 {"doc_id": "intern:tiktok:7533150108277623048", "label": 0, "qid": "q58"}
 {"doc_id": "intern:tiktok:7562148703776688389", "label": 0, "qid": "q58"}
@@ -6055,6 +6113,7 @@
 {"doc_id": "intern:amazon:10555856", "label": 0, "qid": "q64"}
 {"doc_id": "intern:amazon:10559746", "label": 0, "qid": "q64"}
 {"doc_id": "intern:amazon:10563242", "label": 0, "qid": "q64"}
+{"doc_id": "intern:amazon:10564599", "label": 0, "qid": "q64"}
 {"doc_id": "intern:amazon:10571374", "label": 0, "qid": "q64"}
 {"doc_id": "intern:amazon:10573570", "label": 0, "qid": "q64"}
 {"doc_id": "intern:amazon:10574920", "label": 0, "qid": "q64"}
@@ -6193,6 +6252,7 @@
 {"doc_id": "intern:tiktok:7701072604556642613", "label": 1, "qid": "q65"}
 {"doc_id": "intern:tiktok:7701801971234539829", "label": 1, "qid": "q65"}
 {"doc_id": "intern:tiktok:7704769317216815413", "label": 0, "qid": "q65"}
+{"doc_id": "intern:wd:adobe:R172064", "label": 1, "qid": "q65"}
 {"doc_id": "intern:wd:adobe:R172997", "label": 0, "qid": "q65"}
 {"doc_id": "intern:wd:adobe:R173016", "label": 1, "qid": "q65"}
 {"doc_id": "intern:wd:intel:JR0287525", "label": 1, "qid": "q65"}
@@ -6245,6 +6305,7 @@
 {"doc_id": "intern:ashby:snowflake:ab028e3c-c1cf-4455-8915-8e4e6b0cc9e8", "label": 1, "qid": "q66"}
 {"doc_id": "intern:gh:coinbase:8168315", "label": 1, "qid": "q66"}
 {"doc_id": "intern:gh:coinbase:8175441", "label": 0, "qid": "q66"}
+{"doc_id": "intern:gh:coinbase:8175462", "label": 0, "qid": "q66"}
 {"doc_id": "intern:gh:coinbase:8221238", "label": 0, "qid": "q66"}
 {"doc_id": "intern:gh:datadog:8052118", "label": 2, "qid": "q66"}
 {"doc_id": "intern:gh:datadog:8114161", "label": 2, "qid": "q66"}
@@ -6452,6 +6513,7 @@
 {"doc_id": "intern:simplify:0237db49-2c6e-4821-9ef5-4c8214f38c17", "label": 1, "qid": "q68"}
 {"doc_id": "intern:simplify:183e5059-a65a-4031-89cb-16f14f42f6f0", "label": 1, "qid": "q68"}
 {"doc_id": "intern:simplify:1b670e5e-9edc-4255-93f8-5fdac2fb70ac", "label": 1, "qid": "q68"}
+{"doc_id": "intern:simplify:279f47da-651d-4b99-be89-f25aaa8768d1", "label": 1, "qid": "q68"}
 {"doc_id": "intern:simplify:37964531-f7ed-49ac-a7b8-25685cbe73ac", "label": 0, "qid": "q68"}
 {"doc_id": "intern:simplify:429206eb-1f40-45d7-b889-7f15adca52b5", "label": 1, "qid": "q68"}
 {"doc_id": "intern:simplify:48e1b4e0-a04d-448e-8145-aa3837d7ca9c", "label": 1, "qid": "q68"}
@@ -6535,6 +6597,7 @@
 {"doc_id": "intern:microsoft:200055967", "label": 0, "qid": "q69"}
 {"doc_id": "intern:simplify:15541ad0-6422-49de-b84d-968855e502c2", "label": 0, "qid": "q69"}
 {"doc_id": "intern:simplify:199801ca-ff30-4280-8376-c89c13ddc645", "label": 2, "qid": "q69"}
+{"doc_id": "intern:simplify:24381402-1346-48ef-9e6d-909cd81ca7d5", "label": 2, "qid": "q69"}
 {"doc_id": "intern:simplify:2afc5cb6-5d17-4a8f-b6e4-6f77835d6041", "label": 0, "qid": "q69"}
 {"doc_id": "intern:simplify:31ab487e-bda7-4337-94b7-bda1786f13f2", "label": 1, "qid": "q69"}
 {"doc_id": "intern:simplify:33ae8cab-9f3b-486e-9f60-5c43fd1f1e48", "label": 1, "qid": "q69"}
@@ -6624,6 +6687,7 @@
 {"doc_id": "intern:amazon:10585775", "label": 0, "qid": "q70"}
 {"doc_id": "intern:amazon:10587999", "label": 1, "qid": "q70"}
 {"doc_id": "intern:amazon:10588969", "label": 0, "qid": "q70"}
+{"doc_id": "intern:amazon:10593054", "label": 0, "qid": "q70"}
 {"doc_id": "intern:amazon:3134271", "label": 0, "qid": "q70"}
 {"doc_id": "intern:ashby:cohere:73bd3e2b-6597-4124-b64b-1e5dbc32e785", "label": 1, "qid": "q70"}
 {"doc_id": "intern:ashby:keyrock:d2d0a311-b102-4fda-b537-1a8e926b55c7", "label": 1, "qid": "q70"}
@@ -6673,6 +6737,7 @@
 {"doc_id": "intern:simplify:7e873b50-f8c3-4967-9769-eccdbbd62a8f", "label": 0, "qid": "q70"}
 {"doc_id": "intern:simplify:8255a98d-744a-4c7a-8b06-3b5a4efb25ac", "label": 0, "qid": "q70"}
 {"doc_id": "intern:simplify:82f54e51-864a-4797-b7f5-d35f173af418", "label": 0, "qid": "q70"}
+{"doc_id": "intern:sr:grab:744000140389140", "label": 1, "qid": "q70"}
 {"doc_id": "intern:sr:grab:744000152841949", "label": 0, "qid": "q70"}
 {"doc_id": "intern:tiktok:7528196025854380306", "label": 0, "qid": "q70"}
 {"doc_id": "intern:tiktok:7530513185797359880", "label": 1, "qid": "q70"}
@@ -6840,6 +6905,7 @@
 {"doc_id": "intern:simplify:2e8bb17d-0726-4482-af62-5f868bede92c", "label": 2, "qid": "q72"}
 {"doc_id": "intern:simplify:30dd5981-4dd4-4270-a114-1f8d10583205", "label": 2, "qid": "q72"}
 {"doc_id": "intern:simplify:373613a0-5aec-44b7-b558-00424f8347e1", "label": 1, "qid": "q72"}
+{"doc_id": "intern:simplify:44076521-67dd-416f-8928-86fbe0b496b9", "label": 2, "qid": "q72"}
 {"doc_id": "intern:simplify:6be1a997-592a-4fed-98f8-f00887837e03", "label": 2, "qid": "q72"}
 {"doc_id": "intern:simplify:85296cc2-e177-4e6b-a942-962f6643c9b5", "label": 2, "qid": "q72"}
 {"doc_id": "intern:simplify:8d2d1d5d-4101-4154-8430-c9b1201db685", "label": 2, "qid": "q72"}
@@ -7060,6 +7126,7 @@
 {"doc_id": "intern:simplify:96f11f30-fe78-4db5-81f2-699789c49f91", "label": 2, "qid": "q75"}
 {"doc_id": "intern:simplify:a34ec36a-bccc-4e43-93a8-36560196de44", "label": 1, "qid": "q75"}
 {"doc_id": "intern:simplify:bc7d4376-6b3f-4e31-8e71-be0610594d48", "label": 2, "qid": "q75"}
+{"doc_id": "intern:simplify:d466fdad-f557-4135-b159-963583eb27df", "label": 1, "qid": "q75"}
 {"doc_id": "intern:simplify:eabf370c-678d-4de3-925f-22d7298aeb68", "label": 0, "qid": "q75"}
 {"doc_id": "intern:tiktok:7584179082162653445", "label": 1, "qid": "q75"}
 {"doc_id": "intern:tiktok:7594678245917428021", "label": 0, "qid": "q75"}
@@ -7070,6 +7137,7 @@
 {"doc_id": "intern:tiktok:7667865302639855877", "label": 0, "qid": "q75"}
 {"doc_id": "intern:tiktok:7667907101154429189", "label": 0, "qid": "q75"}
 {"doc_id": "intern:tiktok:7667934302872537397", "label": 0, "qid": "q75"}
+{"doc_id": "intern:tiktok:7667934635573692725", "label": 0, "qid": "q75"}
 {"doc_id": "intern:tiktok:7667934759481526581", "label": 0, "qid": "q75"}
 {"doc_id": "intern:tiktok:7667934860750063925", "label": 0, "qid": "q75"}
 {"doc_id": "intern:tiktok:7667935399050692917", "label": 1, "qid": "q75"}
@@ -7136,17 +7204,21 @@
 {"doc_id": "intern:simplify:1757c4ab-3e90-49bb-9fe9-1f16bd55d158", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:2b5c4fa6-dba4-4a25-8f49-5396ddd7f07d", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:39c401c3-d14a-4997-a485-e8e68788de4f", "label": 2, "qid": "q76"}
+{"doc_id": "intern:simplify:3b1e5ee1-c09b-4eea-820a-35105021957d", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:3e175b04-3198-4edf-84a4-adfbc0023419", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:45fec14d-2001-41b9-802c-251d000290e1", "label": 1, "qid": "q76"}
 {"doc_id": "intern:simplify:466fb8d5-0978-48fe-bbfe-b0bdb2df53aa", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:71b8953a-ea1d-4908-ae9c-af9ae857ee7b", "label": 2, "qid": "q76"}
+{"doc_id": "intern:simplify:90912950-0238-4415-ada4-c22d0cbd6ae8", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:93293229-4e3a-48c9-8204-6108c3325ea7", "label": 1, "qid": "q76"}
 {"doc_id": "intern:simplify:a2193fa7-5d7c-4eca-b922-7990e3b89098", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:b18a5562-25bb-4955-af90-8975c5252b03", "label": 2, "qid": "q76"}
+{"doc_id": "intern:simplify:c1bc0780-2c05-4dcf-a1ba-f7e120968902", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:ca1230ad-cc73-4cd9-a19a-9bfc1d42fb23", "label": 1, "qid": "q76"}
 {"doc_id": "intern:simplify:cd65bda8-cf23-44d6-be68-57d9430f5451", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:dabca611-fa12-4b6e-9215-8952a2c58c16", "label": 2, "qid": "q76"}
 {"doc_id": "intern:simplify:df86468a-0723-4315-bf56-0803134d3889", "label": 2, "qid": "q76"}
+{"doc_id": "intern:simplify:fa51c823-7828-457f-b4cf-bb1ef2097644", "label": 1, "qid": "q76"}
 {"doc_id": "intern:tiktok:7532660880120400135", "label": 1, "qid": "q76"}
 {"doc_id": "intern:tiktok:7533083363810330887", "label": 0, "qid": "q76"}
 {"doc_id": "intern:tiktok:7533150108277623048", "label": 0, "qid": "q76"}
@@ -7201,6 +7273,7 @@
 {"doc_id": "intern:simplify:4696ce14-3ae8-4ed6-80e1-61072ce87544", "label": 2, "qid": "q77"}
 {"doc_id": "intern:simplify:4a30dd71-73a0-48c8-9e4a-9422a6952920", "label": 2, "qid": "q77"}
 {"doc_id": "intern:simplify:563916cf-2297-4c6b-93cc-b171f73555c4", "label": 2, "qid": "q77"}
+{"doc_id": "intern:simplify:5d002235-1d81-4824-b9cd-31305b3f86a8", "label": 2, "qid": "q77"}
 {"doc_id": "intern:simplify:7107711b-0874-460d-932c-0c0d7b729f42", "label": 2, "qid": "q77"}
 {"doc_id": "intern:simplify:7605b774-f61b-4d04-876b-25c5e5883f86", "label": 2, "qid": "q77"}
 {"doc_id": "intern:simplify:8254bef8-0753-4347-9bd2-47e5536eab40", "label": 2, "qid": "q77"}
@@ -7212,6 +7285,7 @@
 {"doc_id": "intern:simplify:d58f726c-620e-4c0c-89d7-8b54421280ab", "label": 2, "qid": "q77"}
 {"doc_id": "intern:simplify:e1cb71b6-18fc-4d48-9c80-55c54bb62a50", "label": 2, "qid": "q77"}
 {"doc_id": "intern:simplify:ee68f394-118f-46e4-9fde-768b0ab09b67", "label": 2, "qid": "q77"}
+{"doc_id": "intern:simplify:eed44008-bc56-4a68-9f65-0b98b4876804", "label": 2, "qid": "q77"}
 {"doc_id": "intern:tiktok:7594673408735349045", "label": 1, "qid": "q77"}
 {"doc_id": "intern:tiktok:7594678245917428021", "label": 1, "qid": "q77"}
 {"doc_id": "intern:tiktok:7595507388230568245", "label": 0, "qid": "q77"}
@@ -7724,8 +7798,10 @@
 {"doc_id": "intern:simplify:a4493c94-033c-44ce-ae50-4d4e92ed5dda", "label": 1, "qid": "q82"}
 {"doc_id": "intern:simplify:b5513c72-0126-472b-af07-cd37e80ee5b1", "label": 1, "qid": "q82"}
 {"doc_id": "intern:simplify:b59dc602-a7f2-4fe8-b95c-1d885aaf533c", "label": 2, "qid": "q82"}
+{"doc_id": "intern:simplify:bc0b7e31-28a3-407d-882f-267df776fbd8", "label": 1, "qid": "q82"}
 {"doc_id": "intern:simplify:c5f567d9-027e-4207-b6d3-80f5a9566861", "label": 2, "qid": "q82"}
 {"doc_id": "intern:simplify:e55a7700-5c93-43ed-a30e-6398ef65a328", "label": 2, "qid": "q82"}
+{"doc_id": "intern:simplify:fa51c823-7828-457f-b4cf-bb1ef2097644", "label": 1, "qid": "q82"}
 {"doc_id": "intern:simplify:fb864212-d3c0-4051-9019-29f9bcfde6ac", "label": 2, "qid": "q82"}
 {"doc_id": "intern:sr:grab:744000149793152", "label": 1, "qid": "q82"}
 {"doc_id": "intern:tiktok:7519721555447892232", "label": 0, "qid": "q82"}
@@ -8338,6 +8414,7 @@
 {"doc_id": "intern:wd:nvidia:JR2025025", "label": 0, "qid": "q89"}
 {"doc_id": "intern:wd:nvidia:JR2025048", "label": 0, "qid": "q89"}
 {"doc_id": "intern:wd:nvidia:JR2025179", "label": 0, "qid": "q89"}
+{"doc_id": "intern:wd:nvidia:JR2025314", "label": 0, "qid": "q89"}
 {"doc_id": "intern:wd:nvidia:JR2025406", "label": 0, "qid": "q89"}
 {"doc_id": "intern:wd:nvidia:JR2026052", "label": 1, "qid": "q89"}
 {"doc_id": "intern:wd:nvidia:JR2026972", "label": 1, "qid": "q89"}
@@ -8513,6 +8590,7 @@
 {"doc_id": "intern:microsoft:200055643", "label": 0, "qid": "q92"}
 {"doc_id": "intern:simplify:02dee7ff-6975-4a5e-8aea-ee0dc2ebfde9", "label": 1, "qid": "q92"}
 {"doc_id": "intern:simplify:057bb7a1-e45d-419a-9dce-d6991f31b27d", "label": 2, "qid": "q92"}
+{"doc_id": "intern:simplify:05a491cc-5552-4539-b1dc-4bba5dbdcc6c", "label": 1, "qid": "q92"}
 {"doc_id": "intern:simplify:0ce857da-f2c3-408f-9dff-60465fa37f40", "label": 1, "qid": "q92"}
 {"doc_id": "intern:simplify:18f8a216-9ece-48d2-b065-b46b65c4a5de", "label": 1, "qid": "q92"}
 {"doc_id": "intern:simplify:3d3e0897-9a1e-49e2-94b4-f838b1be2436", "label": 1, "qid": "q92"}
@@ -9074,6 +9152,7 @@
 {"doc_id": "intern:simplify:cd4adf61-4026-464d-8208-c2d4c6258943", "label": 1, "qid": "q98"}
 {"doc_id": "intern:simplify:d973936c-50d5-41f6-acc8-e1dbd6c84acd", "label": 0, "qid": "q98"}
 {"doc_id": "intern:simplify:e0096175-7492-48c9-9a0f-d4b5ba3ce428", "label": 0, "qid": "q98"}
+{"doc_id": "intern:simplify:f837be5e-a836-41f8-ae75-18dafffcf33a", "label": 1, "qid": "q98"}
 {"doc_id": "intern:simplify:f83f287e-8226-4a60-8693-59f4c3a5d746", "label": 0, "qid": "q98"}
 {"doc_id": "intern:simplify:f85e3825-ee60-4f0f-8fca-cb96f23760d0", "label": 0, "qid": "q98"}
 {"doc_id": "intern:simplify:f8a9b90a-fde6-46cf-9272-e8ae8b5f9bac", "label": 2, "qid": "q98"}

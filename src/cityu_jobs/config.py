@@ -102,9 +102,10 @@ SEARCH_MODES = ("vector", "keyword", "hybrid")
 # What gets embedded for a listing (core/text.py). True: its description is cut into
 # ~500-character pieces, each embedded with the listing's header, and the listing scores as
 # its best piece. False: one compact text (header + the first ~500 characters) per listing.
-# Pieces were better for vector search on dev (nDCG@10 0.668 vs 0.648 with bge-m3); they cost
-# about twice the vectors (only a fifth of the listings are long enough to have several).
-EMBED_CHUNKS = True
+# Pieces were better for vector search on dev (nDCG@10 0.668 vs 0.648 with bge-m3), but in
+# hybrid mode they tied on test (0.738 vs 0.739) while doubling the vectors and the search
+# time and favouring long listings (best of ~6 pieces). So the app uses one compact text.
+EMBED_CHUNKS = False
 # Hybrid mode: weights of (keyword ranking, vector ranking) in the Reciprocal Rank Fusion.
 # Equal weights were best on dev once the vector side used bge-m3.
 HYBRID_WEIGHTS = (1.0, 1.0)

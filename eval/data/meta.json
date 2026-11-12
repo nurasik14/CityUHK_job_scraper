@@ -160,15 +160,15 @@
     "device": "cuda",
     "files": {
       "rerank_scores.jsonl.gz": {
-        "bytes": 84118,
-        "sha256": "58b12777498190b6d7e9083313e9268255e61d9da58ff046ce20b4cfa8a9b640"
+        "bytes": 90274,
+        "sha256": "72cc5fc0452076eacee44df6feb8017170641ed8536aa67abe769e8d88a282c2"
       }
     },
     "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
     "input": "query + core/text.compact_text of the listing",
     "max_tokens": 512,
     "model": "BAAI/bge-reranker-v2-m3",
-    "pairs": 4066,
+    "pairs": 4132,
     "precision": "fp16",
     "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
     "score_decimals": 6,
